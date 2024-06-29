@@ -11,9 +11,11 @@ import { SnackbarProvider } from "notistack";
 const theme = createTheme({
   typography: {
     fontFamily: "Inter, Arial, sans-serif",
-    h2: {
-      fontSize: "0.8rem",
-      fontWeight: "600",
+  },
+  palette: {
+    customGreen: {
+      main: "rgb(67, 160, 71)",
+      contrastText: "#fff",
     },
   },
 });

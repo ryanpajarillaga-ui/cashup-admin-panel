@@ -102,8 +102,9 @@ const LoginForm = () => {
           error={!!usernameError}
           helperText={usernameError}
           required
-          inputProps={{ maxLength: 20 }}
+          inputProps={{ maxLength: 20, sx: { fontSize: 14 } }}
           sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+          InputLabelProps={{ sx: { fontSize: 14 } }}
         />
         <TextField
           label="Password"
@@ -120,7 +121,8 @@ const LoginForm = () => {
           error={!!passwordError}
           helperText={passwordError}
           required
-          inputProps={{ maxLength: 15 }}
+          inputProps={{ maxLength: 15, sx: { fontSize: 14 } }}
+          InputLabelProps={{ sx: { fontSize: 14 } }}
           sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
         />
         <Button
@@ -130,6 +132,7 @@ const LoginForm = () => {
           onClick={handleLogin}
           sx={{
             mt: 2,
+            fontSize: "0.75rem",
             backgroundColor: "rgba(67,160,71)",
             color: "white",
             "&:hover": { backgroundColor: "rgba(46, 112, 49)" },

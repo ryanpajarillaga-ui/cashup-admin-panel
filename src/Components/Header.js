@@ -1,23 +1,54 @@
-import { Box, Typography } from "@mui/material";
+import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
 import React, { useState } from "react";
 
-import AppBar from "@mui/material/AppBar";
+import { Avatar } from "@mui/material";
+import ContactSupport from "./NotificationPages/ContactSupport";
 import Cookies from "js-cookie";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import IconButton from "@mui/material/IconButton";
-import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import SupportAgentIcon from "@mui/icons-material/SupportAgent";
-import TaskIcon from "@mui/icons-material/Task";
-import Toolbar from "@mui/material/Toolbar";
+import LicenceVefification from "./NotificationPages/LicenceVerification";
+import PersonIcon from "@mui/icons-material/Person";
+import Profile from "./Profile";
+import WithdrawalRequests from "./NotificationPages/WithdrawalRequests";
+import axios from "axios";
 
 const Header = () => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [contactSupportNotifications, setContactSupportNotifications] = useState([]);
+  const [licenceNotifications, setLicenceNotifications] = useState([]);
+  const [withdrawalNotifications, setWithdrawalNotifications] = useState([]);
 
   const userDataObject = JSON.parse(Cookies.get("userData") || "{}");
   const userData = userDataObject.data[0];
 
-  const handleSubmenuClick = () => {
+  const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
+
+  const fetchNotifications = async (endpoint) => {
+    const url = `${baseURLv1}/${endpoint}`;
+
+    try {
+      const response = await axios.get(url);
+      const data = await response.data.data;
+      if (endpoint == "adminHome/getNotificationWithdrawals") {
+        setWithdrawalNotifications(data);
+      } else if (endpoint == "adminHome/getNotificationContactSupport") {
+        setContactSupportNotifications(data);
+      } else {
+        setLicenceNotifications(data);
+      }
+    } catch (error) {
+      console.error("Error fetching:", error);
+    }
+  };
+
+  const handleSubmenuClick = (e) => {
+    setAnchorEl(e.currentTarget);
+    setSubmenuOpen(!submenuOpen);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
     setSubmenuOpen(!submenuOpen);
   };
 
@@ -35,22 +66,33 @@ const Header = () => {
     >
       <Toolbar sx={{ display: "flex", justifyContent: "flex-end" }}>
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <IconButton color="inherit" sx={{ color: "rgba(67,160,71)" }}>
-            <SupportAgentIcon />
-          </IconButton>
-          <IconButton color="inherit" sx={{ color: "rgba(67,160,71)" }}>
-            <TaskIcon />
-          </IconButton>
-          <IconButton color="inherit" sx={{ color: "rgba(67,160,71)" }}>
-            <MonetizationOnIcon />
-          </IconButton>
+          <ContactSupport
+            fetchNotifications={fetchNotifications}
+            notifications={contactSupportNotifications}
+            userData={userData}
+          />
+          <LicenceVefification
+            fetchNotifications={fetchNotifications}
+            notifications={licenceNotifications}
+            userData={userData}
+          />
+          <WithdrawalRequests
+            fetchNotifications={fetchNotifications}
+            notifications={withdrawalNotifications}
+            userData={userData}
+          />
+          <Avatar sx={{ bgcolor: "#4caf50", ml: 2 }}>
+            <PersonIcon />
+          </Avatar>
           <Box
-            sx={{ display: "flex", flexDirection: "column", alignItems: "left", ml: 2 }}
+            sx={{ display: "flex", flexDirection: "column", alignItems: "left" }}
             onClick={handleSubmenuClick}
           >
             <Typography
-              variant="h2"
+              variant="body"
               color="black"
+              fontSize={".75rem"}
+              fontWeight={"700"}
               sx={{
                 maxWidth: "8rem",
                 overflow: "hidden",
@@ -63,7 +105,8 @@ const Header = () => {
             <Typography
               variant="body"
               color="textSecondary"
-              fontSize={".75rem"}
+              fontSize={".7rem"}
+              fontWeight={"500"}
               sx={{
                 maxWidth: "8rem",
                 overflow: "hidden",
@@ -75,6 +118,12 @@ const Header = () => {
             </Typography>
           </Box>
           {submenuOpen ? <ExpandLess color="disabled" /> : <ExpandMore color="disabled" />}
+          <Profile
+            anchorEl={anchorEl}
+            submenuOpen={submenuOpen}
+            handleClose={handleClose}
+            userData={userData}
+          />
         </Box>
       </Toolbar>
     </AppBar>
