@@ -28,6 +28,7 @@ import RememberMeOutlinedIcon from "@mui/icons-material/RememberMeOutlined";
 import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 import StorefrontSharpIcon from "@mui/icons-material/StorefrontSharp";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import TaskIcon from "@mui/icons-material/Task";
 
 const drawerWidth = 240;
 
@@ -101,7 +102,7 @@ const VerticalNav = () => {
     },
     {
       text: "License Verification",
-      icon: <RememberMeOutlinedIcon />,
+      icon: <TaskIcon />,
       path: "/licenseverification",
       permission: "menu_license",
     },
