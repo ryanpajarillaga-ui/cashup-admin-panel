@@ -1,13 +1,20 @@
-import { AppBar, Box, IconButton, Menu, MenuItem, Toolbar, Typography } from "@mui/material";
-import React, { useState } from "react";
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Button,
+  IconButton,
+  Menu,
+  MenuItem,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import { ExpandLess, ExpandMore, Person as PersonIcon } from "@mui/icons-material";
+import React, { useEffect, useState } from "react";
 
-import { Avatar } from "@mui/material";
 import ContactSupport from "./NotificationPages/ContactSupport";
 import Cookies from "js-cookie";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import LicenceVefification from "./NotificationPages/LicenceVerification";
-import PersonIcon from "@mui/icons-material/Person";
+import LicenceVerification from "./NotificationPages/LicenceVerification";
 import Profile from "./Profile";
 import WithdrawalRequests from "./NotificationPages/WithdrawalRequests";
 import axios from "axios";
@@ -24,33 +31,32 @@ const Header = () => {
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
-  const fetchNotifications = async (endpoint) => {
+  const fetchNotifications = async (endpoint, setter) => {
     const url = `${baseURLv1}/${endpoint}`;
 
     try {
       const response = await axios.get(url);
-      const data = await response.data.data;
-      if (endpoint == "adminHome/getNotificationWithdrawals") {
-        setWithdrawalNotifications(data);
-      } else if (endpoint == "adminHome/getNotificationContactSupport") {
-        setContactSupportNotifications(data);
-      } else {
-        setLicenceNotifications(data);
-      }
+      setter(response.data.data);
     } catch (error) {
-      console.error("Error fetching:", error);
+      console.error(`Error fetching ${endpoint}:`, error);
     }
   };
 
-  const handleSubmenuClick = (e) => {
-    setAnchorEl(e.currentTarget);
-    setSubmenuOpen(!submenuOpen);
+  const handleSubmenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setSubmenuOpen((prev) => !prev);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
-    setSubmenuOpen(!submenuOpen);
+    setSubmenuOpen(false);
   };
+
+  useEffect(() => {
+    fetchNotifications("adminHome/getNotificationWithdrawals", setWithdrawalNotifications);
+    fetchNotifications("adminHome/getNotificationContactSupport", setContactSupportNotifications);
+    fetchNotifications("adminHome/getNotificationLicenceVerification", setLicenceNotifications);
+  }, []);
 
   return (
     <AppBar
@@ -71,7 +77,7 @@ const Header = () => {
             notifications={contactSupportNotifications}
             userData={userData}
           />
-          <LicenceVefification
+          <LicenceVerification
             fetchNotifications={fetchNotifications}
             notifications={licenceNotifications}
             userData={userData}
@@ -81,43 +87,45 @@ const Header = () => {
             notifications={withdrawalNotifications}
             userData={userData}
           />
-          <Avatar sx={{ bgcolor: "#4caf50", ml: 2 }}>
-            <PersonIcon />
-          </Avatar>
-          <Box
-            sx={{ display: "flex", flexDirection: "column", alignItems: "left" }}
+          <Button
+            sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
             onClick={handleSubmenuClick}
           >
-            <Typography
-              variant="body"
-              color="black"
-              fontSize={".75rem"}
-              fontWeight={"700"}
-              sx={{
-                maxWidth: "8rem",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {userData.full_name.toUpperCase()}
-            </Typography>
-            <Typography
-              variant="body"
-              color="textSecondary"
-              fontSize={".7rem"}
-              fontWeight={"500"}
-              sx={{
-                maxWidth: "8rem",
-                overflow: "hidden",
-                whiteSpace: "nowrap",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {userData.designation.toUpperCase()}
-            </Typography>
-          </Box>
-          {submenuOpen ? <ExpandLess color="disabled" /> : <ExpandMore color="disabled" />}
+            <Avatar sx={{ bgcolor: "#4caf50", ml: 2, mr: 1 }}>
+              <PersonIcon />
+            </Avatar>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+              <Typography
+                variant="body"
+                color="black"
+                fontSize=".75rem"
+                fontWeight="700"
+                sx={{
+                  maxWidth: "8rem",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {userData.full_name.toUpperCase()}
+              </Typography>
+              <Typography
+                variant="body"
+                color="textSecondary"
+                fontSize=".7rem"
+                fontWeight="500"
+                sx={{
+                  maxWidth: "8rem",
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {userData.designation.toUpperCase()}
+              </Typography>
+            </Box>
+            {submenuOpen ? <ExpandLess color="disabled" /> : <ExpandMore color="disabled" />}
+          </Button>
           <Profile
             anchorEl={anchorEl}
             submenuOpen={submenuOpen}
