@@ -17,6 +17,10 @@ const theme = createTheme({
       main: "rgb(67, 160, 71)",
       contrastText: "#fff",
     },
+    customRed: {
+      main: "red",
+      contrastText: "#fff",
+    },
   },
 });
 

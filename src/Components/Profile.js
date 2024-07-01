@@ -12,13 +12,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 
-const Profile = ({ anchorEl, submenuOpen, handleClose, userData }) => {
+const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) => {
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const validationSchema = Yup.object({
     fullname: Yup.string().required("Full Name is required"),
     designation: Yup.string().required("Designation is required"),
-    username: Yup.string().required("Username is required"),
+    username: Yup.string().required("User Name is required"),
     password: Yup.string()
       .min(8, "Password must be at least 8 characters long")
       .required("Password is required"),
@@ -35,6 +35,7 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData }) => {
     try {
       const response = await axios.get(url);
       const data = await response.data;
+      Cookies.remove("userData");
       Cookies.set("userData", JSON.stringify(data), { expires: 7 }); // Store menu items in cookies for 1 day
     } catch (error) {
       console.error("Error fetching menu items:", error);
@@ -67,7 +68,7 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData }) => {
       enqueueSnackbar(res.data.message, { variant: "success" });
 
       handleClose();
-      window.location.reload();
+      updateState(data.in_full_name);
     } catch (error) {
       console.error("There was a problem with the axios request:", error);
     }
@@ -91,13 +92,16 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData }) => {
         },
       }}
     >
-      <MenuItem>
-        <Avatar sx={{ bgcolor: "#4caf50", mr: 2 }}>
+      <MenuItem
+        sx={{
+          pointerEvents: "none",
+          cursor: "default",
+        }}
+      >
+        <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
           <PersonIcon />
         </Avatar>
-        <Typography variant="body1" fontWeight="bold">
-          User Profile
-        </Typography>
+        <Typography variant="body1">User Profile</Typography>
       </MenuItem>
       <Formik
         initialValues={initialValues}

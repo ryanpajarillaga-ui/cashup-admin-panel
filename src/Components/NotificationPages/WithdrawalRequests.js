@@ -17,12 +17,14 @@ const WithdrawalRequests = ({ fetchNotifications, notifications, userData }) => 
     <Fragment>
       <Badge
         badgeContent={userData.withdraw_notification == true ? "" : null}
-        color="error"
+        color="customRed"
         sx={{
           "& .MuiBadge-badge": {
-            minWidth: "8px",
-            height: "12px",
-            transform: "translate(-10%, 1%)",
+            minWidth: "10px",
+            height: "10px",
+            padding: "0",
+            fontSize: "0.7rem",
+            transform: "translate(-1px, 5px)",
           },
         }}
       >
@@ -69,7 +71,7 @@ const WithdrawalRequests = ({ fetchNotifications, notifications, userData }) => 
             }}
           >
             {notifications.map((notification) => (
-              <li key={notification.contact_support_id}>
+              <li key={notification.withdraw_id}>
                 <Box
                   mx={2}
                   sx={{
@@ -120,7 +122,7 @@ export default WithdrawalRequests;
 const NavIconButton = ({ title, icon: Icon, onClick }) => (
   <Tooltip title={title}>
     <IconButton aria-label={title} onClick={onClick} sx={{ color: "rgba(67,160,71)" }}>
-      <Icon fontSize="medium" />
+      <Icon fontSize="small" />
     </IconButton>
   </Tooltip>
 );

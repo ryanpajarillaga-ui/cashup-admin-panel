@@ -19,7 +19,7 @@ import Profile from "./Profile";
 import WithdrawalRequests from "./NotificationPages/WithdrawalRequests";
 import axios from "axios";
 
-const Header = () => {
+const Header = ({ updateState }) => {
   const [submenuOpen, setSubmenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [contactSupportNotifications, setContactSupportNotifications] = useState([]);
@@ -55,7 +55,7 @@ const Header = () => {
   useEffect(() => {
     fetchNotifications("adminHome/getNotificationWithdrawals", setWithdrawalNotifications);
     fetchNotifications("adminHome/getNotificationContactSupport", setContactSupportNotifications);
-    fetchNotifications("adminHome/getNotificationLicenceVerification", setLicenceNotifications);
+    fetchNotifications("adminHome/getNotificationLicenseVerification", setLicenceNotifications);
   }, []);
 
   return (
@@ -91,7 +91,7 @@ const Header = () => {
             sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
             onClick={handleSubmenuClick}
           >
-            <Avatar sx={{ bgcolor: "#4caf50", ml: 2, mr: 1 }}>
+            <Avatar sx={{ bgcolor: "#2e7d32", mr: 1 }}>
               <PersonIcon />
             </Avatar>
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
@@ -131,6 +131,7 @@ const Header = () => {
             submenuOpen={submenuOpen}
             handleClose={handleClose}
             userData={userData}
+            updateState={updateState}
           />
         </Box>
       </Toolbar>
