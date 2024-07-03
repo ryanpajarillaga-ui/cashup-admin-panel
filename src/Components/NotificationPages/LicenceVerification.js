@@ -33,6 +33,7 @@ const LicenceVerification = ({ fetchNotifications, notifications, userData }) =>
           title="Licence Verification"
           icon={TaskIcon}
           onClick={toggleNotificationsDrawer}
+          size="small"
         />
       </Badge>
       <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={toggleNotificationsDrawer}>
@@ -43,8 +44,8 @@ const LicenceVerification = ({ fetchNotifications, notifications, userData }) =>
             sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <NavIconButton icon={TaskIcon} />
-              <Typography variant="body1" color={"black"}>
+              <NavIconButton icon={TaskIcon} size="medium" />
+              <Typography variant="body1" color={"black"} fontWeight={"bold"}>
                 Licence Verification ({notifications.length})
               </Typography>
             </Box>
@@ -112,10 +113,10 @@ const LicenceVerification = ({ fetchNotifications, notifications, userData }) =>
 
 export default LicenceVerification;
 
-const NavIconButton = ({ title, icon: Icon, onClick }) => (
+const NavIconButton = ({ title, icon: Icon, onClick, size }) => (
   <Tooltip title={title}>
     <IconButton aria-label={title} onClick={onClick} sx={{ color: "rgba(67,160,71)" }}>
-      <Icon fontSize="small" />
+      <Icon fontSize={size} />
     </IconButton>
   </Tooltip>
 );

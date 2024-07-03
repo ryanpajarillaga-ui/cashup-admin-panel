@@ -32,6 +32,7 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
           title="Contact support"
           icon={SupportAgentIcon}
           onClick={toggleNotificationsDrawer}
+          size="small"
         />
       </Badge>
 
@@ -39,8 +40,8 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
         <Box sx={{ width: 350 }}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Box px={1} py={1.5} sx={{ display: "flex", alignItems: "center" }}>
-              <NavIconButton icon={SupportAgentIcon} />
-              <Typography variant="body1" color={"black"}>
+              <NavIconButton icon={SupportAgentIcon} size="medium" />
+              <Typography variant="body1" color={"black"} fontWeight={"bold"}>
                 Contact Support ({notifications.length})
               </Typography>
             </Box>
@@ -106,10 +107,10 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
 
 export default ContactSupport;
 
-const NavIconButton = ({ title, icon: Icon, onClick }) => (
+const NavIconButton = ({ title, icon: Icon, onClick, size }) => (
   <Tooltip title={title}>
     <IconButton aria-label={title} onClick={onClick} sx={{ color: "rgba(67,160,71)" }}>
-      <Icon fontSize="small" />
+      <Icon fontSize={size} />
     </IconButton>
   </Tooltip>
 );

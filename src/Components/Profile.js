@@ -2,19 +2,17 @@ import * as Yup from "yup";
 
 import { Box, Button, Divider, Menu, MenuItem, TextField, Typography } from "@mui/material";
 import { Field, Form, Formik } from "formik";
-import React, { useEffect } from "react";
 
 import { Avatar } from "@mui/material";
 import BuildIcon from "@mui/icons-material/Build";
 import Cookies from "js-cookie";
 import PersonIcon from "@mui/icons-material/Person";
+import React from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import { useSnackbar } from "notistack";
 
 const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) => {
   const { enqueueSnackbar } = useSnackbar();
-  const navigate = useNavigate();
   const validationSchema = Yup.object({
     fullname: Yup.string().required("Full Name is required"),
     designation: Yup.string().required("Designation is required"),
@@ -30,13 +28,13 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
   const fetchUserData = async (userId) => {
-    const url = `${baseURLv1}/adminHome/getUserMainInfo/${userId}`; // Replace with your API endpoint for menu items
+    const url = `${baseURLv1}/adminHome/getUserMainInfo/${userId}`;
 
     try {
       const response = await axios.get(url);
       const data = await response.data;
-      Cookies.remove("userData");
-      Cookies.set("userData", JSON.stringify(data), { expires: 7 }); // Store menu items in cookies for 1 day
+      // Cookies.remove("userData");
+      Cookies.set("userData", JSON.stringify(data), { expires: 7 });
     } catch (error) {
       console.error("Error fetching menu items:", error);
     }
@@ -46,8 +44,8 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
     fullname: userData.full_name,
     designation: userData.designation,
     username: userData.user_name,
-    password: "123456789012345",
-    retypePassword: "123456789012345",
+    password: "12345678",
+    retypePassword: "12345678",
   };
 
   const handleSubmit = async (values) => {
@@ -75,8 +73,7 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
   };
 
   const handleLogout = () => {
-    Cookies.remove("userData"); // Remove user data cookie
-    // Perform additional logout actions, such as redirecting to the login page
+    Cookies.remove("userData");
     window.location.href = "/";
   };
 

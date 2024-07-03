@@ -12,6 +12,7 @@ import {
 import { ExpandLess, ExpandMore, Person as PersonIcon } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 
+import Admin from "../Images/admin.png";
 import ContactSupport from "./NotificationPages/ContactSupport";
 import Cookies from "js-cookie";
 import LicenceVerification from "./NotificationPages/LicenceVerification";
@@ -91,9 +92,7 @@ const Header = ({ updateState }) => {
             sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
             onClick={handleSubmenuClick}
           >
-            <Avatar sx={{ bgcolor: "#2e7d32", mr: 1 }}>
-              <PersonIcon />
-            </Avatar>
+            <img src={Admin} alt="Logo" style={{ width: "60px", marginRight: ".5rem" }} />
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <Typography
                 variant="body"

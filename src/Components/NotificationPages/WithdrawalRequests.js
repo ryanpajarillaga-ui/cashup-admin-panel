@@ -32,6 +32,7 @@ const WithdrawalRequests = ({ fetchNotifications, notifications, userData }) => 
           title="Withdrawal Requests"
           icon={MonetizationOnIcon}
           onClick={toggleNotificationsDrawer}
+          size="small"
         />
       </Badge>
 
@@ -43,8 +44,8 @@ const WithdrawalRequests = ({ fetchNotifications, notifications, userData }) => 
             sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              <NavIconButton icon={MonetizationOnIcon} />
-              <Typography variant="body1" color={"black"}>
+              <NavIconButton icon={MonetizationOnIcon} size="medium" />
+              <Typography variant="body1" color={"black"} fontWeight={"bold"}>
                 Withdrawal Requests ({notifications.length})
               </Typography>
             </Box>
@@ -119,10 +120,10 @@ const WithdrawalRequests = ({ fetchNotifications, notifications, userData }) => 
 
 export default WithdrawalRequests;
 
-const NavIconButton = ({ title, icon: Icon, onClick }) => (
+const NavIconButton = ({ title, icon: Icon, onClick, size }) => (
   <Tooltip title={title}>
     <IconButton aria-label={title} onClick={onClick} sx={{ color: "rgba(67,160,71)" }}>
-      <Icon fontSize="small" />
+      <Icon fontSize={size} />
     </IconButton>
   </Tooltip>
 );
