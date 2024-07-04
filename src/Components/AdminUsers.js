@@ -40,10 +40,10 @@ import axios from "axios";
 
 const AdminUsers = () => {
   const permissionsList = [
-    "Menu > Account management",
-    "Menu > Account management > Merchant",
-    "Menu > Account management > Consumer",
-    "Menu > Account management > Users",
+    "Menu > Account Management",
+    "Menu > Account Management > Merchant",
+    "Menu > Account Management > Consumer",
+    "Menu > Account Management > Users",
     "Menu > My Network",
     "Menu > eShop Dashboard",
     "Menu > eShop Admin Site",
@@ -51,7 +51,7 @@ const AdminUsers = () => {
     "Menu > Reports",
     "Menu > Withdraw Request",
     "Menu > License Verification",
-    "Menu > contact Support",
+    "Menu > Contact Support",
     "Merchant - Register",
     "Merchant - View Profile",
     "Merchant - Transactions",
@@ -62,7 +62,7 @@ const AdminUsers = () => {
     "Admin Users - Full Control",
     "Notifications - Contact Support",
     "Notifications - License Verify",
-    "Notifications - withdrawal",
+    "Notifications - Withdrawal",
     "Process - License Verification",
     "Process - Withdrawal",
     "Process - Contact Support",
@@ -143,6 +143,7 @@ const AdminUsers = () => {
   const [errors, setErrors] = useState({});
   const [userTypes, setUserTypes] = useState([]);
   const [selectedUserType, setSelectedUserType] = useState();
+  const [usersListchanged, setUsersListchanged] = useState(false);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -174,7 +175,7 @@ const AdminUsers = () => {
     }
     fetchAdminUsers();
     fetchUserTypes();
-  }, [openDeleteDialog]);
+  }, [openDeleteDialog, usersListchanged]);
 
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
@@ -194,10 +195,8 @@ const AdminUsers = () => {
       permissions = SuperAdminPermissionsList;
     }
     setOpenAddDialog(true);
-    // console.log("user", user);
-
+    setSelectedUserType();
     if (user.user_id !== undefined) {
-      console.log("yuscgdhuhsuhidsy");
       setNewUser({
         User_Id: user.user_id,
         Full_Name: user.full_name,
@@ -256,7 +255,6 @@ const AdminUsers = () => {
     const { name, value } = e.target;
     setNewUser((prevNewUser) => ({ ...prevNewUser, [name]: value }));
 
-    // Validate field on change
     if (value.trim() === "") {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -291,8 +289,6 @@ const AdminUsers = () => {
   };
 
   const handleAddConfirm = async () => {
-    console.log("errors", errors);
-
     if (!validateForm()) return;
     const headers = { in_platform_type_id: "4" };
     let data = {
@@ -389,6 +385,7 @@ const AdminUsers = () => {
       console.error("Error adding user:", error);
     } finally {
       handleAddClose();
+      setUsersListchanged(!usersListchanged);
     }
   };
 
@@ -453,15 +450,18 @@ const AdminUsers = () => {
               Admin Users
             </Typography>
           </Box>
-          <Link
-            component="button"
+
+          <Button
+            variant="text"
             onClick={handleAddClick}
-            color="rgba(67,160,71)"
-            variant="body2"
-            sx={{ textDecoration: "none" }}
+            size="small" // Reduces the size of the button
+            sx={{
+              color: "rgb(67, 160, 71)", // Change to your desired color
+              fontSize: "0.75rem", // Further reduce the font size if needed
+            }}
           >
             ADD NEW +
-          </Link>
+          </Button>
         </Box>
 
         <Paper elevation={3} sx={{ padding: "20px", maxWidth: "1300px", margin: "auto" }}>
@@ -524,6 +524,7 @@ const AdminUsers = () => {
                       <IconButton
                         aria-label="Delete"
                         color="customRed"
+                        size="small"
                         onClick={() => handleDeleteClick(user)}
                       >
                         <DeleteIcon />
@@ -544,17 +545,20 @@ const AdminUsers = () => {
         >
           <DialogTitle id="alert-dialog-title">{"Delete User"}</DialogTitle>
           <DialogContent>
-            <DialogContentText id="alert-dialog-description" sx={{ fontSize: "14px" }}>
-              Are you sure you want to delete this User?
-              <br />
-              This action cannot to undone.
+            <DialogContentText id="alert-dialog-description" sx={{ fontSize: "0.85rem" }}>
+              Are you sure you want to delete this User? This action cannot to undone.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleDeleteClose} color="customGreen" sx={{ fontWeight: "bold" }}>
+            <Button onClick={handleDeleteClose} color="customGreen" sx={{ fontSize: "0.8rem" }}>
               CANCEL
             </Button>
-            <Button onClick={handleDeleteConfirm} color="customRed" sx={{ fontWeight: "bold" }}>
+            <Button
+              variant="contained"
+              onClick={handleDeleteConfirm}
+              color="customRed"
+              sx={{ fontSize: "0.8rem" }}
+            >
               DELETE
             </Button>
           </DialogActions>
@@ -587,8 +591,8 @@ const AdminUsers = () => {
                   error={Boolean(errors.Full_Name)}
                   helperText={errors.Full_Name}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: 14 } }}
-                  InputLabelProps={{ sx: { fontSize: 14 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
                   inputProps={{ maxLength: 50 }}
                 />
               </Grid>
@@ -606,8 +610,8 @@ const AdminUsers = () => {
                   error={Boolean(errors.Designation)}
                   helperText={errors.Designation}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: 14 } }}
-                  InputLabelProps={{ sx: { fontSize: 14 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
                   inputProps={{ maxLength: 30 }}
                 />
               </Grid>
@@ -625,8 +629,8 @@ const AdminUsers = () => {
                   error={Boolean(errors.User_Name)}
                   helperText={errors.User_Name}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: 14 } }}
-                  InputLabelProps={{ sx: { fontSize: 14 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
                   inputProps={{ maxLength: 20 }}
                 />
               </Grid>
@@ -635,7 +639,7 @@ const AdminUsers = () => {
                   <InputLabel
                     id="usertype-dropdown"
                     color="customGreen"
-                    style={{ fontSize: "14px" }}
+                    style={{ fontSize: "0.8rem" }}
                   >
                     User Type
                   </InputLabel>
@@ -649,14 +653,14 @@ const AdminUsers = () => {
                     color="customGreen"
                     sx={{
                       borderRadius: 2,
-                      fontSize: "14px",
+                      fontSize: "0.8rem",
                     }}
                   >
                     {userTypes.map((option) => (
                       <MenuItem
                         key={option.user_type_id}
                         value={option.user_type_id}
-                        style={{ fontSize: "14px" }}
+                        style={{ fontSize: "0.8rem" }}
                       >
                         {option.user_type}
                       </MenuItem>
@@ -679,8 +683,8 @@ const AdminUsers = () => {
                   error={Boolean(errors.Password)}
                   helperText={errors.Password}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: 14 } }}
-                  InputLabelProps={{ sx: { fontSize: 14 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
                   inputProps={{ maxLength: 15 }}
                 />
               </Grid>
@@ -699,7 +703,7 @@ const AdminUsers = () => {
                   label="Active User"
                   sx={{
                     "& .MuiFormControlLabel-label": {
-                      fontSize: 14, // Adjust the font size as needed
+                      fontSize: "0.8rem", // Adjust the font size as needed
                     },
                   }}
                 />
@@ -723,7 +727,7 @@ const AdminUsers = () => {
                         label={permission}
                         sx={{
                           "& .MuiFormControlLabel-label": {
-                            fontSize: 14, // Adjust the font size as needed
+                            fontSize: "0.8rem", // Adjust the font size as needed
                           },
                         }}
                       />
@@ -735,10 +739,30 @@ const AdminUsers = () => {
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={handleAddClose} color="customGreen">
+            <Button
+              onClick={handleAddClose}
+              color="customGreen"
+              size="small"
+              sx={{
+                fontSize: "0.75rem",
+                lineHeight: "1.5rem",
+                marginBottom: "2rem",
+              }}
+            >
               CANCEL
             </Button>
-            <Button onClick={handleAddConfirm} variant="contained" color="customGreen">
+            <Button
+              onClick={handleAddConfirm}
+              variant="contained"
+              color="customGreen"
+              size="small"
+              sx={{
+                fontSize: "0.75rem",
+                lineHeight: "1.5rem",
+                marginBottom: "2rem",
+                marginRight: "2rem",
+              }}
+            >
               SAVE
             </Button>
           </DialogActions>
