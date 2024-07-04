@@ -118,8 +118,8 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
                 error={touched.fullname && Boolean(errors.fullname)}
                 helperText={touched.fullname && errors.fullname}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: 14 } }}
-                InputLabelProps={{ sx: { fontSize: 14 } }}
+                InputProps={{ sx: { fontSize: "0.8rem" } }}
+                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
               />
             </Box>
             <Box mb={2}>
@@ -133,8 +133,8 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
                 error={touched.designation && Boolean(errors.designation)}
                 helperText={touched.designation && errors.designation}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: 14 } }}
-                InputLabelProps={{ sx: { fontSize: 14 } }}
+                InputProps={{ sx: { fontSize: "0.8rem" } }}
+                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
               />
             </Box>
             <Divider />
@@ -150,8 +150,8 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
                 error={touched.username && Boolean(errors.username)}
                 helperText={touched.username && errors.username}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: 14 } }}
-                InputLabelProps={{ sx: { fontSize: 14 } }}
+                InputProps={{ sx: { fontSize: "0.8rem" } }}
+                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
               />
             </Box>
             <Box mb={2}>
@@ -167,8 +167,8 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
                 error={touched.password && Boolean(errors.password)}
                 helperText={touched.password && errors.password}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: 14 } }}
-                InputLabelProps={{ sx: { fontSize: 14 } }}
+                InputProps={{ sx: { fontSize: "0.8rem" } }}
+                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
               />
             </Box>
             <Box mb={2}>
@@ -184,8 +184,8 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
                 error={touched.retypePassword && Boolean(errors.retypePassword)}
                 helperText={touched.retypePassword && errors.retypePassword}
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: 14 } }}
-                InputLabelProps={{ sx: { fontSize: 14 } }}
+                InputProps={{ sx: { fontSize: "0.8rem" } }}
+                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
               />
             </Box>
             {userData.system_settings ? (

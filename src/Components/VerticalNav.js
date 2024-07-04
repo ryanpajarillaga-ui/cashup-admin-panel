@@ -173,11 +173,11 @@ const VerticalNav = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary={item.text}
-                      primaryTypographyProps={{ fontSize: "0.9rem" }}
+                      primaryTypographyProps={{ fontSize: "0.8rem" }}
                     />
                     {submenuOpen ? <ExpandLess /> : <ExpandMore />}
                   </ListItem>
-                  <Collapse in={submenuOpen} timeout="auto" unmountOnExit>
+                  <Collapse in={submenuOpen} timeout="auto">
                     <List component="div" disablePadding>
                       {item.submenu.map((subItem, subIndex) => (
                         <ListItem
@@ -196,7 +196,7 @@ const VerticalNav = () => {
                           </ListItemIcon>
                           <ListItemText
                             primary={subItem.text}
-                            primaryTypographyProps={{ fontSize: "0.9rem" }}
+                            primaryTypographyProps={{ fontSize: "0.8rem" }}
                           />
                         </ListItem>
                       ))}
@@ -216,7 +216,7 @@ const VerticalNav = () => {
                   </ListItemIcon>
                   <ListItemText
                     primary={item.text}
-                    primaryTypographyProps={{ fontSize: "0.9rem" }}
+                    primaryTypographyProps={{ fontSize: "0.8rem" }}
                   />
                 </ListItem>
               )}
@@ -237,7 +237,7 @@ const VerticalNav = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary={item.text}
-                      primaryTypographyProps={{ fontSize: "0.9rem" }}
+                      primaryTypographyProps={{ fontSize: "0.8rem" }}
                     />
                     {submenuOpen ? <ExpandLess /> : <ExpandMore />}
                   </ListItem>
@@ -260,7 +260,7 @@ const VerticalNav = () => {
                           </ListItemIcon>
                           <ListItemText
                             primary={subItem.text}
-                            primaryTypographyProps={{ fontSize: "0.9rem" }}
+                            primaryTypographyProps={{ fontSize: "0.8rem" }}
                           />
                         </ListItem>
                       ))}
@@ -280,7 +280,7 @@ const VerticalNav = () => {
                   </ListItemIcon>
                   <ListItemText
                     primary={item.text}
-                    primaryTypographyProps={{ fontSize: "0.9rem" }}
+                    primaryTypographyProps={{ fontSize: "0.8rem" }}
                   />
                 </ListItem>
               )}
