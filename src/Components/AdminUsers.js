@@ -174,7 +174,7 @@ const AdminUsers = () => {
     }
     fetchAdminUsers();
     fetchUserTypes();
-  }, [openDeleteDialog, adminUsers]);
+  }, [openDeleteDialog]);
 
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
@@ -459,7 +459,6 @@ const AdminUsers = () => {
             color="rgba(67,160,71)"
             variant="body2"
             sx={{ textDecoration: "none" }}
-            fontWeight={"bold"}
           >
             ADD NEW +
           </Link>
@@ -473,7 +472,7 @@ const AdminUsers = () => {
                   <TableCell sx={{ padding: "4px" }}>Full Name</TableCell>
                   <TableCell sx={{ padding: "4px" }}>Status</TableCell>
                   <TableCell sx={{ padding: "4px" }}>Designation</TableCell>
-                  <TableCell sx={{ padding: "4px" }}>User name</TableCell>
+                  <TableCell sx={{ padding: "4px" }}>User Name</TableCell>
                   <TableCell sx={{ padding: "4px" }}>User Type</TableCell>
                   <TableCell sx={{ padding: "4px" }}></TableCell>
                 </TableRow>
@@ -736,10 +735,10 @@ const AdminUsers = () => {
           </DialogContent>
 
           <DialogActions>
-            <Button onClick={handleAddClose} color="customGreen" sx={{ fontWeight: "bold" }}>
+            <Button onClick={handleAddClose} color="customGreen">
               CANCEL
             </Button>
-            <Button onClick={handleAddConfirm} color="customGreen" sx={{ fontWeight: "bold" }}>
+            <Button onClick={handleAddConfirm} variant="contained" color="customGreen">
               SAVE
             </Button>
           </DialogActions>
