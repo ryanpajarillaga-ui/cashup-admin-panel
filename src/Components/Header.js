@@ -92,7 +92,7 @@ const Header = ({ updateState }) => {
             sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
             onClick={handleSubmenuClick}
           >
-            <img src={Admin} alt="Logo" style={{ width: "60px", marginRight: ".5rem" }} />
+            <img src={Admin} alt="Logo" style={{ width: "50px", marginRight: ".5rem" }} />
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <Typography
                 variant="body"

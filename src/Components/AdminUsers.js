@@ -104,10 +104,6 @@ const AdminUsers = () => {
     "Notifications - withdrawal",
     "Process - Withdrawal",
     "Menu > Transactions",
-    // "Consumer - View Profile",
-    // "Process - License Verification",
-    // "Process - Contact Support",
-    // "Consumer - Transactions",
   ];
   const GeneralUserPermissionsList = [
     "Menu > Account management > Merchant",
@@ -132,7 +128,6 @@ const AdminUsers = () => {
   const [adminUsers, setAdminUsers] = useState([]);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
-  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newUser, setNewUser] = useState({
     userId: null,
@@ -144,15 +139,7 @@ const AdminUsers = () => {
     password: "",
     permissions: [],
   });
-  // const [editUser, setEditUser] = useState({
-  //   full_name: "",
-  //   is_active: true,
-  //   designation: "",
-  //   user_name: "",
-  //   user_type: 0,
-  //   password: "",
-  //   permissions: [],
-  // });
+
   const [errors, setErrors] = useState({});
   const [userTypes, setUserTypes] = useState([]);
   const [selectedUserType, setSelectedUserType] = useState();
@@ -162,7 +149,6 @@ const AdminUsers = () => {
   const userDataObject = JSON.parse(Cookies.get("userData") || "{}");
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
-  //let userId = null;
 
   const fetchAdminUsers = async () => {
     try {
@@ -183,63 +169,17 @@ const AdminUsers = () => {
   };
 
   useEffect(() => {
+    if (openDeleteDialog) {
+      setOpenAddDialog(false);
+    }
     fetchAdminUsers();
     fetchUserTypes();
-  }, []);
+  }, [openDeleteDialog]);
 
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
     setOpenDeleteDialog(true);
-    setOpenEditDialog(false);
     setOpenAddDialog(false);
-  };
-
-  // const handleEditClick = (user) => {
-  //   setEditUser(user);
-  //   if (openDeleteDialog) {
-  //     setOpenEditDialog(true);
-  //   }
-  // };
-
-  const handleDeleteClose = () => {
-    setOpenDeleteDialog(false);
-    setSelectedUser(null);
-    setOpenEditDialog(false);
-  };
-
-  // const handleEditClose = () => {
-  //   setOpenEditDialog(false);
-  //   setEditUser({
-  //     full_name: "",
-  //     is_active: true,
-  //     designation: "",
-  //     user_name: "",
-  //     user_type: "",
-  //     password: "",
-  //     permissions: [],
-  //   });
-  //   setErrors({});
-  // };
-
-  const handleDeleteConfirm = async () => {
-    const data = {
-      in_user_id: selectedUser.user_id,
-      in_logged_user_id: currentUserId,
-    };
-    const headers = { in_platform_type_id: "4" };
-
-    if (selectedUser) {
-      try {
-        await axios.post(`${baseURLv1}/adminManageUser/deleteAdminUserAccount`, data, { headers });
-        setAdminUsers((prevUsers) =>
-          prevUsers.filter((user) => user.user_id !== selectedUser.user_id)
-        );
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      } finally {
-        handleDeleteClose();
-      }
-    }
   };
 
   const handleAddClick = (user) => {
@@ -261,11 +201,36 @@ const AdminUsers = () => {
         is_active: user.is_active,
         designation: user.designation,
         user_name: user.user_name,
-        password: "12345678",
+        password: user.user_id ? "12345678" : "",
         permissions: permissions,
       });
       setSelectedUserType(user.user_type_id);
-      //userId = user.user_id;
+    }
+  };
+
+  const handleDeleteClose = () => {
+    setOpenDeleteDialog(false);
+    setSelectedUser(null);
+  };
+
+  const handleDeleteConfirm = async () => {
+    const data = {
+      in_user_id: selectedUser.user_id,
+      in_logged_user_id: currentUserId,
+    };
+    const headers = { in_platform_type_id: "4" };
+
+    if (selectedUser) {
+      try {
+        await axios.post(`${baseURLv1}/adminManageUser/deleteAdminUserAccount`, data, { headers });
+        setAdminUsers((prevUsers) =>
+          prevUsers.filter((user) => user.user_id !== selectedUser.user_id)
+        );
+      } catch (error) {
+        console.error("Error deleting user:", error);
+      } finally {
+        handleDeleteClose();
+      }
     }
   };
 
@@ -544,7 +509,12 @@ const AdminUsers = () => {
                 {adminUsers.map((user) => (
                   <TableRow
                     key={user.user_id}
-                    sx={{ cursor: "pointer" }}
+                    sx={{
+                      cursor: "pointer",
+                      "&:hover": {
+                        backgroundColor: "rgba(0, 0, 0, 0.02)", // Change this to your desired color
+                      },
+                    }}
                     onClick={() => handleAddClick(user)}
                   >
                     <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
@@ -562,7 +532,7 @@ const AdminUsers = () => {
                       ) : (
                         <Chip
                           label={
-                            <span className="flex gap-3 items-center justify-center">Deactive</span>
+                            <span className="flex gap-3 items-center justify-center">Inactive</span>
                           }
                           color="error"
                           variant="outlined"
@@ -625,7 +595,9 @@ const AdminUsers = () => {
           maxWidth="md"
           fullWidth
         >
-          <DialogTitle id="form-dialog-title">Add New Admin User</DialogTitle>
+          <DialogTitle id="form-dialog-title">
+            {newUser.userId ? "Edit Admin User" : "Add New Admin User"}
+          </DialogTitle>
           <DialogContent>
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
               <Grid item xs={4}>
