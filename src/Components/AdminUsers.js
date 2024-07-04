@@ -172,6 +172,17 @@ const AdminUsers = () => {
   useEffect(() => {
     if (openDeleteDialog) {
       setOpenAddDialog(false);
+      setNewUser({
+        User_Id: null,
+        Full_Name: "",
+        Is_Active: true,
+        Designation: "",
+        User_Name: "",
+        User_Type: null,
+        Password: "",
+        Permissions: [],
+      });
+      setSelectedUserType();
     }
     fetchAdminUsers();
     fetchUserTypes();
