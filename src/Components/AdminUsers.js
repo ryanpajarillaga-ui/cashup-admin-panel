@@ -130,14 +130,14 @@ const AdminUsers = () => {
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [newUser, setNewUser] = useState({
-    userId: null,
-    full_name: "",
-    is_active: true,
-    designation: "",
-    user_name: "",
-    user_type: null,
-    password: "",
-    permissions: [],
+    User_Id: null,
+    Full_Name: "",
+    Is_Active: true,
+    Designation: "",
+    User_Name: "",
+    User_Type: null,
+    Password: "",
+    Permissions: [],
   });
 
   const [errors, setErrors] = useState({});
@@ -174,7 +174,7 @@ const AdminUsers = () => {
     }
     fetchAdminUsers();
     fetchUserTypes();
-  }, [openDeleteDialog]);
+  }, [openDeleteDialog, adminUsers]);
 
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
@@ -194,15 +194,18 @@ const AdminUsers = () => {
       permissions = SuperAdminPermissionsList;
     }
     setOpenAddDialog(true);
-    if (user) {
+    // console.log("user", user);
+
+    if (user.user_id !== undefined) {
+      console.log("yuscgdhuhsuhidsy");
       setNewUser({
-        userId: user.user_id,
-        full_name: user.full_name,
-        is_active: user.is_active,
-        designation: user.designation,
-        user_name: user.user_name,
-        password: user.user_id ? "12345678" : "",
-        permissions: permissions,
+        User_Id: user.user_id,
+        Full_Name: user.full_name,
+        Is_Active: user.is_active,
+        Designation: user.designation,
+        User_Name: user.user_name,
+        Password: user.user_id ? "12345678" : "",
+        Permissions: permissions,
       });
       setSelectedUserType(user.user_type_id);
     }
@@ -237,14 +240,14 @@ const AdminUsers = () => {
   const handleAddClose = () => {
     setOpenAddDialog(false);
     setNewUser({
-      userId: null,
-      full_name: "",
-      is_active: true,
-      designation: "",
-      user_name: "",
-      user_type: null,
-      password: "",
-      permissions: [],
+      User_Id: null,
+      Full_Name: "",
+      Is_Active: true,
+      Designation: "",
+      User_Name: "",
+      User_Type: null,
+      Password: "",
+      Permissions: [],
     });
     setErrors({});
   };
@@ -269,92 +272,93 @@ const AdminUsers = () => {
 
   const handleAddCheckboxChange = (permission) => {
     setNewUser((prevNewUser) => {
-      const permissions = prevNewUser.permissions.includes(permission)
-        ? prevNewUser.permissions.filter((perm) => perm !== permission)
-        : [...prevNewUser.permissions, permission];
-      return { ...prevNewUser, permissions };
+      const Permissions = prevNewUser.Permissions.includes(permission)
+        ? prevNewUser.Permissions.filter((perm) => perm !== permission)
+        : [...prevNewUser.Permissions, permission];
+      return { ...prevNewUser, Permissions };
     });
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (newUser.full_name.trim() === "") newErrors.full_name = "Full Name is required";
-    if (newUser.designation.trim() === "") newErrors.designation = "Designation is required";
-    if (newUser.user_name.trim() === "") newErrors.user_name = "User Name is required";
-    if (newUser.user_type < 1) newErrors.user_type = "User Type is requireddd";
-    if (newUser.password.trim() === "") newErrors.password = "Password is required";
+    if (newUser.Full_Name.trim() === "") newErrors.Full_Name = "Full Name is required";
+    if (newUser.Designation.trim() === "") newErrors.Designation = "Designation is required";
+    if (newUser.User_Name.trim() === "") newErrors.User_Name = "User Name is required";
+    if (newUser.User_Type < 1) newErrors.User_Type = "User Type is required";
+    if (newUser.Password.trim() === "") newErrors.Password = "Password is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleAddConfirm = async () => {
-    console.log("useridh:", newUser.userId);
+    console.log("errors", errors);
+
     if (!validateForm()) return;
     const headers = { in_platform_type_id: "4" };
     let data = {
-      in_full_name: newUser.full_name,
-      in_designation: newUser.designation,
-      in_user_name: newUser.user_name,
-      in_password: newUser.password,
+      in_full_name: newUser.Full_Name,
+      in_designation: newUser.Designation,
+      in_user_name: newUser.User_Name,
+      in_password: newUser.Password,
       in_user_type_id: selectedUserType,
-      in_is_active: newUser.is_active ? 1 : 0,
-      in_prm_menu_account_main: newUser.permissions.includes("Menu > Account management") ? 1 : 0,
-      in_prm_menu_account_merchant: newUser.permissions.includes(
+      in_is_active: newUser.Is_Active ? 1 : 0,
+      in_prm_menu_account_main: newUser.Permissions.includes("Menu > Account management") ? 1 : 0,
+      in_prm_menu_account_merchant: newUser.Permissions.includes(
         "Menu > Account management > Merchant"
       )
         ? 1
         : 0,
-      in_prm_menu_account_consumer: newUser.permissions.includes(
+      in_prm_menu_account_consumer: newUser.Permissions.includes(
         "Menu > Account management > Consumer"
       )
         ? 1
         : 0,
-      in_prm_menu_users: newUser.permissions.includes("Menu > Account management > Users") ? 1 : 0,
-      in_prm_menu_network: newUser.permissions.includes("Menu > My Network") ? 1 : 0,
-      in_prm_menu_eshop_dash: newUser.permissions.includes("Menu > eShop Dashboard") ? 1 : 0,
-      in_prm_menu_eshop_page: newUser.permissions.includes("Menu > eShop Admin Site") ? 1 : 0,
-      in_prm_menu_transactions: newUser.permissions.includes("Menu > Transactions") ? 1 : 0,
-      in_prm_menu_reports: newUser.permissions.includes("Menu > Reports") ? 1 : 0,
-      in_prm_menu_withdraw: newUser.permissions.includes("Menu > Withdraw Request") ? 1 : 0,
-      in_prm_menu_license: newUser.permissions.includes("Menu > License Verification") ? 1 : 0,
-      in_prm_menu_support: newUser.permissions.includes("Menu > contact Support") ? 1 : 0,
-      in_prm_notification_support: newUser.permissions.includes("Notifications - Contact Support")
+      in_prm_menu_users: newUser.Permissions.includes("Menu > Account management > Users") ? 1 : 0,
+      in_prm_menu_network: newUser.Permissions.includes("Menu > My Network") ? 1 : 0,
+      in_prm_menu_eshop_dash: newUser.Permissions.includes("Menu > eShop Dashboard") ? 1 : 0,
+      in_prm_menu_eshop_page: newUser.Permissions.includes("Menu > eShop Admin Site") ? 1 : 0,
+      in_prm_menu_transactions: newUser.Permissions.includes("Menu > Transactions") ? 1 : 0,
+      in_prm_menu_reports: newUser.Permissions.includes("Menu > Reports") ? 1 : 0,
+      in_prm_menu_withdraw: newUser.Permissions.includes("Menu > Withdraw Request") ? 1 : 0,
+      in_prm_menu_license: newUser.Permissions.includes("Menu > License Verification") ? 1 : 0,
+      in_prm_menu_support: newUser.Permissions.includes("Menu > contact Support") ? 1 : 0,
+      in_prm_notification_support: newUser.Permissions.includes("Notifications - Contact Support")
         ? 1
         : 0,
-      in_prm_notification_license: newUser.permissions.includes("Notifications - License Verify")
+      in_prm_notification_license: newUser.Permissions.includes("Notifications - License Verify")
         ? 1
         : 0,
-      in_prm_notification_withdraw: newUser.permissions.includes("Notifications - withdrawal")
+      in_prm_notification_withdraw: newUser.Permissions.includes("Notifications - withdrawal")
         ? 1
         : 0,
-      in_prm_system_settings: newUser.permissions.includes("Systems Settings") ? 1 : 0,
-      in_prm_merchant_register: newUser.permissions.includes("Merchant - Register") ? 1 : 0,
-      in_prm_merchant_view: newUser.permissions.includes("Merchant - View Profile") ? 1 : 0,
-      in_prm_merchant_transactions: newUser.permissions.includes("Merchant - Transactions") ? 1 : 0,
-      in_prm_merchant_status: newUser.permissions.includes("Merchant - Change Status") ? 1 : 0,
-      in_prm_consumer_view: newUser.permissions.includes("Consumer - View Profile") ? 1 : 0,
-      in_prm_consumer_transactions: newUser.permissions.includes("Consumer - Transactions") ? 1 : 0,
-      in_prm_consumer_status: newUser.permissions.includes("Consumer - change Status") ? 1 : 0,
-      in_prm_users_full: newUser.permissions.includes("Admin Users - Full Control") ? 1 : 0,
-      in_prm_license_process: newUser.permissions.includes("Process - License Verification")
+      in_prm_system_settings: newUser.Permissions.includes("Systems Settings") ? 1 : 0,
+      in_prm_merchant_register: newUser.Permissions.includes("Merchant - Register") ? 1 : 0,
+      in_prm_merchant_view: newUser.Permissions.includes("Merchant - View Profile") ? 1 : 0,
+      in_prm_merchant_transactions: newUser.Permissions.includes("Merchant - Transactions") ? 1 : 0,
+      in_prm_merchant_status: newUser.Permissions.includes("Merchant - Change Status") ? 1 : 0,
+      in_prm_consumer_view: newUser.Permissions.includes("Consumer - View Profile") ? 1 : 0,
+      in_prm_consumer_transactions: newUser.Permissions.includes("Consumer - Transactions") ? 1 : 0,
+      in_prm_consumer_status: newUser.Permissions.includes("Consumer - change Status") ? 1 : 0,
+      in_prm_users_full: newUser.Permissions.includes("Admin Users - Full Control") ? 1 : 0,
+      in_prm_license_process: newUser.Permissions.includes("Process - License Verification")
         ? 1
         : 0,
-      in_prm_withdraw_process: newUser.permissions.includes("Process - Withdrawal") ? 1 : 0,
-      in_prm_support_process: newUser.permissions.includes("Process - Contact Support") ? 1 : 0,
+      in_prm_withdraw_process: newUser.Permissions.includes("Process - Withdrawal") ? 1 : 0,
+      in_prm_support_process: newUser.Permissions.includes("Process - Contact Support") ? 1 : 0,
       in_logged_user_id: currentUserId,
     };
-    if (newUser.userId) {
-      data = { ...data, in_user_id: newUser.userId };
+    if (newUser.User_Id) {
+      data = { ...data, in_user_id: newUser.User_Id };
     }
     try {
       const response = null;
-      if (newUser.userId) {
+      if (newUser.User_Id) {
         response = await axios.post(`${baseURLv1}/adminManageUser/updateAdminUserAccount`, data, {
           headers,
         });
         setAdminUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user.user_id === newUser.userId
+            user.user_id === newUser.User_Id
               ? {
                   ...user,
                   designation: newUser.designation,
@@ -371,13 +375,13 @@ const AdminUsers = () => {
           headers,
         });
         const AddedUser = {
-          designation: newUser.designation,
-          full_name: newUser.full_name,
-          is_active: newUser.is_active,
+          designation: newUser.Designation,
+          full_name: newUser.Full_Name,
+          is_active: newUser.Is_Active,
           user_id: response.data.data.new_inserted_ID,
-          user_name: newUser.user_name,
-          user_type: newUser.user_type,
-          user_type_id: newUser.user_type,
+          user_name: newUser.User_Name,
+          user_type: newUser.User_Type,
+          user_type_id: newUser.User_Type,
         };
         setAdminUsers((prevUsers) => [...prevUsers, AddedUser]);
       }
@@ -388,47 +392,16 @@ const AdminUsers = () => {
     }
   };
 
-  // const handleEditConfirm = async () => {
-  //   if (!validateForm()) return;
-
-  //   const data = {
-  //     in_user_id: editUser.user_id,
-  //     in_full_name: editUser.full_name,
-  //     in_designation: editUser.designation,
-  //     in_user_name: editUser.user_name,
-  //     in_password: editUser.password,
-  //     in_user_type_id: 1,
-  //     in_is_active: editUser.is_active ? 1 : 0,
-  //     in_prm_menu_account_main: editUser.permissions.includes("Permission 1") ? 1 : 0,
-  //     in_prm_menu_account_merchant: editUser.permissions.includes("Permission 2") ? 1 : 0,
-  //     // Add other permissions accordingly
-  //     in_logged_user_id: currentUserId,
-  //   };
-  //   try {
-  //     await axios.post(`${baseURLv1}/adminManageUser/updateAdminUserAccount`, data);
-  //     setAdminUsers((prevUsers) =>
-  //       prevUsers.map((user) => (user.user_id === editUser.user_id ? editUser : user))
-  //     );
-  //   } catch (error) {
-  //     console.error("Error updating user:", error);
-  //   } finally {
-  //     handleEditClose();
-  //   }
-  // };
-
   const handleUserType = (e) => {
     const { name, value } = e.target;
     setNewUser((prevNewUser) => ({ ...prevNewUser, [name]: value }));
     const userType = value;
     if (value < 1) {
-      console.log("value less than 1");
       setErrors((prevErrors) => ({
         ...prevErrors,
         [name]: `${name.replace("_", " ")} is required`,
       }));
     } else {
-      console.log("value greater than 1");
-
       setErrors((prevErrors) => {
         const { [name]: removedError, ...rest } = prevErrors;
         return rest;
@@ -439,22 +412,22 @@ const AdminUsers = () => {
     if (userType == 1) {
       setNewUser((prevNewUser) => ({
         ...prevNewUser,
-        permissions: GeneralUserPermissionsList,
+        Permissions: GeneralUserPermissionsList,
       }));
     } else if (userType == 2) {
       setNewUser((prevNewUser) => ({
         ...prevNewUser,
-        permissions: AccountsPermissionsList,
+        Permissions: AccountsPermissionsList,
       }));
     } else if (userType == 3) {
       setNewUser((prevNewUser) => ({
         ...prevNewUser,
-        permissions: AdministratorPermissionsList,
+        Permissions: AdministratorPermissionsList,
       }));
     } else if (userType == 4) {
       setNewUser((prevNewUser) => ({
         ...prevNewUser,
-        permissions: SuperAdminPermissionsList,
+        Permissions: SuperAdminPermissionsList,
       }));
     }
   };
@@ -596,7 +569,7 @@ const AdminUsers = () => {
           fullWidth
         >
           <DialogTitle id="form-dialog-title">
-            {newUser.userId ? "Edit Admin User" : "Add New Admin User"}
+            {newUser.User_Id ? "Edit Admin User" : "New Admin User"}
           </DialogTitle>
           <DialogContent>
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
@@ -604,16 +577,16 @@ const AdminUsers = () => {
                 <TextField
                   autoFocus
                   margin="dense"
-                  name="full_name"
+                  name="Full_Name"
                   label="Full Name"
                   type="text"
                   color="customGreen"
                   required
                   fullWidth
-                  value={newUser.full_name}
+                  value={newUser.Full_Name}
                   onChange={handleAddChange}
-                  error={Boolean(errors.full_name)}
-                  helperText={errors.full_name}
+                  error={Boolean(errors.Full_Name)}
+                  helperText={errors.Full_Name}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: 14 } }}
                   InputLabelProps={{ sx: { fontSize: 14 } }}
@@ -623,16 +596,16 @@ const AdminUsers = () => {
               <Grid item xs={4}>
                 <TextField
                   margin="dense"
-                  name="designation"
+                  name="Designation"
                   label="Designation"
                   type="text"
                   color="customGreen"
                   fullWidth
                   required
-                  value={newUser.designation}
+                  value={newUser.Designation}
                   onChange={handleAddChange}
-                  error={Boolean(errors.designation)}
-                  helperText={errors.designation}
+                  error={Boolean(errors.Designation)}
+                  helperText={errors.Designation}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: 14 } }}
                   InputLabelProps={{ sx: { fontSize: 14 } }}
@@ -642,16 +615,16 @@ const AdminUsers = () => {
               <Grid item xs={4}>
                 <TextField
                   margin="dense"
-                  name="user_name"
+                  name="User_Name"
                   label="User Name"
                   type="text"
                   color="customGreen"
                   fullWidth
                   required
-                  value={newUser.user_name}
+                  value={newUser.User_Name}
                   onChange={handleAddChange}
-                  error={Boolean(errors.user_name)}
-                  helperText={errors.user_name}
+                  error={Boolean(errors.User_Name)}
+                  helperText={errors.User_Name}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: 14 } }}
                   InputLabelProps={{ sx: { fontSize: 14 } }}
@@ -659,7 +632,7 @@ const AdminUsers = () => {
                 />
               </Grid>
               <Grid item xs={4} marginTop={"8px"}>
-                <FormControl fullWidth required error={!!errors.user_type}>
+                <FormControl fullWidth required error={errors.User_Type}>
                   <InputLabel
                     id="usertype-dropdown"
                     color="customGreen"
@@ -670,7 +643,7 @@ const AdminUsers = () => {
                   <Select
                     labelId="usertype-dropdown"
                     id="dropdown"
-                    name="user_type"
+                    name="User_Type"
                     value={selectedUserType}
                     onChange={handleUserType}
                     label="Select an Option"
@@ -690,22 +663,22 @@ const AdminUsers = () => {
                       </MenuItem>
                     ))}
                   </Select>
-                  {errors.user_type && <FormHelperText>{errors.user_type}</FormHelperText>}
+                  {errors.User_Type && <FormHelperText>{errors.User_Type}</FormHelperText>}
                 </FormControl>
               </Grid>
               <Grid item xs={4}>
                 <TextField
                   margin="dense"
-                  name="password"
+                  name="Password"
                   label="Password"
                   type="password"
                   color="customGreen"
                   fullWidth
                   required
-                  value={newUser.password}
+                  value={newUser.Password}
                   onChange={handleAddChange}
-                  error={Boolean(errors.password)}
-                  helperText={errors.password}
+                  error={Boolean(errors.Password)}
+                  helperText={errors.Password}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: 14 } }}
                   InputLabelProps={{ sx: { fontSize: 14 } }}
@@ -716,10 +689,10 @@ const AdminUsers = () => {
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={newUser.is_active}
+                      checked={newUser.Is_Active}
                       color="customGreen"
                       onChange={() =>
-                        setNewUser((prev) => ({ ...prev, is_active: !prev.is_active }))
+                        setNewUser((prev) => ({ ...prev, Is_Active: !prev.Is_Active }))
                       }
                       name="is_active"
                     />
@@ -742,7 +715,7 @@ const AdminUsers = () => {
                       <FormControlLabel
                         control={
                           <Checkbox
-                            checked={newUser.permissions.includes(permission)}
+                            checked={newUser.Permissions.includes(permission)}
                             color="customGreen"
                             onChange={() => handleAddCheckboxChange(permission)}
                             name={permission}
