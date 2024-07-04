@@ -523,7 +523,7 @@ const AdminUsers = () => {
                     <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
                       <IconButton
                         aria-label="Delete"
-                        color="customRed"
+                        color="error"
                         size="small"
                         onClick={() => handleDeleteClick(user)}
                       >
@@ -556,7 +556,7 @@ const AdminUsers = () => {
             <Button
               variant="contained"
               onClick={handleDeleteConfirm}
-              color="customRed"
+              color="error"
               sx={{ fontSize: "0.8rem" }}
             >
               DELETE
