@@ -26,6 +26,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -505,7 +506,7 @@ const AdminUsers = () => {
             <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
               <PersonIcon />
             </Avatar>
-            <Typography variant="body1" fontWeight={"bold"} gutterBottom>
+            <Typography variant="h6" gutterBottom>
               Admin Users
             </Typography>
           </Box>
@@ -585,14 +586,16 @@ const AdminUsers = () => {
                       {user.user_type}
                     </TableCell>
                     <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
-                      <IconButton
-                        aria-label="Delete"
-                        color="error"
-                        size="small"
-                        onClick={() => handleDeleteClick(user)}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
+                      <Tooltip title={"Delete User"}>
+                        <IconButton
+                          aria-label="Delete"
+                          color="error"
+                          size="small"
+                          onClick={() => handleDeleteClick(user)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Tooltip>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -608,9 +611,14 @@ const AdminUsers = () => {
           aria-describedby="alert-dialog-description"
         >
           <DialogTitle id="alert-dialog-title">
-            <Typography variant="body1" fontWeight={"bold"}>
-              Delete User
-            </Typography>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+              <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
+                <PersonIcon />
+              </Avatar>
+              <Typography variant="h6" gutterBottom>
+                Delete User
+              </Typography>
+            </Box>
           </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description" sx={{ fontSize: "0.85rem" }}>
@@ -639,8 +647,15 @@ const AdminUsers = () => {
           maxWidth="md"
           fullWidth
         >
-          <DialogTitle id="form-dialog-title" variant="body1" fontWeight={"bold"}>
-            {newUser.User_Id ? "Edit Admin User" : "New Admin User"}
+          <DialogTitle id="form-dialog-title" variant="h6">
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+              <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
+                <PersonIcon />
+              </Avatar>
+              <Typography variant="h6" gutterBottom>
+                {newUser.User_Id ? "Edit Admin User" : "New Admin User"}
+              </Typography>
+            </Box>
           </DialogTitle>
           <DialogContent>
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
@@ -777,7 +792,7 @@ const AdminUsers = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom marginBottom={"16px"}>
+                <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.1rem"}>
                   Permissions
                 </Typography>
                 <Grid container spacing={2}>

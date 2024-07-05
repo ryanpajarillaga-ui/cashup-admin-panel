@@ -29,7 +29,7 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
         }}
       >
         <NavIconButton
-          title="Contact support"
+          title="Contact Support"
           icon={SupportAgentIcon}
           onClick={toggleNotificationsDrawer}
           size="small"
@@ -37,18 +37,17 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
       </Badge>
 
       <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={toggleNotificationsDrawer}>
-        <Box sx={{ width: 350 }}>
+        <Box sx={{ width: 380 }}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Box px={1} py={1.5} sx={{ display: "flex", alignItems: "center" }}>
               <NavIconButton icon={SupportAgentIcon} size="medium" />
-              <Typography variant="body1" color={"black"} fontWeight={"bold"}>
-                Contact Support ({notifications.length})
-              </Typography>
+              <Typography variant="h6">Contact Support ({notifications.length})</Typography>
             </Box>
             <Link
               href="/view-all"
               color="rgba(67,160,71)"
-              variant="body2"
+              variant="body1"
+              fontSize={"0.8rem"}
               sx={{ textDecoration: "none" }}
             >
               View All >

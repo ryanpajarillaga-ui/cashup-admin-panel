@@ -24,6 +24,7 @@ import HomeRoundedIcon from "@mui/icons-material/HomeRounded";
 import Logo from "../Images/cashup-logo-colored.png";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
+import PersonIcon from "@mui/icons-material/Person";
 import RememberMeOutlinedIcon from "@mui/icons-material/RememberMeOutlined";
 import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 import StorefrontSharpIcon from "@mui/icons-material/StorefrontSharp";
@@ -61,7 +62,7 @@ const VerticalNav = () => {
         },
         {
           text: "Admin Users",
-          icon: <PermIdentityOutlinedIcon />,
+          icon: <PersonIcon />,
           path: "/adminusers",
           permission: "menu_accounts_user",
         },

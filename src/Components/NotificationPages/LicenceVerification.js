@@ -37,7 +37,7 @@ const LicenceVerification = ({ fetchNotifications, notifications, userData }) =>
         />
       </Badge>
       <Drawer anchor="right" open={isNotificationDrawerOpen} onClose={toggleNotificationsDrawer}>
-        <Box sx={{ width: 350 }}>
+        <Box sx={{ width: 380 }}>
           <Box
             px={1}
             py={1.5}
@@ -45,14 +45,13 @@ const LicenceVerification = ({ fetchNotifications, notifications, userData }) =>
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <NavIconButton icon={TaskIcon} size="medium" />
-              <Typography variant="body1" color={"black"} fontWeight={"bold"}>
-                Licence Verification ({notifications.length})
-              </Typography>
+              <Typography variant="h6">Licence Verification ({notifications.length})</Typography>
             </Box>
             <Link
               href="/view-all"
               color="rgba(67,160,71)"
-              variant="body2"
+              variant="body1"
+              fontSize={"0.8rem"}
               sx={{
                 textDecoration: "none",
                 display: "flex",
