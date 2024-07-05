@@ -41,9 +41,49 @@ import axios from "axios";
 const AdminUsers = () => {
   const permissionsList = [
     "Menu > Account Management",
+    "Menu > Withdraw Request",
+    "Consumer - Change Status",
+
+    "Menu > Account Management > Merchant",
+    "Menu > License Verification",
+    "Admin Users - Full Control",
+
+    "Menu > Account Management > Consumer",
+    "Menu > Contact Support",
+    "Notifications - Contact Support",
+
+    "Menu > Account Management > Users",
+    "Merchant - Register",
+    "Notifications - License Verify",
+
+    "Menu > My Network",
+    "Merchant - View Profile",
+    "Notifications - Withdrawal",
+
+    "Menu > eShop Dashboard",
+    "Merchant - Transactions",
+    "Process - License Verification",
+
+    "Menu > eShop Admin Site",
+    "Merchant - Change Status",
+    "Process - Withdrawal",
+
+    "Menu > Transactions",
+    "Consumer - View Profile",
+    "Process - Contact Support",
+
+    "Menu > Reports",
+
+    "Consumer - Transactions",
+
+    "Systems Settings",
+  ];
+
+  const SuperAdminPermissionsList = permissionsList;
+  const AdministratorPermissionsList = [
+    "Menu > Account Management",
     "Menu > Account Management > Merchant",
     "Menu > Account Management > Consumer",
-    "Menu > Account Management > Users",
     "Menu > My Network",
     "Menu > eShop Dashboard",
     "Menu > eShop Admin Site",
@@ -58,40 +98,10 @@ const AdminUsers = () => {
     "Merchant - Change Status",
     "Consumer - View Profile",
     "Consumer - Transactions",
-    "Consumer - change Status",
-    "Admin Users - Full Control",
+    "Consumer - Change Status",
     "Notifications - Contact Support",
     "Notifications - License Verify",
     "Notifications - Withdrawal",
-    "Process - License Verification",
-    "Process - Withdrawal",
-    "Process - Contact Support",
-    "Systems Settings",
-  ];
-
-  const SuperAdminPermissionsList = permissionsList;
-  const AdministratorPermissionsList = [
-    "Menu > Account management",
-    "Menu > Account management > Merchant",
-    "Menu > Account management > Consumer",
-    "Menu > My Network",
-    "Menu > eShop Dashboard",
-    "Menu > eShop Admin Site",
-    "Menu > Transactions",
-    "Menu > Reports",
-    "Menu > Withdraw Request",
-    "Menu > License Verification",
-    "Menu > contact Support",
-    "Merchant - Register",
-    "Merchant - View Profile",
-    "Merchant - Transactions",
-    "Merchant - Change Status",
-    "Consumer - View Profile",
-    "Consumer - Transactions",
-    "Consumer - change Status",
-    "Notifications - Contact Support",
-    "Notifications - License Verify",
-    "Notifications - withdrawal",
     "Process - License Verification",
     "Process - Withdrawal",
     "Process - Contact Support",
@@ -100,14 +110,16 @@ const AdminUsers = () => {
     "Menu > My Network",
     "Menu > eShop Dashboard",
     "Menu > Reports",
+    "Notifications - Withdrawal",
     "Menu > Withdraw Request",
-    "Notifications - withdrawal",
+
     "Process - Withdrawal",
     "Menu > Transactions",
   ];
   const GeneralUserPermissionsList = [
-    "Menu > Account management > Merchant",
-    "Menu > Account management > Consumer",
+    "Menu > Account Management",
+    "Menu > Account Management > Merchant",
+    "Menu > Account Management > Consumer",
     "Menu > My Network",
     "Menu > Transactions",
     "Menu > eShop Dashboard",
@@ -115,7 +127,7 @@ const AdminUsers = () => {
     "Notifications - Contact Support",
     "Notifications - License Verify",
     "Menu > License Verification",
-    "Menu > contact Support",
+    "Menu > Contact Support",
 
     "Merchant - View Profile",
     "Merchant - Transactions",
@@ -172,21 +184,25 @@ const AdminUsers = () => {
   useEffect(() => {
     if (openDeleteDialog) {
       setOpenAddDialog(false);
-      setNewUser({
-        User_Id: null,
-        Full_Name: "",
-        Is_Active: true,
-        Designation: "",
-        User_Name: "",
-        User_Type: null,
-        Password: "",
-        Permissions: [],
-      });
-      setSelectedUserType();
+      // setNewUser({
+      //   User_Id: null,
+      //   Full_Name: "",
+      //   Is_Active: true,
+      //   Designation: "",
+      //   User_Name: "",
+      //   User_Type: null,
+      //   Password: "",
+      //   Permissions: [],
+      // });
+      // setSelectedUserType();
     }
     fetchAdminUsers();
     fetchUserTypes();
   }, [openDeleteDialog, usersListchanged]);
+
+  // useEffect(() => {
+  //   console.log("useeffect:", selectedUserType);
+  // }, [selectedUserType]);
 
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
@@ -194,20 +210,54 @@ const AdminUsers = () => {
     setOpenAddDialog(false);
   };
 
-  const handleAddClick = (user) => {
-    let permissions = [];
-    if (user.user_type_id == 1) {
-      permissions = GeneralUserPermissionsList;
-    } else if (user.user_type_id == 2) {
-      permissions = AccountsPermissionsList;
-    } else if (user.user_type_id == 3) {
-      permissions = AccountsPermissionsList;
-    } else {
-      permissions = SuperAdminPermissionsList;
+  const fetchUserData = async (id) => {
+    try {
+      const response = await axios.get(`${baseURLv1}/adminHome/getUserMainInfo/${id}`);
+      const data = response.data.data[0];
+      const Permissions = [
+        data.menu_accounts_main ? "Menu > Account Management" : null,
+        data.menu_accounts_merchant ? "Menu > Account Management > Merchant" : null,
+        data.menu_accounts_consumer ? "Menu > Account Management > Consumer" : null,
+        data.menu_accounts_user ? "Menu > Account Management > Users" : null,
+        data.menu_network ? "Menu > My Network" : null,
+        data.menu_eshop_dashboard ? "Menu > eShop Dashboard" : null,
+        data.menu_eshop_page ? "Menu > eShop Admin Site" : null,
+        data.menu_transactions ? "Menu > Transactions" : null,
+        data.menu_reports ? "Menu > Reports" : null,
+        data.menu_withdraw ? "Menu > Withdraw Request" : null,
+        data.menu_license ? "Menu > License Verification" : null,
+        data.menu_support ? "Menu > Contact Support" : null,
+        data.notification_support ? "Notifications - Contact Support" : null,
+        data.notification_license ? "Notifications - License Verify" : null,
+        data.notification_withdraw ? "Notifications - Withdrawal" : null,
+        data.system_settings ? "Systems Settings" : null,
+        data.merchant_register ? "Merchant - Register" : null,
+        data.merchant_view ? "Merchant - View Profile" : null,
+        data.merchant_transactions ? "Merchant - Transactions" : null,
+        data.merchant_status ? "Merchant - Change Status" : null,
+        data.consumer_view ? "Consumer - View Profile" : null,
+        data.consumer_transaction ? "Consumer - Transactions" : null,
+        data.consumer_status ? "Consumer - Change Status" : null,
+
+        data.manage_users ? "Admin Users - Full Control" : null,
+        data.workflow_license ? "Process - License Verification" : null,
+        data.workflow_withdraw ? "Process - Withdrawal" : null,
+        data.workflow_support ? "Process - Contact Support" : null,
+      ].filter((permission) => permission !== null);
+      return Permissions;
+    } catch (error) {
+      console.error("Error fetching admin users:", error);
     }
+  };
+
+  const handleAddClick = async (user) => {
     setOpenAddDialog(true);
     setSelectedUserType();
+
     if (user.user_id !== undefined) {
+      setSelectedUserType(user.user_type_id);
+      let permissions = await fetchUserData(user.user_id);
+
       setNewUser({
         User_Id: user.user_id,
         Full_Name: user.full_name,
@@ -217,7 +267,6 @@ const AdminUsers = () => {
         Password: user.user_id ? "12345678" : "",
         Permissions: permissions,
       });
-      setSelectedUserType(user.user_type_id);
     }
   };
 
@@ -309,18 +358,18 @@ const AdminUsers = () => {
       in_password: newUser.Password,
       in_user_type_id: selectedUserType,
       in_is_active: newUser.Is_Active ? 1 : 0,
-      in_prm_menu_account_main: newUser.Permissions.includes("Menu > Account management") ? 1 : 0,
+      in_prm_menu_account_main: newUser.Permissions.includes("Menu > Account Management") ? 1 : 0,
       in_prm_menu_account_merchant: newUser.Permissions.includes(
-        "Menu > Account management > Merchant"
+        "Menu > Account Management > Merchant"
       )
         ? 1
         : 0,
       in_prm_menu_account_consumer: newUser.Permissions.includes(
-        "Menu > Account management > Consumer"
+        "Menu > Account Management > Consumer"
       )
         ? 1
         : 0,
-      in_prm_menu_users: newUser.Permissions.includes("Menu > Account management > Users") ? 1 : 0,
+      in_prm_menu_users: newUser.Permissions.includes("Menu > Account Management > Users") ? 1 : 0,
       in_prm_menu_network: newUser.Permissions.includes("Menu > My Network") ? 1 : 0,
       in_prm_menu_eshop_dash: newUser.Permissions.includes("Menu > eShop Dashboard") ? 1 : 0,
       in_prm_menu_eshop_page: newUser.Permissions.includes("Menu > eShop Admin Site") ? 1 : 0,
@@ -328,14 +377,14 @@ const AdminUsers = () => {
       in_prm_menu_reports: newUser.Permissions.includes("Menu > Reports") ? 1 : 0,
       in_prm_menu_withdraw: newUser.Permissions.includes("Menu > Withdraw Request") ? 1 : 0,
       in_prm_menu_license: newUser.Permissions.includes("Menu > License Verification") ? 1 : 0,
-      in_prm_menu_support: newUser.Permissions.includes("Menu > contact Support") ? 1 : 0,
+      in_prm_menu_support: newUser.Permissions.includes("Menu > Contact Support") ? 1 : 0,
       in_prm_notification_support: newUser.Permissions.includes("Notifications - Contact Support")
         ? 1
         : 0,
       in_prm_notification_license: newUser.Permissions.includes("Notifications - License Verify")
         ? 1
         : 0,
-      in_prm_notification_withdraw: newUser.Permissions.includes("Notifications - withdrawal")
+      in_prm_notification_withdraw: newUser.Permissions.includes("Notifications - Withdrawal")
         ? 1
         : 0,
       in_prm_system_settings: newUser.Permissions.includes("Systems Settings") ? 1 : 0,
@@ -345,7 +394,7 @@ const AdminUsers = () => {
       in_prm_merchant_status: newUser.Permissions.includes("Merchant - Change Status") ? 1 : 0,
       in_prm_consumer_view: newUser.Permissions.includes("Consumer - View Profile") ? 1 : 0,
       in_prm_consumer_transactions: newUser.Permissions.includes("Consumer - Transactions") ? 1 : 0,
-      in_prm_consumer_status: newUser.Permissions.includes("Consumer - change Status") ? 1 : 0,
+      in_prm_consumer_status: newUser.Permissions.includes("Consumer - Change Status") ? 1 : 0,
       in_prm_users_full: newUser.Permissions.includes("Admin Users - Full Control") ? 1 : 0,
       in_prm_license_process: newUser.Permissions.includes("Process - License Verification")
         ? 1
@@ -457,7 +506,7 @@ const AdminUsers = () => {
             <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
               <PersonIcon />
             </Avatar>
-            <Typography variant="h5" gutterBottom>
+            <Typography variant="body1" fontWeight={"bold"} gutterBottom>
               Admin Users
             </Typography>
           </Box>
@@ -511,6 +560,11 @@ const AdminUsers = () => {
                           }
                           color="success"
                           variant="outlined"
+                          sx={{
+                            "& .MuiChip-label": {
+                              fontSize: "0.7rem",
+                            },
+                          }}
                         />
                       ) : (
                         <Chip
@@ -554,10 +608,14 @@ const AdminUsers = () => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">{"Delete User"}</DialogTitle>
+          <DialogTitle id="alert-dialog-title">
+            <Typography variant="body1" fontWeight={"bold"}>
+              Delete User
+            </Typography>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description" sx={{ fontSize: "0.85rem" }}>
-              Are you sure you want to delete this User? This action cannot to undone.
+              Are you sure you want to delete this User? This action cannot be undone.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
@@ -582,7 +640,7 @@ const AdminUsers = () => {
           maxWidth="md"
           fullWidth
         >
-          <DialogTitle id="form-dialog-title">
+          <DialogTitle id="form-dialog-title" variant="body1" fontWeight={"bold"}>
             {newUser.User_Id ? "Edit Admin User" : "New Admin User"}
           </DialogTitle>
           <DialogContent>

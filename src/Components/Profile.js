@@ -98,7 +98,9 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
         <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
           <PersonIcon />
         </Avatar>
-        <Typography variant="body1">User Profile</Typography>
+        <Typography variant="body1" fontWeight={"bold"}>
+          User Profile
+        </Typography>
       </MenuItem>
       <Formik
         initialValues={initialValues}
