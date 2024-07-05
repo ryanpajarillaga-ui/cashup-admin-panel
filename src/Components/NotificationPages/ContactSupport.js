@@ -41,7 +41,9 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Box px={1} py={1.5} sx={{ display: "flex", alignItems: "center" }}>
               <NavIconButton icon={SupportAgentIcon} size="medium" />
-              <Typography variant="h6">Contact Support ({notifications.length})</Typography>
+              <Typography variant="h6" fontSize={"1.2rem"}>
+                Contact Support ({notifications.length})
+              </Typography>
             </Box>
             <Link
               href="/view-all"

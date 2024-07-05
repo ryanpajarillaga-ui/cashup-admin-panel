@@ -45,7 +45,9 @@ const WithdrawalRequests = ({ fetchNotifications, notifications, userData }) => 
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <NavIconButton icon={MonetizationOnIcon} size="medium" />
-              <Typography variant="h6">Withdrawal Requests ({notifications.length})</Typography>
+              <Typography variant="h6" fontSize={"1.2rem"}>
+                Withdrawal Requests ({notifications.length})
+              </Typography>
             </Box>
             <Link
               href="/view-all"

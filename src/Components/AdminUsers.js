@@ -506,7 +506,7 @@ const AdminUsers = () => {
             <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
               <PersonIcon />
             </Avatar>
-            <Typography variant="h6" gutterBottom>
+            <Typography variant="h6" gutterBottom fontSize={"1.2rem"}>
               Admin Users
             </Typography>
           </Box>
@@ -615,7 +615,7 @@ const AdminUsers = () => {
               <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
                 <PersonIcon />
               </Avatar>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" fontSize={"1.2rem"} gutterBottom>
                 Delete User
               </Typography>
             </Box>
@@ -652,7 +652,7 @@ const AdminUsers = () => {
               <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
                 <PersonIcon />
               </Avatar>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" fontSize={"1.2rem"} gutterBottom>
                 {newUser.User_Id ? "Edit Admin User" : "New Admin User"}
               </Typography>
             </Box>

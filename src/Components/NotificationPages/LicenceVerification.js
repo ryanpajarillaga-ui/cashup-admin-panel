@@ -45,7 +45,9 @@ const LicenceVerification = ({ fetchNotifications, notifications, userData }) =>
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <NavIconButton icon={TaskIcon} size="medium" />
-              <Typography variant="h6">Licence Verification ({notifications.length})</Typography>
+              <Typography variant="h6" fontSize={"1.2rem"}>
+                Licence Verification ({notifications.length})
+              </Typography>
             </Box>
             <Link
               href="/view-all"
