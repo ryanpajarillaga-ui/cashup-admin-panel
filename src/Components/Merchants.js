@@ -288,7 +288,7 @@ const Merchants = () => {
                     }}
                     // onClick={handleMerchantClick(merchant)}
                   >
-                    <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
+                    <TableCell sx={{ padding: "8px", fontSize: "0.8rem" }}>
                       <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
                         {
                           <img
