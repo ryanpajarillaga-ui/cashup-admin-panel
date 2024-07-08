@@ -46,19 +46,10 @@ import axios from "axios";
 
 const Merchants = () => {
   const [merchants, setMerchants] = useState([]);
-  const [merchant, setMerchant] = useState({
-    User_Id: null,
-    Full_Name: "",
-    Is_Active: true,
-    Designation: "",
-    User_Name: "",
-    User_Type: null,
-    Password: "",
-    Permissions: [],
-  });
+
   const [searchText, setSearchText] = useState("");
   const [searchCategory, setSearchCategory] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(0);
   const [currentPage, setCurrentPage] = useState(1); // Track current page
   const [totalPages, setTotalPages] = useState(10); // Track total pages
   // const [itemsPerPage, setItemsPerPage] = useState(10); // Track total pages
@@ -80,9 +71,17 @@ const Merchants = () => {
         `${baseURLv1}/adminManageMerchant/searchMerchantListByPage`,
         data
       );
-      setMerchants(response.data.data.results_list);
-      setTotalPages(response.data.data.total_number_of_pages);
-      setCurrentPage(response.data.data.current_page_number);
+      console.log(response.data.data.results_list);
+
+      if (response.data.data.results_list) {
+        console.log("jjjj");
+        setMerchants(response.data.data.results_list);
+        setTotalPages(response.data.data.total_number_of_pages);
+        setCurrentPage(response.data.data.current_page_number);
+      } else {
+        setMerchants([]);
+      }
+
       // setItemsPerPage(response.data.data.rows_per_page_limit);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
@@ -93,7 +92,6 @@ const Merchants = () => {
     try {
       const response = await axios.get(`${baseURLv1}/adminLookup/getAllMerchantSearchCategory`);
       setSearchCategory(response.data.data);
-      console.log(response.data.data);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
     }
@@ -105,6 +103,9 @@ const Merchants = () => {
   }, []);
 
   const handleSearch = () => {
+    if (selectedCategory == 0) {
+      setSelectedCategory(null);
+    }
     fetchMerchants(searchText, selectedCategory);
   };
 
@@ -129,14 +130,11 @@ const Merchants = () => {
 
   const handleReset = () => {
     setSearchText("");
-    setSelectedCategory("");
+    setSelectedCategory(0);
     fetchMerchants("");
   };
 
   const handlePageChange = (event, page) => {
-    console.log(page);
-    console.log(searchText);
-    console.log(selectedCategory);
     setCurrentPage(page);
     fetchMerchants("", 1, page);
   };
@@ -206,7 +204,7 @@ const Merchants = () => {
               />
             </Grid>
             <Grid item xs={4}>
-              <FormControl fullWidth required>
+              <FormControl fullWidth required error={Boolean(selectedCategory == null)}>
                 <InputLabel
                   id="category-dropdown"
                   color="customGreen"
@@ -234,7 +232,9 @@ const Merchants = () => {
                     </MenuItem>
                   ))}
                 </Select>
-                {/* {errors.User_Type && <FormHelperText>{errors.User_Type}</FormHelperText>} */}
+                {Boolean(selectedCategory == null) && (
+                  <FormHelperText>{"Search Category is requied"}</FormHelperText>
+                )}
               </FormControl>
             </Grid>
             <Grid
@@ -387,6 +387,216 @@ const Merchants = () => {
             </Stack>
           </Box>
         </Paper>
+
+        {/* <Dialog
+          open={openAddDialog}
+          onClose={handleAddClose}
+          aria-labelledby="form-dialog-title"
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle id="form-dialog-title" variant="h6">
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+              <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
+                <PersonIcon />
+              </Avatar>
+              <Typography variant="h6" fontSize={"1.2rem"} gutterBottom>
+                {newUser.User_Id ? "Edit Admin User" : "New Admin User"}
+              </Typography>
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            <Grid container spacing={2} style={{ paddingTop: 0 }}>
+              <Grid item xs={4}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Full_Name"
+                  label="Full Name"
+                  type="text"
+                  color="customGreen"
+                  required
+                  fullWidth
+                  value={newUser.Full_Name}
+                  onChange={handleAddChange}
+                  error={Boolean(errors.Full_Name)}
+                  helperText={errors.Full_Name}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 50 }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  margin="dense"
+                  name="Designation"
+                  label="Designation"
+                  type="text"
+                  color="customGreen"
+                  fullWidth
+                  required
+                  value={newUser.Designation}
+                  onChange={handleAddChange}
+                  error={Boolean(errors.Designation)}
+                  helperText={errors.Designation}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 30 }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  margin="dense"
+                  name="User_Name"
+                  label="User Name"
+                  type="text"
+                  color="customGreen"
+                  fullWidth
+                  required
+                  value={newUser.User_Name}
+                  onChange={handleAddChange}
+                  error={Boolean(errors.User_Name)}
+                  helperText={errors.User_Name}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 20 }}
+                />
+              </Grid>
+              <Grid item xs={4} marginTop={"8px"}>
+                <FormControl fullWidth required error={errors.User_Type}>
+                  <InputLabel
+                    id="usertype-dropdown"
+                    color="customGreen"
+                    style={{ fontSize: "0.8rem" }}
+                  >
+                    User Type
+                  </InputLabel>
+                  <Select
+                    labelId="usertype-dropdown"
+                    id="dropdown"
+                    name="User_Type"
+                    value={selectedUserType}
+                    onChange={handleUserType}
+                    label="Select an Option"
+                    color="customGreen"
+                    sx={{
+                      borderRadius: 2,
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {userTypes.map((option) => (
+                      <MenuItem
+                        key={option.user_type_id}
+                        value={option.user_type_id}
+                        style={{ fontSize: "0.8rem" }}
+                      >
+                        {option.user_type}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.User_Type && <FormHelperText>{errors.User_Type}</FormHelperText>}
+                </FormControl>
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  margin="dense"
+                  name="Password"
+                  label="Password"
+                  type="password"
+                  color="customGreen"
+                  fullWidth
+                  required
+                  value={newUser.Password}
+                  onChange={handleAddChange}
+                  error={Boolean(errors.Password)}
+                  helperText={errors.Password}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 15 }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={newUser.Is_Active}
+                      color="customGreen"
+                      onChange={() =>
+                        setNewUser((prev) => ({ ...prev, Is_Active: !prev.Is_Active }))
+                      }
+                      name="is_active"
+                    />
+                  }
+                  label="Active User"
+                  sx={{
+                    "& .MuiFormControlLabel-label": {
+                      fontSize: "0.8rem",
+                    },
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.1rem"}>
+                  Permissions
+                </Typography>
+                <Grid container spacing={2}>
+                  {permissionsList.map((permission, index) => (
+                    <Grid item xs={4} key={index} style={{ paddingTop: 0 }}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            checked={newUser.Permissions.includes(permission)}
+                            color="customGreen"
+                            onChange={() => handleAddCheckboxChange(permission)}
+                            name={permission}
+                          />
+                        }
+                        label={permission}
+                        sx={{
+                          "& .MuiFormControlLabel-label": {
+                            fontSize: "0.8rem", // Adjust the font size as needed
+                          },
+                        }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleAddClose}
+              color="customGreen"
+              size="small"
+              sx={{
+                fontSize: "0.75rem",
+                lineHeight: "1.5rem",
+                marginBottom: "2rem",
+              }}
+            >
+              CANCEL
+            </Button>
+            <Button
+              onClick={handleAddConfirm}
+              variant="contained"
+              color="customGreen"
+              size="small"
+              sx={{
+                fontSize: "0.75rem",
+                lineHeight: "1.5rem",
+                marginBottom: "2rem",
+                marginRight: "2rem",
+              }}
+            >
+              SAVE
+            </Button>
+          </DialogActions>
+        </Dialog> */}
       </Box>
     </Box>
   );
