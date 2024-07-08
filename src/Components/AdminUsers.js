@@ -15,7 +15,6 @@ import {
   Grid,
   IconButton,
   InputLabel,
-  Link,
   MenuItem,
   Paper,
   Select,
@@ -33,7 +32,6 @@ import React, { useEffect, useState } from "react";
 
 import Cookies from "js-cookie";
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import Header from "./Header";
 import PersonIcon from "@mui/icons-material/Person";
 import VerticalNav from "./VerticalNav";
@@ -44,47 +42,37 @@ const AdminUsers = () => {
     "Menu > Account Management",
     "Menu > Withdraw Request",
     "Consumer - Change Status",
-
-    "Menu > Account Management > Merchant",
+    "Menu > Account > Merchant",
     "Menu > License Verification",
     "Admin Users - Full Control",
-
-    "Menu > Account Management > Consumer",
+    "Menu > Account > Consumer",
     "Menu > Contact Support",
     "Notifications - Contact Support",
-
-    "Menu > Account Management > Users",
+    "Menu > Account > Users",
     "Merchant - Register",
     "Notifications - License Verify",
-
     "Menu > My Network",
     "Merchant - View Profile",
     "Notifications - Withdrawal",
-
     "Menu > eShop Dashboard",
     "Merchant - Transactions",
     "Process - License Verification",
-
     "Menu > eShop Admin Site",
     "Merchant - Change Status",
     "Process - Withdrawal",
-
     "Menu > Transactions",
     "Consumer - View Profile",
     "Process - Contact Support",
-
     "Menu > Reports",
-
     "Consumer - Transactions",
-
     "Systems Settings",
   ];
 
   const SuperAdminPermissionsList = permissionsList;
   const AdministratorPermissionsList = [
     "Menu > Account Management",
-    "Menu > Account Management > Merchant",
-    "Menu > Account Management > Consumer",
+    "Menu > Account > Merchant",
+    "Menu > Account > Consumer",
     "Menu > My Network",
     "Menu > eShop Dashboard",
     "Menu > eShop Admin Site",
@@ -113,23 +101,20 @@ const AdminUsers = () => {
     "Menu > Reports",
     "Notifications - Withdrawal",
     "Menu > Withdraw Request",
-
     "Process - Withdrawal",
     "Menu > Transactions",
   ];
   const GeneralUserPermissionsList = [
     "Menu > Account Management",
-    "Menu > Account Management > Merchant",
-    "Menu > Account Management > Consumer",
+    "Menu > Account > Merchant",
+    "Menu > Account > Consumer",
     "Menu > My Network",
     "Menu > Transactions",
     "Menu > eShop Dashboard",
-
     "Notifications - Contact Support",
     "Notifications - License Verify",
     "Menu > License Verification",
     "Menu > Contact Support",
-
     "Merchant - View Profile",
     "Merchant - Transactions",
     "Process - License Verification",
@@ -152,7 +137,6 @@ const AdminUsers = () => {
     Password: "",
     Permissions: [],
   });
-
   const [errors, setErrors] = useState({});
   const [userTypes, setUserTypes] = useState([]);
   const [selectedUserType, setSelectedUserType] = useState();
@@ -200,14 +184,9 @@ const AdminUsers = () => {
     fetchUserTypes();
   }, [openDeleteDialog, usersListchanged]);
 
-  // useEffect(() => {
-  //   console.log("useeffect:", selectedUserType);
-  // }, [selectedUserType]);
-
   const handleDeleteClick = (user) => {
     setSelectedUser(user);
     setOpenDeleteDialog(true);
-    //setOpenAddDialog(false);
   };
 
   const fetchUserData = async (id) => {
@@ -216,9 +195,9 @@ const AdminUsers = () => {
       const data = response.data.data[0];
       const Permissions = [
         data.menu_accounts_main ? "Menu > Account Management" : null,
-        data.menu_accounts_merchant ? "Menu > Account Management > Merchant" : null,
-        data.menu_accounts_consumer ? "Menu > Account Management > Consumer" : null,
-        data.menu_accounts_user ? "Menu > Account Management > Users" : null,
+        data.menu_accounts_merchant ? "Menu > Account > Merchant" : null,
+        data.menu_accounts_consumer ? "Menu > Account > Consumer" : null,
+        data.menu_accounts_user ? "Menu > Account > Users" : null,
         data.menu_network ? "Menu > My Network" : null,
         data.menu_eshop_dashboard ? "Menu > eShop Dashboard" : null,
         data.menu_eshop_page ? "Menu > eShop Admin Site" : null,
@@ -238,7 +217,6 @@ const AdminUsers = () => {
         data.consumer_view ? "Consumer - View Profile" : null,
         data.consumer_transaction ? "Consumer - Transactions" : null,
         data.consumer_status ? "Consumer - Change Status" : null,
-
         data.manage_users ? "Admin Users - Full Control" : null,
         data.workflow_license ? "Process - License Verification" : null,
         data.workflow_withdraw ? "Process - Withdrawal" : null,
@@ -253,11 +231,9 @@ const AdminUsers = () => {
   const handleAddClick = async (user) => {
     setOpenAddDialog(true);
     setSelectedUserType();
-
     if (user.user_id !== undefined) {
       setSelectedUserType(user.user_type_id);
       let permissions = await fetchUserData(user.user_id);
-
       setNewUser({
         User_Id: user.user_id,
         Full_Name: user.full_name,
@@ -281,7 +257,6 @@ const AdminUsers = () => {
       in_logged_user_id: currentUserId,
     };
     const headers = { in_platform_type_id: "4" };
-
     if (selectedUser) {
       try {
         await axios.post(`${baseURLv1}/adminManageUser/deleteAdminUserAccount`, data, { headers });
@@ -314,7 +289,6 @@ const AdminUsers = () => {
   const handleAddChange = (e) => {
     const { name, value } = e.target;
     setNewUser((prevNewUser) => ({ ...prevNewUser, [name]: value }));
-
     if (value.trim() === "") {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -359,17 +333,13 @@ const AdminUsers = () => {
       in_user_type_id: selectedUserType,
       in_is_active: newUser.Is_Active ? 1 : 0,
       in_prm_menu_account_main: newUser.Permissions.includes("Menu > Account Management") ? 1 : 0,
-      in_prm_menu_account_merchant: newUser.Permissions.includes(
-        "Menu > Account Management > Merchant"
-      )
+      in_prm_menu_account_merchant: newUser.Permissions.includes("Menu > Account > Merchant")
         ? 1
         : 0,
-      in_prm_menu_account_consumer: newUser.Permissions.includes(
-        "Menu > Account Management > Consumer"
-      )
+      in_prm_menu_account_consumer: newUser.Permissions.includes("Menu > Account > Consumer")
         ? 1
         : 0,
-      in_prm_menu_users: newUser.Permissions.includes("Menu > Account Management > Users") ? 1 : 0,
+      in_prm_menu_users: newUser.Permissions.includes("Menu > Account > Users") ? 1 : 0,
       in_prm_menu_network: newUser.Permissions.includes("Menu > My Network") ? 1 : 0,
       in_prm_menu_eshop_dash: newUser.Permissions.includes("Menu > eShop Dashboard") ? 1 : 0,
       in_prm_menu_eshop_page: newUser.Permissions.includes("Menu > eShop Admin Site") ? 1 : 0,
@@ -510,20 +480,18 @@ const AdminUsers = () => {
               Admin Users
             </Typography>
           </Box>
-
           <Button
             variant="text"
             onClick={handleAddClick}
-            size="small" // Reduces the size of the button
+            size="small"
             sx={{
-              color: "rgb(67, 160, 71)", // Change to your desired color
-              fontSize: "0.75rem", // Further reduce the font size if needed
+              color: "rgb(67, 160, 71)",
+              fontSize: "0.75rem",
             }}
           >
             ADD NEW +
           </Button>
         </Box>
-
         <Paper elevation={3} sx={{ padding: "20px", maxWidth: "1300px", margin: "auto" }}>
           <TableContainer>
             <Table>
@@ -544,7 +512,7 @@ const AdminUsers = () => {
                     sx={{
                       cursor: "pointer",
                       "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.02)", // Change this to your desired color
+                        backgroundColor: "rgba(0, 0, 0, 0.02)",
                       },
                     }}
                     onClick={() => handleAddClick(user)}
@@ -603,7 +571,6 @@ const AdminUsers = () => {
             </Table>
           </TableContainer>
         </Paper>
-
         <Dialog
           open={openDeleteDialog}
           onClose={handleDeleteClose}
@@ -639,7 +606,6 @@ const AdminUsers = () => {
             </Button>
           </DialogActions>
         </Dialog>
-
         <Dialog
           open={openAddDialog}
           onClose={handleAddClose}
@@ -786,7 +752,7 @@ const AdminUsers = () => {
                   label="Active User"
                   sx={{
                     "& .MuiFormControlLabel-label": {
-                      fontSize: "0.8rem", // Adjust the font size as needed
+                      fontSize: "0.8rem",
                     },
                   }}
                 />
@@ -820,7 +786,6 @@ const AdminUsers = () => {
               </Grid>
             </Grid>
           </DialogContent>
-
           <DialogActions>
             <Button
               onClick={handleAddClose}
