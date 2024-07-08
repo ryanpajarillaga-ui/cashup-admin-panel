@@ -49,7 +49,7 @@ const Merchants = () => {
 
   const [searchText, setSearchText] = useState("");
   const [searchCategory, setSearchCategory] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState(1);
   const [currentPage, setCurrentPage] = useState(1); // Track current page
   const [totalPages, setTotalPages] = useState(10); // Track total pages
   // const [itemsPerPage, setItemsPerPage] = useState(10); // Track total pages
@@ -130,7 +130,7 @@ const Merchants = () => {
 
   const handleReset = () => {
     setSearchText("");
-    setSelectedCategory(0);
+    setSelectedCategory(1);
     fetchMerchants("");
   };
 
@@ -205,18 +205,17 @@ const Merchants = () => {
             </Grid>
             <Grid item xs={4}>
               <FormControl fullWidth required error={Boolean(selectedCategory == null)}>
-                <InputLabel
+                {/* <InputLabel
                   id="category-dropdown"
                   color="customGreen"
                   style={{ fontSize: "0.8rem" }}
                 >
                   Search Category
-                </InputLabel>
+                </InputLabel> */}
                 <Select
                   labelId="category-dropdown"
                   id="dropdown"
                   name="Category"
-                  label="Search Category"
                   color="customGreen"
                   sx={{
                     borderRadius: 1,
@@ -227,7 +226,11 @@ const Merchants = () => {
                   onChange={handleCategoryChange}
                 >
                   {searchCategory.map((option) => (
-                    <MenuItem key={option.category_id} value={option.category_id}>
+                    <MenuItem
+                      key={option.category_id}
+                      value={option.category_id}
+                      style={{ fontSize: "0.8rem" }}
+                    >
                       {option.category}
                     </MenuItem>
                   ))}
@@ -291,7 +294,7 @@ const Merchants = () => {
                           <img
                             src={merchant.logo_path}
                             alt="Logo"
-                            style={{ width: "50px", marginRight: ".5rem" }}
+                            style={{ width: "35px", marginRight: ".5rem", borderRadius: "50%" }}
                           />
                         }
 
