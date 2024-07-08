@@ -541,6 +541,11 @@ const AdminUsers = () => {
                           }
                           color="error"
                           variant="outlined"
+                          sx={{
+                            "& .MuiChip-label": {
+                              fontSize: "0.7rem",
+                            },
+                          }}
                         />
                       )}
                     </TableCell>

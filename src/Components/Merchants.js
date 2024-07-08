@@ -265,8 +265,12 @@ const Merchants = () => {
                   <TableCell sx={{ padding: "4px" }}>Status</TableCell>
                   <TableCell sx={{ padding: "4px" }}>Address</TableCell>
                   <TableCell sx={{ padding: "4px" }}>Contact Details</TableCell>
-                  <TableCell sx={{ padding: "4px" }}>Cashback Fee Rate</TableCell>
-                  <TableCell sx={{ padding: "4px" }}>Available Points</TableCell>
+                  <TableCell sx={{ padding: "4px" }} align="right">
+                    Cashback Fee Rate
+                  </TableCell>
+                  <TableCell sx={{ padding: "4px" }} align="right">
+                    Available Points
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -329,7 +333,13 @@ const Merchants = () => {
                             </span>
                           }
                           variant="outlined"
-                          sx={{ color: "orange", borderColor: "orange" }}
+                          sx={{
+                            color: "orange",
+                            borderColor: "orange",
+                            "& .MuiChip-label": {
+                              fontSize: "0.7rem",
+                            },
+                          }}
                         />
                       )}
                     </TableCell>
@@ -357,10 +367,12 @@ const Merchants = () => {
                         </Typography>
                       </Box>
                     </TableCell>
-                    <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
-                      {merchant.merchant_fee_rate}
+                    <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }} align="right">
+                      {parseFloat(merchant.merchant_fee_rate)
+                        .toFixed(2)
+                        .replace(/\.?0+$/, "") + "%"}
                     </TableCell>
-                    <TableCell sx={{ padding: "4px" }}>
+                    <TableCell sx={{ padding: "4px" }} align="right">
                       <Typography
                         fontSize="0.8rem"
                         color={merchant.points_balance < 100 ? "red" : "black"}
