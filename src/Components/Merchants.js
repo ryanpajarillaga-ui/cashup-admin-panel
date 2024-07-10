@@ -55,7 +55,9 @@ const Merchants = () => {
   const [searchCategory, setSearchCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(10);
+  const [currentPageRecords, setCurrentPageRecords] = useState(1);
+  const [totalPages, setTotalPages] = useState();
+  const [pageLimit, setPageLimit] = useState();
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
   const [newMerchant, setNewMerchant] = useState({
     User_Id: null,
@@ -89,15 +91,18 @@ const Merchants = () => {
         in_page_number: pageNumber,
       };
 
-      const response = await axios.post(
+      let response = await axios.post(
         `${baseURLv1}/adminManageMerchant/searchMerchantListByPage`,
         data
       );
-      const result = response.data.data.results_list || [];
+      response = response.data.data;
+      const result = response.results_list || [];
       setMerchants(result);
-      setTotalPages(response.data.data.total_number_of_pages);
-      setCurrentPage(response.data.data.current_page_number);
-      setTotalRecords(response.data.data.total_row_count);
+      setTotalPages(response.total_number_of_pages);
+      setCurrentPage(response.current_page_number);
+      setTotalRecords(response.total_row_count);
+      setPageLimit(response.rows_per_page_limit);
+      setCurrentPageRecords(response.rows_on_this_page);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
     }
@@ -303,43 +308,91 @@ const Merchants = () => {
         </Paper>
         <Paper elevation={3} sx={{ padding: "20px", maxWidth: "1300px", margin: "auto" }}>
           <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ padding: "4px" }}>Merchant Name</TableCell>
-                  <TableCell sx={{ padding: "4px" }}>Status</TableCell>
-                  <TableCell sx={{ padding: "4px" }}>Address</TableCell>
-                  <TableCell sx={{ padding: "4px" }}>Contact Details</TableCell>
-                  <TableCell sx={{ padding: "4px" }} align="right">
-                    Cashback Fee Rate
-                  </TableCell>
-                  <TableCell sx={{ padding: "4px" }} align="right">
-                    Available Points
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {merchants.map((merchant) => (
-                  <TableRow
-                    key={merchant.merchant_id}
-                    sx={{
-                      cursor: "pointer",
-                      "&:hover": {
-                        backgroundColor: "rgba(0, 0, 0, 0.02)",
-                      },
-                    }}
-                    // onClick={handleMerchantClick(merchant)}
-                  >
-                    <TableCell sx={{ padding: "8px", fontSize: "0.8rem" }}>
-                      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}>
+            {merchants.length === 0 ? (
+              <Grid display="flex" justifyContent="center">
+                <Typography color="rgb(160, 160, 160)">{"No records found"}</Typography>
+              </Grid>
+            ) : (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ padding: "4px" }}>Merchant Name</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>Status</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>Address</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>Contact Details</TableCell>
+                    <TableCell sx={{ padding: "4px" }} align="right">
+                      Cashback Fee Rate
+                    </TableCell>
+                    <TableCell sx={{ padding: "4px" }} align="right">
+                      Available Points
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {merchants.map((merchant) => (
+                    <TableRow
+                      key={merchant.merchant_id}
+                      sx={{
+                        cursor: "pointer",
+                        "&:hover": {
+                          backgroundColor: "rgba(0, 0, 0, 0.02)",
+                        },
+                      }}
+                      // onClick={handleMerchantClick(merchant)}
+                    >
+                      <TableCell sx={{ padding: "8px", fontSize: "0.8rem" }}>
+                        <Box
+                          sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start" }}
+                        >
+                          {
+                            <img
+                              src={merchant.logo_path}
+                              alt="Logo"
+                              style={{ width: "35px", marginRight: ".5rem", borderRadius: "50%" }}
+                            />
+                          }
+
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "flex-start",
+                            }}
+                          >
+                            <Typography variant="body" fontSize="0.8rem">
+                              {merchant.merchant_name}
+                            </Typography>
+                            <Typography variant="body" color="textSecondary" fontSize="0.7rem">
+                              {merchant.merchant_code}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
                         {
-                          <img
-                            src={merchant.logo_path}
-                            alt="Logo"
-                            style={{ width: "35px", marginRight: ".5rem", borderRadius: "50%" }}
+                          <Chip
+                            label={
+                              <span className="flex gap-3 items-center justify-center">
+                                {merchant.merchant_status}
+                              </span>
+                            }
+                            color={
+                              merchant.merchant_status == "Active"
+                                ? "success"
+                                : merchant.merchant_status == "Registered"
+                                ? "warning"
+                                : "error"
+                            }
+                            variant="outlined"
+                            sx={{
+                              "& .MuiChip-label": {
+                                fontSize: "0.7rem",
+                              },
+                            }}
                           />
                         }
-
+                      </TableCell>
+                      <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
                         <Box
                           sx={{
                             display: "flex",
@@ -348,101 +401,69 @@ const Merchants = () => {
                           }}
                         >
                           <Typography variant="body" fontSize="0.8rem">
-                            {merchant.merchant_name}
+                            {merchant.area_name}
                           </Typography>
                           <Typography variant="body" color="textSecondary" fontSize="0.7rem">
-                            {merchant.merchant_code}
+                            {merchant.city_name}
                           </Typography>
                         </Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
-                      {
-                        <Chip
-                          label={
-                            <span className="flex gap-3 items-center justify-center">
-                              {merchant.merchant_status}
-                            </span>
-                          }
-                          color={
-                            merchant.merchant_status == "Active"
-                              ? "success"
-                              : merchant.merchant_status == "Registered"
-                              ? "warning"
-                              : "error"
-                          }
-                          variant="outlined"
+                      </TableCell>
+                      <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
+                        <Box
                           sx={{
-                            "& .MuiChip-label": {
-                              fontSize: "0.7rem",
-                            },
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
                           }}
-                        />
-                      }
-                    </TableCell>
-                    <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
-                      <Box
-                        sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}
-                      >
-                        <Typography variant="body" fontSize="0.8rem">
-                          {merchant.area_name}
+                        >
+                          <Typography variant="body" fontSize="0.8rem">
+                            {merchant.email_address}
+                          </Typography>
+                          <Typography variant="body" color="textSecondary" fontSize="0.7rem">
+                            {merchant.mobile_no}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }} align="right">
+                        {parseFloat(merchant.merchant_fee_rate)
+                          .toFixed(2)
+                          .replace(/\.?0+$/, "") + "%"}
+                      </TableCell>
+                      <TableCell sx={{ padding: "4px" }} align="right">
+                        <Typography
+                          fontSize="0.8rem"
+                          color={merchant.points_balance < 100 ? "red" : "black"}
+                        >
+                          {merchant.points_balance}
                         </Typography>
-                        <Typography variant="body" color="textSecondary" fontSize="0.7rem">
-                          {merchant.city_name}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
-                      <Box
-                        sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}
-                      >
-                        <Typography variant="body" fontSize="0.8rem">
-                          {merchant.email_address}
-                        </Typography>
-                        <Typography variant="body" color="textSecondary" fontSize="0.7rem">
-                          {merchant.mobile_no}
-                        </Typography>
-                      </Box>
-                    </TableCell>
-                    <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }} align="right">
-                      {parseFloat(merchant.merchant_fee_rate)
-                        .toFixed(2)
-                        .replace(/\.?0+$/, "") + "%"}
-                    </TableCell>
-                    <TableCell sx={{ padding: "4px" }} align="right">
-                      <Typography
-                        fontSize="0.8rem"
-                        color={merchant.points_balance < 100 ? "red" : "black"}
-                      >
-                        {merchant.points_balance}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+            <Grid container sx={{ marginTop: "1rem" }} alignItems="center">
+              <Grid item xs={2} display="flex" justifyContent="flex-start">
+                {merchants.length !== 0 ? (
+                  <Typography fontSize="0.8rem">{`${(currentPage - 1) * pageLimit + 1} to ${
+                    (currentPage - 1) * pageLimit + currentPageRecords
+                  } of ${totalRecords} Records`}</Typography>
+                ) : null}
+              </Grid>
+              <Grid item xs={8} display="flex" justifyContent="center">
+                {merchants.length === 0 ? null : (
+                  <Stack spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
+                    <Pagination
+                      count={totalPages}
+                      page={currentPage}
+                      onChange={handlePageChange}
+                      variant="outlined"
+                    />
+                  </Stack>
+                )}
+              </Grid>
+            </Grid>
           </TableContainer>
-          <Grid container sx={{ marginTop: "1rem" }} alignItems="center">
-            <Grid item xs={2} display="flex" justifyContent="flex-start">
-              {merchants.length !== 0 ? (
-                <Typography fontSize="0.8rem">{`${merchants.length} of ${totalRecords} Records`}</Typography>
-              ) : null}
-            </Grid>
-            <Grid item xs={8} display="flex" justifyContent="center">
-              {merchants.length === 0 ? (
-                <Typography color="rgb(160, 160, 160)">{"No Merchants"}</Typography>
-              ) : (
-                <Stack spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
-                  <Pagination
-                    count={totalPages}
-                    page={currentPage}
-                    onChange={handlePageChange}
-                    variant="outlined"
-                  />
-                </Stack>
-              )}
-            </Grid>
-          </Grid>
         </Paper>
 
         <Dialog
