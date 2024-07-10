@@ -48,16 +48,38 @@ const Merchants = () => {
   const [merchants, setMerchants] = useState([]);
 
   const [searchText, setSearchText] = useState("");
+  const [industries, setIndustries] = useState([]);
+  const [selectedIndustry, setSelectedIndustry] = useState("");
+  const [branchTypes, setBranchTypes] = useState([]);
+  const [selectedBranchType, setSelectedBranchType] = useState("");
   const [searchCategory, setSearchCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1); // Track current page
-  const [totalPages, setTotalPages] = useState(10); // Track total pages
-  // const [itemsPerPage, setItemsPerPage] = useState(10); // Track total pages
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(10);
+  const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
+  const [newMerchant, setNewMerchant] = useState({
+    User_Id: null,
+    Full_Name: "",
+    Is_Active: true,
+    Designation: "",
+    User_Name: "",
+    User_Type: null,
+    Password: "",
+    Permissions: [],
+  });
+  const [totalRecords, setTotalRecords] = useState();
+  const [errors, setErrors] = useState({});
+
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
   const userDataObject = JSON.parse(Cookies.get("userData") || "{}");
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
+
+  useEffect(() => {
+    fetchMerchants();
+    fetchSearchCategory();
+  }, []);
 
   const fetchMerchants = async (searchText = "", selectedCategory = 1, pageNumber = 1) => {
     try {
@@ -71,18 +93,11 @@ const Merchants = () => {
         `${baseURLv1}/adminManageMerchant/searchMerchantListByPage`,
         data
       );
-      console.log(response.data.data.results_list);
-
-      if (response.data.data.results_list) {
-        console.log("jjjj");
-        setMerchants(response.data.data.results_list);
-        setTotalPages(response.data.data.total_number_of_pages);
-        setCurrentPage(response.data.data.current_page_number);
-      } else {
-        setMerchants([]);
-      }
-
-      // setItemsPerPage(response.data.data.rows_per_page_limit);
+      const result = response.data.data.results_list || [];
+      setMerchants(result);
+      setTotalPages(response.data.data.total_number_of_pages);
+      setCurrentPage(response.data.data.current_page_number);
+      setTotalRecords(response.data.data.total_row_count);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
     }
@@ -96,11 +111,6 @@ const Merchants = () => {
       console.error("Error fetching Merchants:", error);
     }
   };
-
-  useEffect(() => {
-    fetchMerchants();
-    fetchSearchCategory();
-  }, []);
 
   const handleSearch = () => {
     if (selectedCategory == 0) {
@@ -136,7 +146,38 @@ const Merchants = () => {
 
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
-    fetchMerchants("", 1, page);
+    fetchMerchants(searchText, selectedCategory, page);
+    //fetchMerchants("", 1, page);
+  };
+
+  const handleRegisterClick = () => {
+    setOpenRegisterDialog(true);
+  };
+
+  const handleRegisterClose = () => {
+    setOpenRegisterDialog(false);
+  };
+
+  const handleAddChange = (e) => {
+    // const { name, value } = e.target;
+    // setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: value }));
+    // if (value.trim() === "") {
+    //   setErrors((prevErrors) => ({
+    //     ...prevErrors,
+    //     [name]: `${name.replace("_", " ")} is required`,
+    //   }));
+    // } else {
+    //   setErrors((prevErrors) => {
+    //     const { [name]: removedError, ...rest } = prevErrors;
+    //     return rest;
+    //   });
+    // }
+    const { name, value } = e.target;
+    setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: value }));
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: value.trim() === "" ? `${name.replace("_", " ")} is required` : "",
+    }));
   };
 
   return (
@@ -167,6 +208,7 @@ const Merchants = () => {
               color: "rgb(67, 160, 71)",
               fontSize: "0.75rem",
             }}
+            onClick={handleRegisterClick}
           >
             REGISTER +
           </Button>
@@ -315,36 +357,28 @@ const Merchants = () => {
                       </Box>
                     </TableCell>
                     <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
-                      {merchant.is_active ? (
-                        <Chip
-                          label={
-                            <span className="flex gap-3 items-center justify-center">Active</span>
-                          }
-                          color="success"
-                          variant="outlined"
-                          sx={{
-                            "& .MuiChip-label": {
-                              fontSize: "0.7rem",
-                            },
-                          }}
-                        />
-                      ) : (
+                      {
                         <Chip
                           label={
                             <span className="flex gap-3 items-center justify-center">
-                              Registered
+                              {merchant.merchant_status}
                             </span>
+                          }
+                          color={
+                            merchant.merchant_status == "Active"
+                              ? "success"
+                              : merchant.merchant_status == "Registered"
+                              ? "warning"
+                              : "error"
                           }
                           variant="outlined"
                           sx={{
-                            color: "orange",
-                            borderColor: "orange",
                             "& .MuiChip-label": {
                               fontSize: "0.7rem",
                             },
                           }}
                         />
-                      )}
+                      }
                     </TableCell>
                     <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
                       <Box
@@ -388,24 +422,32 @@ const Merchants = () => {
               </TableBody>
             </Table>
           </TableContainer>
-          <Box sx={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-            <Stack
-              spacing={2}
-              sx={{ marginTop: "1rem", justifyContent: "center", alignItems: "center" }}
-            >
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={handlePageChange} // Correct usage
-                variant="outlined"
-              />
-            </Stack>
-          </Box>
+          <Grid container sx={{ marginTop: "1rem" }} alignItems="center">
+            <Grid item xs={2} display="flex" justifyContent="flex-start">
+              {merchants.length !== 0 ? (
+                <Typography fontSize="0.8rem">{`${merchants.length} of ${totalRecords} Records`}</Typography>
+              ) : null}
+            </Grid>
+            <Grid item xs={8} display="flex" justifyContent="center">
+              {merchants.length === 0 ? (
+                <Typography color="rgb(160, 160, 160)">{"No Merchants"}</Typography>
+              ) : (
+                <Stack spacing={2} sx={{ justifyContent: "center", alignItems: "center" }}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                  />
+                </Stack>
+              )}
+            </Grid>
+          </Grid>
         </Paper>
 
-        {/* <Dialog
-          open={openAddDialog}
-          onClose={handleAddClose}
+        <Dialog
+          open={openRegisterDialog}
+          onClose={handleRegisterClose}
           aria-labelledby="form-dialog-title"
           maxWidth="md"
           fullWidth
@@ -413,29 +455,37 @@ const Merchants = () => {
           <DialogTitle id="form-dialog-title" variant="h6">
             <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
               <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
-                <PersonIcon />
+                <StoreOutlinedIcon />
               </Avatar>
               <Typography variant="h6" fontSize={"1.2rem"} gutterBottom>
-                {newUser.User_Id ? "Edit Admin User" : "New Admin User"}
+                {"New Merchant Registration"}
               </Typography>
             </Box>
           </DialogTitle>
           <DialogContent>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+              <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
+                <StoreOutlinedIcon />
+              </Avatar>
+              <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.1rem"}>
+                Merchant Details
+              </Typography>
+            </Box>
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
               <Grid item xs={4}>
                 <TextField
                   autoFocus
                   margin="dense"
-                  name="Full_Name"
-                  label="Full Name"
+                  name="Merchant_Name"
+                  label="Merchant Name"
                   type="text"
                   color="customGreen"
                   required
                   fullWidth
-                  value={newUser.Full_Name}
+                  value={newMerchant.Merchant_Name}
                   onChange={handleAddChange}
-                  error={Boolean(errors.Full_Name)}
-                  helperText={errors.Full_Name}
+                  error={Boolean(errors.Merchant_Name)}
+                  helperText={errors.Merchant_Name}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: "0.8rem" } }}
                   InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
@@ -444,57 +494,39 @@ const Merchants = () => {
               </Grid>
               <Grid item xs={4}>
                 <TextField
+                  autoFocus
                   margin="dense"
-                  name="Designation"
-                  label="Designation"
+                  name="Merchant_Name"
+                  label="Merchant Name"
                   type="text"
                   color="customGreen"
-                  fullWidth
                   required
-                  value={newUser.Designation}
+                  fullWidth
+                  value={newMerchant.Merchant_Name}
                   onChange={handleAddChange}
-                  error={Boolean(errors.Designation)}
-                  helperText={errors.Designation}
+                  error={Boolean(errors.Merchant_Name)}
+                  helperText={errors.Merchant_Name}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: "0.8rem" } }}
                   InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-                  inputProps={{ maxLength: 30 }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  margin="dense"
-                  name="User_Name"
-                  label="User Name"
-                  type="text"
-                  color="customGreen"
-                  fullWidth
-                  required
-                  value={newUser.User_Name}
-                  onChange={handleAddChange}
-                  error={Boolean(errors.User_Name)}
-                  helperText={errors.User_Name}
-                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: "0.8rem" } }}
-                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-                  inputProps={{ maxLength: 20 }}
+                  inputProps={{ maxLength: 50 }}
                 />
               </Grid>
               <Grid item xs={4} marginTop={"8px"}>
-                <FormControl fullWidth required error={errors.User_Type}>
+                <FormControl fullWidth required error={errors.Industry}>
                   <InputLabel
-                    id="usertype-dropdown"
+                    id="industry-dropdown"
                     color="customGreen"
                     style={{ fontSize: "0.8rem" }}
                   >
-                    User Type
+                    Industry
                   </InputLabel>
                   <Select
-                    labelId="usertype-dropdown"
+                    labelId="industry-dropdown"
                     id="dropdown"
-                    name="User_Type"
-                    value={selectedUserType}
-                    onChange={handleUserType}
+                    name="Industry"
+                    value={selectedIndustry}
+                    onChange={handleAddChange}
                     label="Select an Option"
                     color="customGreen"
                     sx={{
@@ -502,7 +534,7 @@ const Merchants = () => {
                       fontSize: "0.8rem",
                     }}
                   >
-                    {userTypes.map((option) => (
+                    {industries.map((option) => (
                       <MenuItem
                         key={option.user_type_id}
                         value={option.user_type_id}
@@ -512,80 +544,49 @@ const Merchants = () => {
                       </MenuItem>
                     ))}
                   </Select>
-                  {errors.User_Type && <FormHelperText>{errors.User_Type}</FormHelperText>}
+                  {errors.Industry && <FormHelperText>{errors.Industry}</FormHelperText>}
                 </FormControl>
               </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  margin="dense"
-                  name="Password"
-                  label="Password"
-                  type="password"
-                  color="customGreen"
-                  fullWidth
-                  required
-                  value={newUser.Password}
-                  onChange={handleAddChange}
-                  error={Boolean(errors.Password)}
-                  helperText={errors.Password}
-                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: "0.8rem" } }}
-                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-                  inputProps={{ maxLength: 15 }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={newUser.Is_Active}
-                      color="customGreen"
-                      onChange={() =>
-                        setNewUser((prev) => ({ ...prev, Is_Active: !prev.Is_Active }))
-                      }
-                      name="is_active"
-                    />
-                  }
-                  label="Active User"
-                  sx={{
-                    "& .MuiFormControlLabel-label": {
+              <Grid item xs={4} marginTop={"8px"}>
+                <FormControl fullWidth required error={errors.Branch_Type}>
+                  <InputLabel
+                    id="branchtype-dropdown"
+                    color="customGreen"
+                    style={{ fontSize: "0.8rem" }}
+                  >
+                    Branch Type
+                  </InputLabel>
+                  <Select
+                    labelId="branchtype-dropdown"
+                    id="dropdown"
+                    name="Branch_Type"
+                    value={selectedBranchType}
+                    onChange={handleAddChange}
+                    label="Select an Option"
+                    color="customGreen"
+                    sx={{
+                      borderRadius: 2,
                       fontSize: "0.8rem",
-                    },
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.1rem"}>
-                  Permissions
-                </Typography>
-                <Grid container spacing={2}>
-                  {permissionsList.map((permission, index) => (
-                    <Grid item xs={4} key={index} style={{ paddingTop: 0 }}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={newUser.Permissions.includes(permission)}
-                            color="customGreen"
-                            onChange={() => handleAddCheckboxChange(permission)}
-                            name={permission}
-                          />
-                        }
-                        label={permission}
-                        sx={{
-                          "& .MuiFormControlLabel-label": {
-                            fontSize: "0.8rem", // Adjust the font size as needed
-                          },
-                        }}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
+                    }}
+                  >
+                    {branchTypes.map((option) => (
+                      <MenuItem
+                        key={option.user_type_id}
+                        value={option.user_type_id}
+                        style={{ fontSize: "0.8rem" }}
+                      >
+                        {option.user_type}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.Branch_Type && <FormHelperText>{errors.Branch_Type}</FormHelperText>}
+                </FormControl>
               </Grid>
             </Grid>
           </DialogContent>
           <DialogActions>
             <Button
-              onClick={handleAddClose}
+              onClick={handleRegisterClose}
               color="customGreen"
               size="small"
               sx={{
@@ -597,7 +598,7 @@ const Merchants = () => {
               CANCEL
             </Button>
             <Button
-              onClick={handleAddConfirm}
+              onClick={handleRegisterClose}
               variant="contained"
               color="customGreen"
               size="small"
@@ -611,7 +612,7 @@ const Merchants = () => {
               SAVE
             </Button>
           </DialogActions>
-        </Dialog> */}
+        </Dialog>
       </Box>
     </Box>
   );
