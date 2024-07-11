@@ -76,18 +76,18 @@ const Merchants = () => {
   const [newMerchant, setNewMerchant] = useState({
     Merchant_Id: null,
     Merchant_Name: "",
-    Cashback_Fee_Rate: null,
+    Cashback_Fee_Rate: "",
     Industry: null,
     Branch_Type: null,
     Address: "",
-    PO_Box: null,
+    PO_Box: "",
     City: null,
     Area: null,
     Email_Address: "",
     Mobile_Number: "",
-    Telephone_Number: null,
-    Deposit_Amount: null,
-    Signup_Bonus: null,
+    Telephone_Number: "",
+    Deposit_Amount: "",
+    Signup_Bonus: "",
     Payment_Mode: null,
     Payment_Details: "",
   });
@@ -234,7 +234,24 @@ const Merchants = () => {
 
   const handleRegisterClose = () => {
     setOpenRegisterDialog(false);
-    setNewMerchant({});
+    setNewMerchant({
+      Merchant_Id: null,
+      Merchant_Name: "",
+      Cashback_Fee_Rate: "",
+      Industry: null,
+      Branch_Type: null,
+      Address: "",
+      PO_Box: "",
+      City: null,
+      Area: null,
+      Email_Address: "",
+      Mobile_Number: "",
+      Telephone_Number: "",
+      Deposit_Amount: "",
+      Signup_Bonus: "",
+      Payment_Mode: null,
+      Payment_Details: "",
+    });
     setErrors([]);
   };
 
