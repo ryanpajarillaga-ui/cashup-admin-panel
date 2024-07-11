@@ -33,7 +33,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { alpha, styled } from "@mui/material/styles";
 
-import AdminLogo from "../Images/admin.png";
+import AdminLogo from "../Images/no_logo.png";
 import ClearIcon from "@mui/icons-material/Clear";
 import Cookies from "js-cookie";
 import DubaiFlag from "../Images/dubai_flag.jpg";
@@ -183,7 +183,7 @@ const Merchants = () => {
 
   const fetchPaymentModes = async () => {
     try {
-      const response = await axios.get(`${baseURLv1}/adminLookup/getAllPaymentGateway`);
+      const response = await axios.get(`${baseURLv1}/adminLookup/getAllMerchantPaymentMode`);
       setPaymentModes(response.data.data);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
@@ -240,6 +240,18 @@ const Merchants = () => {
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
+    const numericFields = [
+      "Mobile_Number",
+      "Telephone_Number",
+      "Cashback_Fee_Rate",
+      "Deposit_Amount",
+      "Signup_Bonus",
+    ];
+
+    // Allow only numbers for the specified fields
+    if (numericFields.includes(name) && !/^\d*$/.test(value)) {
+      return;
+    }
     setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: value }));
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -698,11 +710,10 @@ const Merchants = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
-                    autoFocus
                     margin="dense"
                     name="Cashback_Fee_Rate"
                     label="Cashback Fee Rate"
-                    type="number"
+                    type="text"
                     color="customGreen"
                     required
                     fullWidth
@@ -844,7 +855,6 @@ const Merchants = () => {
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
               <Grid item xs={9}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="Address"
                   label="Address"
@@ -864,7 +874,6 @@ const Merchants = () => {
               </Grid>
               <Grid item xs={3}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="PO_Box"
                   label="PO Box"
@@ -952,7 +961,6 @@ const Merchants = () => {
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
               <Grid item xs={6}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="Email_Address"
                   label="Email Address"
@@ -972,11 +980,10 @@ const Merchants = () => {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="Mobile_Number"
                   label="Mobile Number"
-                  type="number"
+                  type="text"
                   color="customGreen"
                   required
                   fullWidth
@@ -1004,11 +1011,10 @@ const Merchants = () => {
               </Grid>
               <Grid item xs={6}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="Telephone_Number"
                   label="Telephone Number"
-                  type="number"
+                  type="text"
                   color="customGreen"
                   required
                   fullWidth
@@ -1045,7 +1051,6 @@ const Merchants = () => {
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
               <Grid item xs={3}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="Deposit_Amount"
                   label="Deposit Amount"
@@ -1065,11 +1070,10 @@ const Merchants = () => {
               </Grid>
               <Grid item xs={3}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="Signup_Bonus"
                   label="Signup Bonus"
-                  type="number"
+                  type="text"
                   color="customGreen"
                   required
                   fullWidth
@@ -1106,11 +1110,11 @@ const Merchants = () => {
                   >
                     {paymentModes.map((option) => (
                       <MenuItem
-                        key={option.payment_gateway_id}
-                        value={option.payment_gateway_id}
+                        key={option.payment_mode_id}
+                        value={option.payment_mode_id}
                         style={{ fontSize: "0.8rem" }}
                       >
-                        {option.payment_gateway_desc}
+                        {option.payment_mode}
                       </MenuItem>
                     ))}
                   </Select>
@@ -1119,7 +1123,6 @@ const Merchants = () => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  autoFocus
                   margin="dense"
                   name="Payment_Details"
                   label="Payment Details"
