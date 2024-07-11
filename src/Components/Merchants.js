@@ -33,25 +33,37 @@ import {
 import React, { useEffect, useState } from "react";
 import { alpha, styled } from "@mui/material/styles";
 
+import AdminLogo from "../Images/admin.png";
 import ClearIcon from "@mui/icons-material/Clear";
 import Cookies from "js-cookie";
+import DubaiFlag from "../Images/dubai_flag.jpg";
+import EditIcon from "@mui/icons-material/Edit";
 import Header from "./Header";
+import InfoIcon from "@mui/icons-material/Info";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
 import Pagination from "@mui/material/Pagination";
+import PersonIcon from "@mui/icons-material/Person";
+import PhoneIcon from "@mui/icons-material/Phone";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import Stack from "@mui/material/Stack";
 import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 import VerticalNav from "./VerticalNav";
 import axios from "axios";
+import { useSnackbar } from "notistack";
 
 const Merchants = () => {
+  const { enqueueSnackbar } = useSnackbar();
   const [merchants, setMerchants] = useState([]);
 
   const [searchText, setSearchText] = useState("");
   const [industries, setIndustries] = useState([]);
-  const [selectedIndustry, setSelectedIndustry] = useState("");
+  const [cities, setCities] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [paymentModes, setPaymentModes] = useState([]);
+  const [selectedIndustry, setSelectedIndustry] = useState();
   const [branchTypes, setBranchTypes] = useState([]);
-  const [selectedBranchType, setSelectedBranchType] = useState("");
+  const [selectedBranchType, setSelectedBranchType] = useState();
   const [searchCategory, setSearchCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,28 +71,44 @@ const Merchants = () => {
   const [totalPages, setTotalPages] = useState();
   const [pageLimit, setPageLimit] = useState();
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
+  const [error, setError] = useState("");
+  const [logoFile, setLogoFile] = useState(null);
   const [newMerchant, setNewMerchant] = useState({
-    User_Id: null,
-    Full_Name: "",
-    Is_Active: true,
-    Designation: "",
-    User_Name: "",
-    User_Type: null,
-    Password: "",
-    Permissions: [],
+    Merchant_Id: null,
+    Merchant_Name: "",
+    Cashback_Fee_Rate: null,
+    Industry: null,
+    Branch_Type: null,
+    Address: "",
+    PO_Box: null,
+    City: null,
+    Area: null,
+    Email_Address: "",
+    Mobile_Number: "",
+    Telephone_Number: null,
+    Deposit_Amount: null,
+    Signup_Bonus: null,
+    Payment_Mode: null,
+    Payment_Details: "",
   });
   const [totalRecords, setTotalRecords] = useState();
   const [errors, setErrors] = useState({});
+  const [logo, setLogo] = useState(AdminLogo);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
   const userDataObject = JSON.parse(Cookies.get("userData") || "{}");
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
-
+  var file = null;
   useEffect(() => {
     fetchMerchants();
     fetchSearchCategory();
+    fetchBranchTypes();
+    fetchIndustries();
+    fetchCities();
+    fetchAreas();
+    fetchPaymentModes();
   }, []);
 
   const fetchMerchants = async (searchText = "", selectedCategory = 1, pageNumber = 1) => {
@@ -112,6 +140,51 @@ const Merchants = () => {
     try {
       const response = await axios.get(`${baseURLv1}/adminLookup/getAllMerchantSearchCategory`);
       setSearchCategory(response.data.data);
+    } catch (error) {
+      console.error("Error fetching Merchants:", error);
+    }
+  };
+
+  const fetchBranchTypes = async () => {
+    try {
+      const response = await axios.get(`${baseURLv1}/adminLookup/getAllBranchType`);
+      setBranchTypes(response.data.data);
+    } catch (error) {
+      console.error("Error fetching Merchants:", error);
+    }
+  };
+
+  const fetchIndustries = async () => {
+    try {
+      const response = await axios.get(`${baseURLv1}/adminLookup/getAllIndustry`);
+      setIndustries(response.data.data);
+    } catch (error) {
+      console.error("Error fetching Merchants:", error);
+    }
+  };
+
+  const fetchCities = async () => {
+    try {
+      const response = await axios.get(`${baseURLv1}/adminLookup/getCityListByCountry/1`);
+      setCities(response.data.data);
+    } catch (error) {
+      console.error("Error fetching Merchants:", error);
+    }
+  };
+
+  const fetchAreas = async () => {
+    try {
+      const response = await axios.get(`${baseURLv1}/adminLookup/getAreaListByCity/1`);
+      setAreas(response.data.data);
+    } catch (error) {
+      console.error("Error fetching Merchants:", error);
+    }
+  };
+
+  const fetchPaymentModes = async () => {
+    try {
+      const response = await axios.get(`${baseURLv1}/adminLookup/getAllPaymentGateway`);
+      setPaymentModes(response.data.data);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
     }
@@ -161,28 +234,124 @@ const Merchants = () => {
 
   const handleRegisterClose = () => {
     setOpenRegisterDialog(false);
+    setNewMerchant({});
+    setErrors([]);
   };
 
-  const handleAddChange = (e) => {
-    // const { name, value } = e.target;
-    // setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: value }));
-    // if (value.trim() === "") {
-    //   setErrors((prevErrors) => ({
-    //     ...prevErrors,
-    //     [name]: `${name.replace("_", " ")} is required`,
-    //   }));
-    // } else {
-    //   setErrors((prevErrors) => {
-    //     const { [name]: removedError, ...rest } = prevErrors;
-    //     return rest;
-    //   });
-    // }
+  const handleFieldChange = (e) => {
     const { name, value } = e.target;
     setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: value }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]: value.trim() === "" ? `${name.replace("_", " ")} is required` : "",
+      [name]:
+        String(value).trim() === ""
+          ? `${name.replace("_", " ").replace("_", " ")} is required`
+          : "",
     }));
+    if (name == "Mobile_Number" && !value.startsWith("5")) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "First letter should be 5 ",
+      }));
+    }
+  };
+
+  const handleLogoChange = (event) => {
+    file = event.target.files[0];
+    setLogoFile(file);
+    console.log("file", file);
+
+    if (file) {
+      if (file.size > 500 * 1024) {
+        // 500KB size limit
+        setError("File size should be less than 500KB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogo(reader.result);
+        setError(""); // Clear any previous errors
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (newMerchant.Merchant_Name.trim() === "")
+      newErrors.Merchant_Name = "Merchant Name is required";
+    if (newMerchant.Cashback_Fee_Rate < 1)
+      newErrors.Cashback_Fee_Rate = "Cashback Fee Rate is required";
+    if (newMerchant.Industry < 1) newErrors.Industry = "Industry is required";
+    if (newMerchant.Branch_Type < 1) newErrors.Branch_Type = "Branch Type is required";
+    if (newMerchant.Address.trim() === "") newErrors.Address = "Address is required";
+    if (newMerchant.City < 1) newErrors.City = "City is required";
+    if (newMerchant.Area < 1) newErrors.Area = "Area is required";
+    if (newMerchant.Email_Address.trim() === "")
+      newErrors.Email_Address = "Email Address is required";
+    if (newMerchant.Mobile_Number < 1) newErrors.Mobile_Number = "Mobile Number is required";
+    if (newMerchant.Telephone_Number < 1)
+      newErrors.Telephone_Number = "Telephone Number is required";
+    if (newMerchant.Deposit_Amount < 1) newErrors.Deposit_Amount = "Deposit Amount is required";
+    if (newMerchant.Signup_Bonus < 1) newErrors.Signup_Bonus = "Signup Bonus is required";
+    if (newMerchant.Payment_Mode < 1) newErrors.Payment_Mode = "Payment_Mode is required";
+    if (!newMerchant.Mobile_Number.startsWith("5"))
+      newErrors.Mobile_Number = "Mobile Number should start with 5";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (event) => {
+    console.log("logofile:", logoFile);
+    if (!validateForm()) return;
+    event.preventDefault();
+    const data = new FormData();
+    data.append("in_merchant_name", newMerchant.Merchant_Name);
+    data.append("in_industry_id", newMerchant.Industry);
+    data.append("in_address", newMerchant.Address);
+    data.append("in_country_id", 1);
+    data.append("in_city_id", newMerchant.City);
+    data.append("in_area_id", newMerchant.Area);
+    data.append("in_pobox", newMerchant.PO_Box);
+    data.append("in_coordinate", "");
+    data.append("in_branch_type_id", newMerchant.Branch_Type);
+
+    data.append("in_tel_country_code_id", 1);
+    data.append("in_tel_no", newMerchant.Telephone_Number);
+    data.append("in_mobile_country_code_id", 1);
+    data.append("in_mobile_no", newMerchant.Mobile_Number);
+    data.append("in_email_address", newMerchant.Email_Address);
+
+    data.append("in_merchant_fee", newMerchant.Cashback_Fee_Rate);
+    data.append("in_user_id", currentUserId);
+    data.append("in_logo_path", logoFile);
+    data.append("in_deposit_amount", newMerchant.Deposit_Amount);
+    data.append("in_signup_bonus", newMerchant.Signup_Bonus);
+    data.append("in_payment_mode_id", newMerchant.Payment_Mode);
+    data.append("in_payment_details", newMerchant.Payment_Details);
+    // if (formData.logo) {
+    //   data.append("logo", formData.logo);
+    // }
+
+    try {
+      const response = await axios.post(
+        `${baseURLv1}/adminManageMerchant/registerNewMerchant`,
+        data,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            in_platform_type_id: 4,
+          },
+        }
+      );
+      setNewMerchant({});
+      // setLogo(null);
+      handleRegisterClose();
+      enqueueSnackbar(response.data.message, { variant: "success" });
+    } catch (err) {
+      const errorMessage = err.response ? err.response.data : "Error occurred";
+      enqueueSnackbar(errorMessage.message || errorMessage, { variant: "error" });
+    }
   };
 
   return (
@@ -474,7 +643,7 @@ const Merchants = () => {
           fullWidth
         >
           <DialogTitle id="form-dialog-title" variant="h6">
-            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "row", mb: 1 }}>
               <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
                 <StoreOutlinedIcon />
               </Avatar>
@@ -484,56 +653,117 @@ const Merchants = () => {
             </Box>
           </DialogTitle>
           <DialogContent>
-            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
-              <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
-                <StoreOutlinedIcon />
-              </Avatar>
-              <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.1rem"}>
-                Merchant Details
-              </Typography>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start", mb: 1 }}>
+              <Grid
+                container
+                spacing={2}
+                style={{
+                  paddingTop: 0,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "end",
+                  mb: 1,
+                }}
+              >
+                <Grid item xs={6}>
+                  <Box sx={{ display: "flex", flexDirection: "row", alignItems: "start" }}>
+                    <InfoIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+                    <Typography
+                      variant="h6"
+                      gutterBottom
+                      marginBottom={"16px"}
+                      fontSize={"1.05rem"}
+                    >
+                      Merchant Details
+                    </Typography>
+                  </Box>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    name="Merchant_Name"
+                    label="Merchant Name"
+                    type="text"
+                    color="customGreen"
+                    required
+                    fullWidth
+                    value={newMerchant.Merchant_Name}
+                    onChange={handleFieldChange}
+                    error={Boolean(errors.Merchant_Name)}
+                    helperText={errors.Merchant_Name}
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                    InputProps={{ sx: { fontSize: "0.8rem" } }}
+                    InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                    inputProps={{ maxLength: 100 }}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <TextField
+                    autoFocus
+                    margin="dense"
+                    name="Cashback_Fee_Rate"
+                    label="Cashback Fee Rate"
+                    type="number"
+                    color="customGreen"
+                    required
+                    fullWidth
+                    value={newMerchant.Cashback_Fee_Rate}
+                    onChange={handleFieldChange}
+                    error={Boolean(errors.Cashback_Fee_Rate)}
+                    helperText={errors.Cashback_Fee_Rate}
+                    sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                    InputProps={{ sx: { fontSize: "0.8rem" } }}
+                    InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                    inputProps={{ maxLength: 50 }}
+                  />
+                </Grid>
+                <Grid
+                  item
+                  xs={3}
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "end",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <Box display="flex" flexDirection="column" alignItems="center">
+                    <Box position="relative" display="inline-block">
+                      <Box
+                        component="img"
+                        src={logo}
+                        alt="Logo"
+                        width="130px"
+                        height="130px"
+                        sx={{ borderRadius: "50%" }}
+                      />
+                      <IconButton
+                        aria-label="change logo"
+                        component="label"
+                        sx={{
+                          position: "absolute",
+                          bottom: 0,
+                          right: 0,
+                          backgroundColor: "white",
+                          borderRadius: "50%",
+                          padding: "5px",
+                        }}
+                      >
+                        <EditIcon />
+                        <input type="file" hidden accept="image/*" onChange={handleLogoChange} />
+                      </IconButton>
+                    </Box>
+                    {error && (
+                      <Typography color="error" variant="body2" sx={{ marginTop: 1 }}>
+                        {error}
+                      </Typography>
+                    )}
+                  </Box>
+                </Grid>
+              </Grid>
             </Box>
+
             <Grid container spacing={2} style={{ paddingTop: 0 }}>
-              <Grid item xs={4}>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  name="Merchant_Name"
-                  label="Merchant Name"
-                  type="text"
-                  color="customGreen"
-                  required
-                  fullWidth
-                  value={newMerchant.Merchant_Name}
-                  onChange={handleAddChange}
-                  error={Boolean(errors.Merchant_Name)}
-                  helperText={errors.Merchant_Name}
-                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: "0.8rem" } }}
-                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-                  inputProps={{ maxLength: 50 }}
-                />
-              </Grid>
-              <Grid item xs={4}>
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  name="Merchant_Name"
-                  label="Merchant Name"
-                  type="text"
-                  color="customGreen"
-                  required
-                  fullWidth
-                  value={newMerchant.Merchant_Name}
-                  onChange={handleAddChange}
-                  error={Boolean(errors.Merchant_Name)}
-                  helperText={errors.Merchant_Name}
-                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                  InputProps={{ sx: { fontSize: "0.8rem" } }}
-                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-                  inputProps={{ maxLength: 50 }}
-                />
-              </Grid>
-              <Grid item xs={4} marginTop={"8px"}>
+              <Grid item xs={6} marginTop={"8px"}>
                 <FormControl fullWidth required error={errors.Industry}>
                   <InputLabel
                     id="industry-dropdown"
@@ -546,8 +776,8 @@ const Merchants = () => {
                     labelId="industry-dropdown"
                     id="dropdown"
                     name="Industry"
-                    value={selectedIndustry}
-                    onChange={handleAddChange}
+                    value={newMerchant.Industry}
+                    onChange={handleFieldChange}
                     label="Select an Option"
                     color="customGreen"
                     sx={{
@@ -557,18 +787,18 @@ const Merchants = () => {
                   >
                     {industries.map((option) => (
                       <MenuItem
-                        key={option.user_type_id}
-                        value={option.user_type_id}
+                        key={option.industry_id}
+                        value={option.industry_id}
                         style={{ fontSize: "0.8rem" }}
                       >
-                        {option.user_type}
+                        {option.industry_name}
                       </MenuItem>
                     ))}
                   </Select>
                   {errors.Industry && <FormHelperText>{errors.Industry}</FormHelperText>}
                 </FormControl>
               </Grid>
-              <Grid item xs={4} marginTop={"8px"}>
+              <Grid item xs={6} marginTop={"8px"}>
                 <FormControl fullWidth required error={errors.Branch_Type}>
                   <InputLabel
                     id="branchtype-dropdown"
@@ -581,8 +811,8 @@ const Merchants = () => {
                     labelId="branchtype-dropdown"
                     id="dropdown"
                     name="Branch_Type"
-                    value={selectedBranchType}
-                    onChange={handleAddChange}
+                    value={newMerchant.Branch_Type}
+                    onChange={handleFieldChange}
                     label="Select an Option"
                     color="customGreen"
                     sx={{
@@ -592,16 +822,317 @@ const Merchants = () => {
                   >
                     {branchTypes.map((option) => (
                       <MenuItem
-                        key={option.user_type_id}
-                        value={option.user_type_id}
+                        key={option.branch_type_id}
+                        value={option.branch_type_id}
                         style={{ fontSize: "0.8rem" }}
                       >
-                        {option.user_type}
+                        {option.branch_type}
                       </MenuItem>
                     ))}
                   </Select>
                   {errors.Branch_Type && <FormHelperText>{errors.Branch_Type}</FormHelperText>}
                 </FormControl>
+              </Grid>
+            </Grid>
+
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "start", mt: 5 }}>
+              <LocationOnIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+              <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.05rem"}>
+                Address/Location
+              </Typography>
+            </Box>
+            <Grid container spacing={2} style={{ paddingTop: 0 }}>
+              <Grid item xs={9}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Address"
+                  label="Address"
+                  type="text"
+                  color="customGreen"
+                  required
+                  fullWidth
+                  value={newMerchant.Address}
+                  onChange={handleFieldChange}
+                  error={Boolean(errors.Address)}
+                  helperText={errors.Address}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 100 }}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="PO_Box"
+                  label="PO Box"
+                  type="text"
+                  color="customGreen"
+                  fullWidth
+                  value={newMerchant.PO_Box}
+                  onChange={handleFieldChange}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 10 }}
+                />
+              </Grid>
+              <Grid item xs={6} marginTop={"8px"}>
+                <FormControl fullWidth required error={errors.City}>
+                  <InputLabel id="city-dropdown" color="customGreen" style={{ fontSize: "0.8rem" }}>
+                    City
+                  </InputLabel>
+                  <Select
+                    labelId="city-dropdown"
+                    id="dropdown"
+                    name="City"
+                    value={newMerchant.City}
+                    onChange={handleFieldChange}
+                    label="Select an Option"
+                    color="customGreen"
+                    sx={{
+                      borderRadius: 2,
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {cities.map((option) => (
+                      <MenuItem
+                        key={option.city_id}
+                        value={option.city_id}
+                        style={{ fontSize: "0.8rem" }}
+                      >
+                        {option.city_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.City && <FormHelperText>{errors.City}</FormHelperText>}
+                </FormControl>
+              </Grid>
+              <Grid item xs={6} marginTop={"8px"}>
+                <FormControl fullWidth required error={errors.Area}>
+                  <InputLabel id="area-dropdown" color="customGreen" style={{ fontSize: "0.8rem" }}>
+                    Area
+                  </InputLabel>
+                  <Select
+                    labelId="area-dropdown"
+                    id="dropdown"
+                    name="Area"
+                    value={newMerchant.Area}
+                    onChange={handleFieldChange}
+                    label="Select an Option"
+                    color="customGreen"
+                    sx={{
+                      borderRadius: 2,
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {areas.map((option) => (
+                      <MenuItem
+                        key={option.area_id}
+                        value={option.area_id}
+                        style={{ fontSize: "0.8rem" }}
+                      >
+                        {option.area_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.Area && <FormHelperText>{errors.Area}</FormHelperText>}
+                </FormControl>
+              </Grid>
+            </Grid>
+
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "start", mt: 5 }}>
+              <PhoneIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+              <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.05rem"}>
+                Contact Details
+              </Typography>
+            </Box>
+            <Grid container spacing={2} style={{ paddingTop: 0 }}>
+              <Grid item xs={6}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Email_Address"
+                  label="Email Address"
+                  type="email"
+                  color="customGreen"
+                  required
+                  fullWidth
+                  value={newMerchant.Email_Address}
+                  onChange={handleFieldChange}
+                  error={Boolean(errors.Email_Address)}
+                  helperText={errors.Email_Address}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 50 }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Mobile_Number"
+                  label="Mobile Number"
+                  type="number"
+                  color="customGreen"
+                  required
+                  fullWidth
+                  value={newMerchant.Mobile_Number}
+                  onChange={handleFieldChange}
+                  error={Boolean(errors.Mobile_Number)}
+                  helperText={errors.Mobile_Number}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <img
+                          src={DubaiFlag}
+                          alt="Dubai Flag"
+                          style={{ width: "20px", marginRight: "8px" }}
+                        />
+                        <Typography variant="body2">+971</Typography>
+                      </InputAdornment>
+                    ),
+                    sx: { fontSize: "0.8rem" },
+                  }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 9 }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Telephone_Number"
+                  label="Telephone Number"
+                  type="number"
+                  color="customGreen"
+                  required
+                  fullWidth
+                  value={newMerchant.Telephone_Number}
+                  onChange={handleFieldChange}
+                  error={Boolean(errors.Telephone_Number)}
+                  helperText={errors.Telephone_Number}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <img
+                          src={DubaiFlag}
+                          alt="Dubai Flag"
+                          style={{ width: "20px", marginRight: "8px" }}
+                        />
+                        <Typography variant="body2">+971</Typography>
+                      </InputAdornment>
+                    ),
+                    sx: { fontSize: "0.8rem" },
+                  }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 8 }}
+                />
+              </Grid>
+            </Grid>
+
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "start", mt: 5 }}>
+              <PersonIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+              <Typography variant="h6" gutterBottom marginBottom={"16px"} fontSize={"1.05rem"}>
+                Account Activation
+              </Typography>
+            </Box>
+            <Grid container spacing={2} style={{ paddingTop: 0 }}>
+              <Grid item xs={3}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Deposit_Amount"
+                  label="Deposit Amount"
+                  type="text"
+                  color="customGreen"
+                  required
+                  fullWidth
+                  value={newMerchant.Deposit_Amount}
+                  onChange={handleFieldChange}
+                  error={Boolean(errors.Deposit_Amount)}
+                  helperText={errors.Deposit_Amount}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 50 }}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Signup_Bonus"
+                  label="Signup Bonus"
+                  type="number"
+                  color="customGreen"
+                  required
+                  fullWidth
+                  value={newMerchant.Signup_Bonus}
+                  onChange={handleFieldChange}
+                  error={Boolean(errors.Signup_Bonus)}
+                  helperText={errors.Signup_Bonus}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                />
+              </Grid>
+              <Grid item xs={6} marginTop={"8px"}>
+                <FormControl fullWidth required error={errors.Payment_Mode}>
+                  <InputLabel
+                    id="paymentmode-dropdown"
+                    color="customGreen"
+                    style={{ fontSize: "0.8rem" }}
+                  >
+                    Payment Mode
+                  </InputLabel>
+                  <Select
+                    labelId="paymentmode-dropdown"
+                    id="dropdown"
+                    name="Payment_Mode"
+                    value={newMerchant.Payment_Mode}
+                    onChange={handleFieldChange}
+                    label="Select an Option"
+                    color="customGreen"
+                    sx={{
+                      borderRadius: 2,
+                      fontSize: "0.8rem",
+                    }}
+                  >
+                    {paymentModes.map((option) => (
+                      <MenuItem
+                        key={option.payment_gateway_id}
+                        value={option.payment_gateway_id}
+                        style={{ fontSize: "0.8rem" }}
+                      >
+                        {option.payment_gateway_desc}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                  {errors.Industry && <FormHelperText>{errors.Industry}</FormHelperText>}
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  autoFocus
+                  margin="dense"
+                  name="Payment_Details"
+                  label="Payment Details"
+                  type="text"
+                  color="customGreen"
+                  fullWidth
+                  value={newMerchant.Payment_Details}
+                  onChange={handleFieldChange}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 100 }}
+                />
               </Grid>
             </Grid>
           </DialogContent>
@@ -619,7 +1150,7 @@ const Merchants = () => {
               CANCEL
             </Button>
             <Button
-              onClick={handleRegisterClose}
+              onClick={handleSubmit}
               variant="contained"
               color="customGreen"
               size="small"
