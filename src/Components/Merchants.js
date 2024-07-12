@@ -2,20 +2,16 @@ import {
   Avatar,
   Box,
   Button,
-  Checkbox,
   Chip,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   FormControl,
-  FormControlLabel,
   FormHelperText,
   Grid,
   IconButton,
   InputAdornment,
-  InputBase,
   InputLabel,
   MenuItem,
   Paper,
@@ -27,11 +23,9 @@ import {
   TableHead,
   TableRow,
   TextField,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { alpha, styled } from "@mui/material/styles";
 
 import AdminLogo from "../Images/no_logo.png";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -61,9 +55,7 @@ const Merchants = () => {
   const [cities, setCities] = useState([]);
   const [areas, setAreas] = useState([]);
   const [paymentModes, setPaymentModes] = useState([]);
-  const [selectedIndustry, setSelectedIndustry] = useState();
   const [branchTypes, setBranchTypes] = useState([]);
-  const [selectedBranchType, setSelectedBranchType] = useState();
   const [searchCategory, setSearchCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,6 +65,7 @@ const Merchants = () => {
   const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
   const [error, setError] = useState("");
   const [logoFile, setLogoFile] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(1);
   const [newMerchant, setNewMerchant] = useState({
     Merchant_Id: null,
     Merchant_Name: "",
@@ -101,15 +94,19 @@ const Merchants = () => {
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
   var file = null;
+
   useEffect(() => {
     fetchMerchants();
     fetchSearchCategory();
     fetchBranchTypes();
     fetchIndustries();
     fetchCities();
-    fetchAreas();
     fetchPaymentModes();
   }, []);
+
+  useEffect(() => {
+    fetchAreas();
+  }, [selectedCity]);
 
   const fetchMerchants = async (searchText = "", selectedCategory = 1, pageNumber = 1) => {
     try {
@@ -174,7 +171,9 @@ const Merchants = () => {
 
   const fetchAreas = async () => {
     try {
-      const response = await axios.get(`${baseURLv1}/adminLookup/getAreaListByCity/1`);
+      const response = await axios.get(
+        `${baseURLv1}/adminLookup/getAreaListByCity/${selectedCity}`
+      );
       setAreas(response.data.data);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
@@ -265,7 +264,6 @@ const Merchants = () => {
       "Signup_Bonus",
     ];
 
-    // Allow only numbers for the specified fields
     if (numericFields.includes(name) && !/^\d*$/.test(value)) {
       return;
     }
@@ -283,6 +281,9 @@ const Merchants = () => {
         [name]: "First letter should be 5 ",
       }));
     }
+    if (name == "City") {
+      setSelectedCity(value);
+    }
   };
 
   const handleLogoChange = (event) => {
@@ -299,7 +300,7 @@ const Merchants = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setLogo(reader.result);
-        setError(""); // Clear any previous errors
+        setError("");
       };
       reader.readAsDataURL(file);
     }
@@ -358,9 +359,6 @@ const Merchants = () => {
     data.append("in_signup_bonus", newMerchant.Signup_Bonus);
     data.append("in_payment_mode_id", newMerchant.Payment_Mode);
     data.append("in_payment_details", newMerchant.Payment_Details);
-    // if (formData.logo) {
-    //   data.append("logo", formData.logo);
-    // }
 
     try {
       const response = await axios.post(
@@ -374,7 +372,6 @@ const Merchants = () => {
         }
       );
       setNewMerchant({});
-      // setLogo(null);
       handleRegisterClose();
       enqueueSnackbar(response.data.message, { variant: "success" });
     } catch (err) {
@@ -429,7 +426,6 @@ const Merchants = () => {
                 placeholder="Type search text here"
                 sx={{
                   "& input": {
-                    // paddingY: "14.5px", // Adjust padding as needed
                     fontSize: "0.8rem",
                   },
                 }}
@@ -450,13 +446,6 @@ const Merchants = () => {
             </Grid>
             <Grid item xs={4}>
               <FormControl fullWidth required error={Boolean(selectedCategory == null)}>
-                {/* <InputLabel
-                  id="category-dropdown"
-                  color="customGreen"
-                  style={{ fontSize: "0.8rem" }}
-                >
-                  Search Category
-                </InputLabel> */}
                 <Select
                   labelId="category-dropdown"
                   id="dropdown"
@@ -536,7 +525,6 @@ const Merchants = () => {
                           backgroundColor: "rgba(0, 0, 0, 0.02)",
                         },
                       }}
-                      // onClick={handleMerchantClick(merchant)}
                     >
                       <TableCell sx={{ padding: "8px", fontSize: "0.8rem" }}>
                         <Box
