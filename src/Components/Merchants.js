@@ -69,7 +69,7 @@ const Merchants = () => {
   const [newMerchant, setNewMerchant] = useState({
     Merchant_Id: null,
     Merchant_Name: "",
-    Cashback_Fee_Rate: "",
+    Fee_Rate: "",
     Industry: null,
     Branch_Type: null,
     Address: "",
@@ -94,6 +94,8 @@ const Merchants = () => {
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
   var file = null;
+  // var reformatedDepositAmount = 0;
+  // var reformatedSignupBonus = 0;
 
   useEffect(() => {
     fetchMerchants();
@@ -236,7 +238,7 @@ const Merchants = () => {
     setNewMerchant({
       Merchant_Id: null,
       Merchant_Name: "",
-      Cashback_Fee_Rate: "",
+      Fee_Rate: "",
       Industry: null,
       Branch_Type: null,
       Address: "",
@@ -254,42 +256,85 @@ const Merchants = () => {
     setErrors([]);
   };
 
+  function formatCurrency(amount) {
+    return amount.toLocaleString("en-US", { style: "currency", currency: "USD" }).replace("$", "");
+  }
+
   const handleFieldChange = (e) => {
-    const { name, value } = e.target;
+    let { name, value } = e.target;
     const numericFields = [
       "Mobile_Number",
       "Telephone_Number",
-      "Cashback_Fee_Rate",
+      "Fee_Rate",
       "Deposit_Amount",
       "Signup_Bonus",
     ];
 
-    if (numericFields.includes(name) && !/^\d*$/.test(value)) {
+    if (numericFields.includes(name) && !/^\d*\.?\d*$/.test(value)) {
       return;
     }
+
     setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: value }));
     setErrors((prevErrors) => ({
       ...prevErrors,
-      [name]:
-        String(value).trim() === ""
-          ? `${name.replace("_", " ").replace("_", " ")} is required`
-          : "",
+      [name]: String(value).trim() === "" ? `${name.replace("_", " ")} is required` : "",
     }));
-    if (name == "Mobile_Number" && !value.startsWith("5")) {
+    if (name == "Email_Address" && String(value).trim() === "") {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        [name]: "First letter should be 5 ",
+        [name]: "Valid email address is required",
       }));
+    }
+    if (name === "Email_Address") {
+      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailPattern.test(value)) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Valid email address is required",
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "",
+        }));
+      }
     }
     if (name == "City") {
       setSelectedCity(value);
     }
   };
 
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "Deposit_Amount" || name === "Signup_Bonus") {
+      const numberValue = parseFloat(value.replace(/,/g, ""));
+      if (!isNaN(numberValue)) {
+        const formattedValue = formatCurrency(numberValue);
+        setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: formattedValue }));
+        // name === "Deposit_Amount"
+        //   ? (reformatedDepositAmount = numberValue)
+        //   : (reformatedSignupBonus = numberValue);
+      }
+    }
+
+    if (name === "Fee_Rate") {
+      const numberValue = parseFloat(value);
+      if (!isNaN(numberValue) && numberValue <= 100) {
+        const formattedValue = formatCurrency(numberValue);
+        setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: formattedValue }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: "Fee Rate should be less than or equal to 100",
+        }));
+      }
+    }
+  };
+
   const handleLogoChange = (event) => {
     file = event.target.files[0];
     setLogoFile(file);
-    console.log("file", file);
 
     if (file) {
       if (file.size > 500 * 1024) {
@@ -310,15 +355,14 @@ const Merchants = () => {
     const newErrors = {};
     if (newMerchant.Merchant_Name.trim() === "")
       newErrors.Merchant_Name = "Merchant Name is required";
-    if (newMerchant.Cashback_Fee_Rate < 1)
-      newErrors.Cashback_Fee_Rate = "Cashback Fee Rate is required";
+    if (newMerchant.Fee_Rate < 1) newErrors.Fee_Rate = "Fee Rate is required";
     if (newMerchant.Industry < 1) newErrors.Industry = "Industry is required";
     if (newMerchant.Branch_Type < 1) newErrors.Branch_Type = "Branch Type is required";
     if (newMerchant.Address.trim() === "") newErrors.Address = "Address is required";
     if (newMerchant.City < 1) newErrors.City = "City is required";
     if (newMerchant.Area < 1) newErrors.Area = "Area is required";
     if (newMerchant.Email_Address.trim() === "")
-      newErrors.Email_Address = "Email Address is required";
+      newErrors.Email_Address = "Valid email address is required";
     if (newMerchant.Mobile_Number < 1) newErrors.Mobile_Number = "Mobile Number is required";
     if (newMerchant.Telephone_Number < 1)
       newErrors.Telephone_Number = "Telephone Number is required";
@@ -326,13 +370,12 @@ const Merchants = () => {
     if (newMerchant.Signup_Bonus < 1) newErrors.Signup_Bonus = "Signup Bonus is required";
     if (newMerchant.Payment_Mode < 1) newErrors.Payment_Mode = "Payment_Mode is required";
     if (!newMerchant.Mobile_Number.startsWith("5"))
-      newErrors.Mobile_Number = "Mobile Number should start with 5";
+      newErrors.Mobile_Number = "Valid mobile number is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (event) => {
-    console.log("logofile:", logoFile);
     if (!validateForm()) return;
     event.preventDefault();
     const data = new FormData();
@@ -352,11 +395,11 @@ const Merchants = () => {
     data.append("in_mobile_no", newMerchant.Mobile_Number);
     data.append("in_email_address", newMerchant.Email_Address);
 
-    data.append("in_merchant_fee", newMerchant.Cashback_Fee_Rate);
+    data.append("in_merchant_fee", newMerchant.Fee_Rate);
     data.append("in_user_id", currentUserId);
     data.append("in_logo_path", logoFile);
-    data.append("in_deposit_amount", newMerchant.Deposit_Amount);
-    data.append("in_signup_bonus", newMerchant.Signup_Bonus);
+    data.append("in_deposit_amount", newMerchant.Deposit_Amount.replace(/,/g, ""));
+    data.append("in_signup_bonus", newMerchant.Signup_Bonus.replace(/,/g, ""));
     data.append("in_payment_mode_id", newMerchant.Payment_Mode);
     data.append("in_payment_details", newMerchant.Payment_Details);
 
@@ -716,20 +759,28 @@ const Merchants = () => {
                 <Grid item xs={3}>
                   <TextField
                     margin="dense"
-                    name="Cashback_Fee_Rate"
+                    name="Fee_Rate"
                     label="Cashback Fee Rate"
                     type="text"
                     color="customGreen"
                     required
                     fullWidth
-                    value={newMerchant.Cashback_Fee_Rate}
+                    value={newMerchant.Fee_Rate}
                     onChange={handleFieldChange}
-                    error={Boolean(errors.Cashback_Fee_Rate)}
-                    helperText={errors.Cashback_Fee_Rate}
+                    onBlur={handleBlur}
+                    error={Boolean(errors.Fee_Rate)}
+                    helperText={errors.Fee_Rate}
                     sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                    InputProps={{ sx: { fontSize: "0.8rem" } }}
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <Typography variant="body2">%</Typography>
+                        </InputAdornment>
+                      ),
+                      sx: { fontSize: "0.8rem" },
+                    }}
                     InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-                    inputProps={{ maxLength: 50 }}
+                    inputProps={{ maxLength: 5 }}
                   />
                 </Grid>
                 <Grid
@@ -1065,12 +1116,13 @@ const Merchants = () => {
                   fullWidth
                   value={newMerchant.Deposit_Amount}
                   onChange={handleFieldChange}
+                  onBlur={handleBlur}
                   error={Boolean(errors.Deposit_Amount)}
                   helperText={errors.Deposit_Amount}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: "0.8rem" } }}
                   InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-                  inputProps={{ maxLength: 50 }}
+                  inputProps={{ maxLength: 9 }}
                 />
               </Grid>
               <Grid item xs={3}>
@@ -1084,11 +1136,13 @@ const Merchants = () => {
                   fullWidth
                   value={newMerchant.Signup_Bonus}
                   onChange={handleFieldChange}
+                  onBlur={handleBlur}
                   error={Boolean(errors.Signup_Bonus)}
                   helperText={errors.Signup_Bonus}
                   sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                   InputProps={{ sx: { fontSize: "0.8rem" } }}
                   InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                  inputProps={{ maxLength: 9 }}
                 />
               </Grid>
               <Grid item xs={6} marginTop={"8px"}>
