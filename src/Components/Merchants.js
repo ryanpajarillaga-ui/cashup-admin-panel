@@ -415,6 +415,7 @@ const Merchants = () => {
         }
       );
       setNewMerchant({});
+      setLogo(AdminLogo);
       handleRegisterClose();
       enqueueSnackbar(response.data.message, { variant: "success" });
     } catch (err) {
