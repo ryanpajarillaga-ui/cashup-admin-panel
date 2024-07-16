@@ -35,6 +35,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import Header from "./Header";
 import InfoIcon from "@mui/icons-material/Info";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import MerchantDetails from "./MerchantDetails";
 import Pagination from "@mui/material/Pagination";
 import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -48,7 +49,11 @@ import { useSnackbar } from "notistack";
 
 const Merchants = () => {
   const { enqueueSnackbar } = useSnackbar();
+
   const [merchants, setMerchants] = useState([]);
+  const [merchantDetails, setMerchantDetails] = useState({});
+
+  const [selectedMerchant, setSelectedMerchant] = useState(189);
 
   const [searchText, setSearchText] = useState("");
   const [industries, setIndustries] = useState([]);
@@ -87,6 +92,7 @@ const Merchants = () => {
   const [totalRecords, setTotalRecords] = useState();
   const [errors, setErrors] = useState({});
   const [logo, setLogo] = useState(AdminLogo);
+  const [openMerchantDetailsDialog, setOpenMerchantDetailsDialog] = useState(false);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -109,6 +115,17 @@ const Merchants = () => {
   useEffect(() => {
     fetchAreas();
   }, [selectedCity]);
+
+  useEffect(() => {
+    fetchMerchantDetails();
+  }, [selectedMerchant]);
+
+  const fetchMerchantDetails = async () => {
+    const res = await axios.post(`${baseURLv1}/adminManageMerchant/getFullMerchantProfile`, {
+      in_merchant_id: selectedMerchant,
+    });
+    setMerchantDetails(res.data.data);
+  };
 
   const fetchMerchants = async (searchText = "", selectedCategory = 1, pageNumber = 1) => {
     try {
@@ -231,6 +248,10 @@ const Merchants = () => {
 
   const handleRegisterClick = () => {
     setOpenRegisterDialog(true);
+  };
+
+  const handleMerchantDetailsClose = () => {
+    setOpenMerchantDetailsDialog(false);
   };
 
   const handleRegisterClose = () => {
@@ -424,6 +445,11 @@ const Merchants = () => {
     }
   };
 
+  const handleSelectedMerchant = (id) => {
+    setOpenMerchantDetailsDialog(true);
+    setSelectedMerchant(id);
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <VerticalNav />
@@ -563,6 +589,7 @@ const Merchants = () => {
                   {merchants.map((merchant) => (
                     <TableRow
                       key={merchant.merchant_id}
+                      onClick={() => handleSelectedMerchant(merchant.merchant_id)}
                       sx={{
                         cursor: "pointer",
                         "&:hover": {
@@ -1227,6 +1254,26 @@ const Merchants = () => {
               SAVE
             </Button>
           </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openMerchantDetailsDialog}
+          onClose={handleMerchantDetailsClose}
+          aria-labelledby="form-dialog-title"
+          maxWidth="lg"
+          fullWidth
+        >
+          <DialogTitle
+            id="form-dialog-title"
+            variant="h6"
+            sx={{ backgroundColor: "green", height: "80px" }}
+          ></DialogTitle>
+          <DialogContent sx={{ backgroundColor: "#F5F5F5" }}>
+            <MerchantDetails
+              // openMerchantDetailsDialog={openMerchantDetailsDialog}
+              // handleMerchantDetailsClose={handleMerchantDetailsClose}
+              merchantDetails={merchantDetails}
+            />
+          </DialogContent>
         </Dialog>
       </Box>
     </Box>
