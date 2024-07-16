@@ -1272,9 +1272,28 @@ const Merchants = () => {
               // openMerchantDetailsDialog={openMerchantDetailsDialog}
               // handleMerchantDetailsClose={handleMerchantDetailsClose}
               merchantDetails={merchantDetails}
+              currentUserId={currentUserId}
             />
           </DialogContent>
         </Dialog>
+
+        {/* <Dialog open={true} onClose={false}>
+          <DialogTitle>Dialog Header</DialogTitle>
+          <Box
+            component="img"
+            sx={{
+              width: "100%",
+              maxHeight: 200,
+              objectFit: "cover",
+            }}
+            alt="Descriptive Alt Text"
+            src={logo}
+          />
+          <DialogContent>
+            <Typography>This is the dialog content.</Typography>
+          </DialogContent>
+          <DialogActions></DialogActions>
+        </Dialog> */}
       </Box>
     </Box>
   );

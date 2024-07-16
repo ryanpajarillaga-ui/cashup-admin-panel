@@ -1,61 +1,33 @@
 import {
-  AppBar,
-  Avatar,
   Box,
   Button,
   Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Divider,
   FormControl,
-  FormHelperText,
   Grid,
-  IconButton,
-  InputAdornment,
-  InputLabel,
   Link,
   MenuItem,
   Paper,
   Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import AdminLogo from "../Images/no_logo.png";
 import ArticleIcon from "@mui/icons-material/Article";
 import CampaignIcon from "@mui/icons-material/Campaign";
-import ClearIcon from "@mui/icons-material/Clear";
-import Cookies from "js-cookie";
-import DubaiFlag from "../Images/dubai_flag.jpg";
-import EditIcon from "@mui/icons-material/Edit";
-import Header from "./Header";
-import InfoIcon from "@mui/icons-material/Info";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import Pagination from "@mui/material/Pagination";
 import PersonIcon from "@mui/icons-material/Person";
-import PhoneIcon from "@mui/icons-material/Phone";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
-import RestartAltIcon from "@mui/icons-material/RestartAlt";
-import SearchIcon from "@mui/icons-material/Search";
-import Stack from "@mui/material/Stack";
-import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
-import VerticalNav from "./VerticalNav";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
-const MerchantDetails = ({ merchantDetails }) => {
+const MerchantDetails = ({ merchantDetails, currentUserId }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const [merchantStatus, setMerchantStatus] = useState([]);
-  const [selectedMerchantStatus, setselectedMerchantStatus] = useState(1);
+  const [selectedMerchantStatus, setselectedMerchantStatus] = useState(2);
+  const [remarks, setRemarks] = useState("");
+
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
   useEffect(() => {
@@ -71,8 +43,31 @@ const MerchantDetails = ({ merchantDetails }) => {
     setselectedMerchantStatus(e.target.value);
   };
 
-  const handleSaveStatus = () => {
-    console.log("saved");
+  const handleSaveStatus = async () => {
+    const data = {
+      in_merchant_id: merchantDetails.merchant_id,
+      in_merchant_status_id: selectedMerchantStatus,
+      in_user_id: currentUserId,
+      in_remarks: remarks,
+    };
+
+    const headers = {
+      in_platform_type_id: 4,
+    };
+
+    try {
+      const res = await axios.post(`${baseURLv1}/adminManageMerchant/changeMerchantStatus`, data, {
+        headers,
+      });
+      enqueueSnackbar(res.data.message, { variant: "success" });
+      setselectedMerchantStatus(2);
+      setRemarks("");
+    } catch (err) {
+      const errorMessage = err.response
+        ? err.response.data.message || "Error occurred"
+        : "Error occurred";
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    }
   };
 
   const formatDate = (dateStr) => {
@@ -88,13 +83,28 @@ const MerchantDetails = ({ merchantDetails }) => {
     return date.toLocaleString("en-US", options).replace(",", "").replace(/\//g, "-");
   };
 
+  const handleRemarksChange = (e) => {
+    setRemarks(e.target.value);
+  };
+
   return (
     <Grid container spacing={2} sx={{ marginTop: "15px" }}>
       <Grid xs={8} md={4} paddingX={"50px"}>
+        {/* <Box
+          component="img"
+          sx={{
+            width: "100%",
+            maxHeight: 250,
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
+          alt="Descriptive Alt Text"
+          src={merchantDetails.logo_path}
+        /> */}
         <img
           src={merchantDetails.logo_path}
           alt="Dubai Flag"
-          style={{ width: "100px", marginRight: "8px", borderRadius: "50%" }}
+          style={{ width: "150px", marginRight: "8px", borderRadius: "50%" }}
         />
         <Typography variant="h6" fontWeight={"bold"}>
           {merchantDetails.merchant_name}
@@ -112,7 +122,7 @@ const MerchantDetails = ({ merchantDetails }) => {
                 paddingTop: "15px",
               }}
             >
-              <Typography variant="body" fontSize={"0.8rem"} gutterBottom>
+              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
                 Available Balance
               </Typography>
               <Typography
@@ -139,7 +149,7 @@ const MerchantDetails = ({ merchantDetails }) => {
                 paddingTop: "15px",
               }}
             >
-              <Typography variant="body" fontSize={"0.8rem"} gutterBottom>
+              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
                 Cashback Fee Rate
               </Typography>
               <Typography
@@ -158,28 +168,56 @@ const MerchantDetails = ({ merchantDetails }) => {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "flex-start",
                 paddingLeft: "15px",
                 paddingTop: "15px",
               }}
             >
-              <Typography variant="body" fontSize={"0.8rem"} gutterBottom>
+              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
                 Network Downlines
               </Typography>
-              <Typography
-                variant="body"
-                fontSize={"0.9rem"}
-                fontWeight={"bold"}
-                marginLeft={1}
-                gutterBottom
-              >
-                <Grid
-                  sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}
-                >
-                  <Grid>{merchantDetails.network_total}</Grid>
-                  {/* <Grid sx={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
+              <Typography variant="body" marginLeft={1} gutterBottom>
+                <Grid container sx={{ display: "flex", justifyContent: "space-between" }}>
+                  <Grid item fontSize={"0.9rem"} fontWeight={"bold"}>
                     {merchantDetails.network_total}
-                  </Grid> */}
+                  </Grid>
+                  <Grid
+                    item
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginRight: "15px",
+                      color: "grey",
+                    }}
+                  >
+                    <Grid item fontSize={"0.5rem"}>
+                      <Grid
+                        item
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+                      >
+                        <Typography fontSize={"0.45rem"} sx={{ marginRight: "0.25rem" }}>
+                          Level 1:{" "}
+                        </Typography>
+                        {"   "}
+                        <Typography fontSize={"0.6rem"}>
+                          {merchantDetails.network_level1}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                    <Grid item>
+                      <Grid
+                        item
+                        sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
+                      >
+                        <Typography fontSize={"0.45rem"} sx={{ marginRight: "0.25rem" }}>
+                          Level 2:{" "}
+                        </Typography>
+                        {"   "}
+                        <Typography fontSize={"0.6rem"}>
+                          {merchantDetails.network_level2}
+                        </Typography>
+                      </Grid>
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Typography>
             </Grid>
@@ -194,7 +232,7 @@ const MerchantDetails = ({ merchantDetails }) => {
                 paddingTop: "15px",
               }}
             >
-              <Typography variant="body" fontSize={"0.8rem"} gutterBottom>
+              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
                 Most Recent Transaction
               </Typography>
               <Typography variant="body" fontSize={"0.9rem"} marginLeft={1} gutterBottom>
@@ -227,7 +265,7 @@ const MerchantDetails = ({ merchantDetails }) => {
                 paddingTop: "15px",
               }}
             >
-              <Typography variant="body" fontSize={"0.8rem"} gutterBottom>
+              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
                 Registration Date
               </Typography>
               <Typography
@@ -245,7 +283,7 @@ const MerchantDetails = ({ merchantDetails }) => {
         </Paper>
 
         <Paper sx={{ marginTop: "20px", padding: "15px", borderRadius: "8px" }}>
-          <Box sx={{ display: "flex", flexDirection: "row", mb: 1, alignItems: "start" }}>
+          <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "start" }}>
             <PersonIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
             <Typography fontWeight={"bold"}>Change Account Status To:</Typography>
           </Box>
@@ -282,6 +320,8 @@ const MerchantDetails = ({ merchantDetails }) => {
                 fullWidth
                 multiline
                 rows={4}
+                value={remarks}
+                onChange={handleRemarksChange}
                 defaultValue="Remarks"
                 color="customGreen"
                 InputProps={{
@@ -290,7 +330,12 @@ const MerchantDetails = ({ merchantDetails }) => {
               />
             </Grid>
             <Grid item xs={12} container justifyContent="flex-end">
-              <Button onClick={handleSaveStatus} color="customGreen" sx={{ fontSize: "0.8rem" }}>
+              <Button
+                onClick={handleSaveStatus}
+                variant="contained"
+                color="customGreen"
+                sx={{ fontSize: "0.8rem" }}
+              >
                 SAVE
               </Button>
             </Grid>
@@ -564,7 +609,9 @@ const MerchantDetails = ({ merchantDetails }) => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1">No bank details available.</Typography>
+              <Typography variant="body1" color="grey">
+                No bank details available.
+              </Typography>
             )}
           </Grid>
 
@@ -574,7 +621,7 @@ const MerchantDetails = ({ merchantDetails }) => {
               {"Contact Persons"}
             </Typography>
           </Box>
-          <Grid container spacing={2}>
+          <Grid container spacing={1}>
             {merchantDetails && merchantDetails.list_contact ? (
               merchantDetails.list_contact.map((contact, index) => (
                 <Grid
@@ -597,7 +644,9 @@ const MerchantDetails = ({ merchantDetails }) => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1">No contact details available.</Typography>
+              <Typography variant="body1" color="grey">
+                No contact details available.
+              </Typography>
             )}
           </Grid>
 
@@ -609,7 +658,7 @@ const MerchantDetails = ({ merchantDetails }) => {
           </Box>
           <Grid
             container
-            spacing={2}
+            spacing={1}
             sx={{ display: "flex", flexDirection: "row", alignItems: "start" }}
           >
             {merchantDetails && merchantDetails.list_promotion ? (
@@ -624,19 +673,26 @@ const MerchantDetails = ({ merchantDetails }) => {
                   <img
                     src={promotion.image_file}
                     alt="Dubai Flag"
-                    style={{ width: "50px", marginRight: "8px" }}
+                    style={{
+                      width: "200px",
+                      height: "125px",
+                      marginRight: "8px",
+                      marginBottom: "8px",
+                    }}
                   />
 
                   <Typography variant="body" fontSize={"0.8rem"} gutterBottom>
                     Account Name: {promotion.promo_title}
                   </Typography>
-                  <Typography variant="body" fontSize={"0.6rem"} gutterBottom>
+                  <Typography variant="body" fontSize={"0.6rem"} color="grey" gutterBottom>
                     Promo Period:{promotion.promo_period}
                   </Typography>
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1">No promotion details available.</Typography>
+              <Typography variant="body1" color="grey">
+                No promotion details available.
+              </Typography>
             )}
           </Grid>
         </Paper>
