@@ -1262,38 +1262,18 @@ const Merchants = () => {
           maxWidth="lg"
           fullWidth
         >
-          <DialogTitle
-            id="form-dialog-title"
-            variant="h6"
-            sx={{ backgroundColor: "green", height: "80px" }}
-          ></DialogTitle>
-          <DialogContent sx={{ backgroundColor: "#F5F5F5" }}>
-            <MerchantDetails
-              // openMerchantDetailsDialog={openMerchantDetailsDialog}
-              // handleMerchantDetailsClose={handleMerchantDetailsClose}
-              merchantDetails={merchantDetails}
-              currentUserId={currentUserId}
-            />
-          </DialogContent>
-        </Dialog>
+          <Box>
+            <DialogTitle
+              id="form-dialog-title"
+              variant="h6"
+              sx={{ backgroundColor: "green", height: "100px" }}
+            ></DialogTitle>
 
-        {/* <Dialog open={true} onClose={false}>
-          <DialogTitle>Dialog Header</DialogTitle>
-          <Box
-            component="img"
-            sx={{
-              width: "100%",
-              maxHeight: 200,
-              objectFit: "cover",
-            }}
-            alt="Descriptive Alt Text"
-            src={logo}
-          />
-          <DialogContent>
-            <Typography>This is the dialog content.</Typography>
-          </DialogContent>
-          <DialogActions></DialogActions>
-        </Dialog> */}
+            <DialogContent sx={{ backgroundColor: "#F5F5F5" }}>
+              <MerchantDetails merchantDetails={merchantDetails} currentUserId={currentUserId} />
+            </DialogContent>
+          </Box>
+        </Dialog>
       </Box>
     </Box>
   );

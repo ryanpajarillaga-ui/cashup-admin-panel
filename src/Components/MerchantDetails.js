@@ -17,6 +17,7 @@ import React, { useEffect, useState } from "react";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import ArticleIcon from "@mui/icons-material/Article";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import InfoIcon from "@mui/icons-material/Info";
 import PersonIcon from "@mui/icons-material/Person";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import axios from "axios";
@@ -26,7 +27,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [merchantStatus, setMerchantStatus] = useState([]);
   const [selectedMerchantStatus, setselectedMerchantStatus] = useState(2);
-  const [remarks, setRemarks] = useState("");
+  const [remarks, setRemarks] = useState(null);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -88,25 +89,23 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
   };
 
   return (
-    <Grid container spacing={2} sx={{ marginTop: "15px" }}>
+    <Grid container spacing={0} sx={{ marginTop: "15px" }}>
       <Grid xs={8} md={4} paddingX={"50px"}>
-        {/* <Box
+        <Box
           component="img"
           sx={{
-            width: "100%",
-            maxHeight: 250,
-            objectFit: "cover",
-            borderRadius: "50%",
+            position: "absolute",
+            top: "3%", // Move image down by 50% of its height
+            left: "5%",
+            width: "16%", // Ensure it covers the width
+            maxHeight: 200,
+            borderRadius: "50%", // Limit the max height to avoid overflow
           }}
           alt="Descriptive Alt Text"
           src={merchantDetails.logo_path}
-        /> */}
-        <img
-          src={merchantDetails.logo_path}
-          alt="Dubai Flag"
-          style={{ width: "150px", marginRight: "8px", borderRadius: "50%" }}
         />
-        <Typography variant="h6" fontWeight={"bold"}>
+
+        <Typography variant="h6" mt={14} fontWeight={"bold"}>
           {merchantDetails.merchant_name}
         </Typography>
         <Typography sx={{ fontSize: "0.8rem" }}>{merchantDetails.merchant_code}</Typography>
@@ -128,12 +127,12 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
               <Typography
                 variant="body"
                 fontSize={"0.9rem"}
-                fontWeight={"bold"}
+                // fontWeight={"bold"}
                 marginLeft={1}
                 gutterBottom
               >
                 {merchantDetails.points_balance}{" "}
-                <Typography component="span" fontWeight={"bold"} sx={{ fontSize: "0.65rem" }}>
+                <Typography component="span" sx={{ fontSize: "0.65rem" }}>
                   Points
                 </Typography>
               </Typography>
@@ -155,7 +154,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
               <Typography
                 variant="body"
                 fontSize={"0.9rem"}
-                fontWeight={"bold"}
+                // fontWeight={"bold"}
                 marginLeft={1}
                 gutterBottom
               >
@@ -177,29 +176,32 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
               </Typography>
               <Typography variant="body" marginLeft={1} gutterBottom>
                 <Grid container sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Grid item fontSize={"0.9rem"} fontWeight={"bold"}>
+                  <Grid item fontSize={"0.9rem"}>
                     {merchantDetails.network_total}
                   </Grid>
                   <Grid
                     item
                     sx={{
                       display: "flex",
-                      flexDirection: "column",
+                      flexDirection: "row",
                       marginRight: "15px",
-                      color: "grey",
+                      color: "black",
                     }}
                   >
-                    <Grid item fontSize={"0.5rem"}>
+                    <Grid item>
                       <Grid
                         item
                         sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
                       >
-                        <Typography fontSize={"0.45rem"} sx={{ marginRight: "0.25rem" }}>
-                          Level 1:{" "}
+                        <Typography fontSize={"0.7rem"} sx={{ marginRight: "0.25rem" }}>
+                          Level 1:
                         </Typography>
-                        {"   "}
-                        <Typography fontSize={"0.6rem"}>
+
+                        <Typography fontSize={"0.7rem"}>
                           {merchantDetails.network_level1}
+                        </Typography>
+                        <Typography fontSize={"0.7rem"} ml={2} mr={2}>
+                          |
                         </Typography>
                       </Grid>
                     </Grid>
@@ -208,11 +210,11 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                         item
                         sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}
                       >
-                        <Typography fontSize={"0.45rem"} sx={{ marginRight: "0.25rem" }}>
-                          Level 2:{" "}
+                        <Typography fontSize={"0.7rem"} sx={{ marginRight: "0.25rem" }}>
+                          Level 2:
                         </Typography>
-                        {"   "}
-                        <Typography fontSize={"0.6rem"}>
+
+                        <Typography fontSize={"0.7rem"}>
                           {merchantDetails.network_level2}
                         </Typography>
                       </Grid>
@@ -242,7 +244,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 href="/view-all"
                 color="rgba(67,160,71)"
                 variant="body1"
-                fontSize={"0.8rem"}
+                fontSize={"0.7rem"}
                 marginLeft={1}
                 sx={{
                   textDecoration: "none",
@@ -285,7 +287,9 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
         <Paper sx={{ marginTop: "20px", padding: "15px", borderRadius: "8px" }}>
           <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "start" }}>
             <PersonIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
-            <Typography fontWeight={"bold"}>Change Account Status To:</Typography>
+            <Typography variant="h6" fontSize={"1.05rem"}>
+              Change Account Status:
+            </Typography>
           </Box>
           <Grid container spacing={2} style={{ paddingTop: 0 }}>
             <Grid item xs={12}>
@@ -322,7 +326,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 rows={4}
                 value={remarks}
                 onChange={handleRemarksChange}
-                defaultValue="Remarks"
+                placeholder="Remarks"
                 color="customGreen"
                 InputProps={{
                   sx: { fontSize: "0.8rem" },
@@ -345,9 +349,9 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
       <Grid item xs={12} md={8}>
         <Paper elevation={3} sx={{ padding: "20px", maxWidth: "1300px", borderRadius: "8px" }}>
           <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-            <Box sx={{ display: "flex", flexDirection: "row", mb: 1, alignItems: "start" }}>
-              <PersonIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
-              <Typography variant="h6" fontSize={"1.05rem"} gutterBottom>
+            <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "center" }}>
+              <InfoIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+              <Typography variant="h6" fontSize={"1.05rem"} mb={0} gutterBottom>
                 {"Merchant Information"}
               </Typography>
             </Box>
@@ -465,11 +469,11 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
               </Grid>
             </Grid>
           </Grid>
-          <Divider sx={{ mb: 3 }} />
+          <Divider sx={{ mb: 5 }} />
 
-          <Box sx={{ display: "flex", flexDirection: "row", mb: 1, alignItems: "start" }}>
-            <ArticleIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
-            <Typography variant="h6" fontSize={"1.05rem"} gutterBottom>
+          <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "center" }}>
+            <ArticleIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+            <Typography variant="h6" fontSize={"1.05rem"} mb={0} gutterBottom>
               {"Trade License"}
             </Typography>
           </Box>
@@ -578,11 +582,11 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
               </Typography>
             </Grid>
           </Grid>
-          <Divider sx={{ mb: 3 }} />
+          <Divider sx={{ mb: 5 }} />
 
-          <Box sx={{ display: "flex", flexDirection: "row", mb: 1, alignItems: "start" }}>
-            <AccountBalanceIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
-            <Typography variant="h6" fontSize={"1.05rem"} gutterBottom>
+          <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "center" }}>
+            <AccountBalanceIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+            <Typography variant="h6" fontSize={"1.05rem"} mb={0} gutterBottom>
               {"Bank Accounts"}
             </Typography>
           </Box>
@@ -600,7 +604,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                     {bank.bank}
                   </Typography>
                   <Typography variant="body2" fontSize={"0.75rem"}>
-                    Account Name: {bank.account_name}
+                    {bank.account_name}
                   </Typography>
                   <Typography variant="body2" fontSize={"0.75rem"} color={"grey"}>
                     Account No: {bank.account_no} | IBAN: {bank.iban_no}
@@ -615,9 +619,9 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
             )}
           </Grid>
 
-          <Box sx={{ display: "flex", flexDirection: "row", mt: 3, mb: 1, alignItems: "start" }}>
-            <RecentActorsIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
-            <Typography variant="h6" fontSize={"1.05rem"} gutterBottom>
+          <Box sx={{ display: "flex", flexDirection: "row", mt: 5, mb: 3, alignItems: "center" }}>
+            <RecentActorsIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+            <Typography variant="h6" fontSize={"1.05rem"} mb={0} gutterBottom>
               {"Contact Persons"}
             </Typography>
           </Box>
@@ -635,10 +639,10 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                     {contact.contact_name}
                   </Typography>
                   <Typography variant="body" fontSize={"0.75rem"}>
-                    Account Name: {contact.designation}
+                    {contact.designation}
                   </Typography>
                   <Typography variant="body" fontSize={"0.75rem"} color={"grey"}>
-                    {contact.mobile_no} | {contact.email_address}
+                    {contact.mobile_no} {contact.email_address ? "|" : null} {contact.email_address}
                   </Typography>
                   <Divider sx={{ mt: 1, width: "100%" }} />
                 </Grid>
@@ -650,9 +654,9 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
             )}
           </Grid>
 
-          <Box sx={{ display: "flex", flexDirection: "row", mt: 3, mb: 1, alignItems: "start" }}>
-            <CampaignIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
-            <Typography variant="h6" fontSize={"1.05rem"} gutterBottom>
+          <Box sx={{ display: "flex", flexDirection: "row", mt: 5, mb: 4, alignItems: "center" }}>
+            <CampaignIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
+            <Typography variant="h6" fontSize={"1.05rem"} mb={0} gutterBottom>
               {"On Going Promotions"}
             </Typography>
           </Box>
@@ -682,10 +686,13 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                   />
 
                   <Typography variant="body" fontSize={"0.8rem"} gutterBottom>
-                    Account Name: {promotion.promo_title}
+                    {promotion.promo_title}
                   </Typography>
                   <Typography variant="body" fontSize={"0.6rem"} color="grey" gutterBottom>
-                    Promo Period:{promotion.promo_period}
+                    Promo Period:
+                    <Typography variant="body" fontSize={"0.6rem"} color="grey" ml={1}>
+                      {promotion.promo_period}
+                    </Typography>
                   </Typography>
                 </Grid>
               ))
