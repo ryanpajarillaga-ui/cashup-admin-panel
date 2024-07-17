@@ -463,7 +463,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
                   Telephone No :
                 </Typography>
-                <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                <Typography variant="body" fontSize={"0.9rem"} gutterBottom ml={1}>
                   {merchantDetails.tel_no}
                 </Typography>
               </Grid>
@@ -477,112 +477,122 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
               {"Trade License"}
             </Typography>
           </Box>
-          <Grid container spacing={2}>
-            <Grid
-              item
-              xs={12}
-              md={12}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
-            >
-              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
-                Trade Name
-              </Typography>
-              <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                {merchantDetails.lic_trade_name}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-            <Grid
-              item
-              xs={6}
-              md={6}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
-            >
-              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
-                License Number
-              </Typography>
-              <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                {merchantDetails.lic_license_no}
-              </Typography>
-            </Grid>
+          {merchantDetails && merchantDetails.lic_trade_name != null ? (
+            <>
+              <Grid container spacing={2}>
+                <Grid
+                  item
+                  xs={12}
+                  md={12}
+                  sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
+                >
+                  <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
+                    Trade Name
+                  </Typography>
+                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                    {merchantDetails.lic_trade_name}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                <Grid
+                  item
+                  xs={6}
+                  md={6}
+                  sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
+                >
+                  <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
+                    License Number
+                  </Typography>
+                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                    {merchantDetails.lic_license_no}
+                  </Typography>
+                </Grid>
 
-            <Grid
-              item
-              xs={6}
-              md={6}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
-            >
-              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
-                Main License Number
-              </Typography>
-              <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                {merchantDetails.lic_main_license_no}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-            <Grid
-              item
-              xs={6}
-              md={6}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
-            >
-              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
-                License Type
-              </Typography>
-              <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                {merchantDetails.lic_license_type}
-              </Typography>
-            </Grid>
+                <Grid
+                  item
+                  xs={6}
+                  md={6}
+                  sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
+                >
+                  <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
+                    Main License Number
+                  </Typography>
+                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                    {merchantDetails.lic_main_license_no}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                <Grid
+                  item
+                  xs={6}
+                  md={6}
+                  sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
+                >
+                  <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
+                    License Type
+                  </Typography>
+                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                    {merchantDetails.lic_license_type}
+                  </Typography>
+                </Grid>
 
-            <Grid
-              item
-              xs={6}
-              md={6}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
-            >
-              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
-                City Issued
-              </Typography>
-              <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                {merchantDetails.lic_city_isued}
-              </Typography>
-            </Grid>
-          </Grid>
-          <Divider sx={{ mb: 2 }} />
-          <Grid container spacing={2}>
-            <Grid
-              item
-              xs={6}
-              md={6}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
-            >
-              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
-                Validity Date
-              </Typography>
-              <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                {merchantDetails.lic_validity_date}
-              </Typography>
-            </Grid>
+                <Grid
+                  item
+                  xs={6}
+                  md={6}
+                  sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
+                >
+                  <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
+                    City Issued
+                  </Typography>
+                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                    {merchantDetails.lic_city_isued}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ mb: 2 }} />
+              <Grid container spacing={2}>
+                <Grid
+                  item
+                  xs={6}
+                  md={6}
+                  sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
+                >
+                  <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
+                    Validity Date
+                  </Typography>
+                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                    {merchantDetails.lic_validity_date}
+                  </Typography>
+                </Grid>
 
-            <Grid
-              item
-              xs={6}
-              md={6}
-              sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
-            >
-              <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
-                License Copy
-              </Typography>
-              <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                {merchantDetails.lic_license_copy}
+                <Grid
+                  item
+                  xs={6}
+                  md={6}
+                  sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}
+                >
+                  <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
+                    License Copy
+                  </Typography>
+                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                    {merchantDetails.lic_license_copy}
+                  </Typography>
+                </Grid>
+              </Grid>
+              <Divider sx={{ mb: 5 }} />
+            </>
+          ) : (
+            <Grid container spacing={1}>
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"} mb={4}>
+                No trade license details available.
               </Typography>
             </Grid>
-          </Grid>
-          <Divider sx={{ mb: 5 }} />
+          )}
 
           <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "center" }}>
             <AccountBalanceIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
@@ -607,13 +617,13 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                     {bank.account_name}
                   </Typography>
                   <Typography variant="body2" fontSize={"0.75rem"} color={"grey"}>
-                    Account No: {bank.account_no} | IBAN: {bank.iban_no}
+                    Account No: {bank.account_no} {bank.iban_no ? "|" : null} IBAN: {bank.iban_no}
                   </Typography>
                   <Divider sx={{ mt: 1, width: "100%" }} />
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1" color="grey">
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"}>
                 No bank details available.
               </Typography>
             )}
@@ -648,7 +658,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1" color="grey">
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"}>
                 No contact details available.
               </Typography>
             )}
@@ -697,7 +707,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1" color="grey">
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"}>
                 No promotion details available.
               </Typography>
             )}
