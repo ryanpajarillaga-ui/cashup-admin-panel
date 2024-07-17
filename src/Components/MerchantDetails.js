@@ -1,7 +1,13 @@
 import {
+  Avatar,
   Box,
   Button,
   Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Divider,
   FormControl,
   Grid,
@@ -23,11 +29,13 @@ import RecentActorsIcon from "@mui/icons-material/RecentActors";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
-const MerchantDetails = ({ merchantDetails, currentUserId }) => {
+const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [merchantStatus, setMerchantStatus] = useState([]);
   const [selectedMerchantStatus, setselectedMerchantStatus] = useState(2);
-  const [remarks, setRemarks] = useState(null);
+  const [selectedMerchantStatusName, setselectedMerchantStatusName] = useState("Active");
+  const [remarks, setRemarks] = useState("");
+  const [openStatusDialog, setOpenStatusDialog] = useState(false);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -42,6 +50,9 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
 
   const handleStatusChange = (e) => {
     setselectedMerchantStatus(e.target.value);
+    setselectedMerchantStatusName(
+      merchantStatus.find((option) => option.merchant_status_id === e.target.value).merchant_status
+    );
   };
 
   const handleSaveStatus = async () => {
@@ -63,12 +74,15 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
       enqueueSnackbar(res.data.message, { variant: "success" });
       setselectedMerchantStatus(2);
       setRemarks("");
+      setselectedMerchantStatusName("Active");
+      fetchMerchantDetails();
     } catch (err) {
       const errorMessage = err.response
         ? err.response.data.message || "Error occurred"
         : "Error occurred";
       enqueueSnackbar(errorMessage, { variant: "error" });
     }
+    handleStatusClose();
   };
 
   const formatDate = (dateStr) => {
@@ -86,6 +100,14 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
 
   const handleRemarksChange = (e) => {
     setRemarks(e.target.value);
+  };
+
+  const handleConfirmStatus = () => {
+    setOpenStatusDialog(true);
+  };
+
+  const handleStatusClose = () => {
+    setOpenStatusDialog(false);
   };
 
   return (
@@ -335,7 +357,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
             </Grid>
             <Grid item xs={12} container justifyContent="flex-end">
               <Button
-                onClick={handleSaveStatus}
+                onClick={handleConfirmStatus}
                 variant="contained"
                 color="customGreen"
                 sx={{ fontSize: "0.8rem" }}
@@ -588,7 +610,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
             </>
           ) : (
             <Grid container spacing={1}>
-              <Typography variant="body1" color="grey" fontSize={"0.9rem"} mb={4}>
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"} mb={4} ml={6}>
                 No trade license details available.
               </Typography>
             </Grid>
@@ -623,7 +645,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1" color="grey" fontSize={"0.9rem"}>
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"} ml={6}>
                 No bank details available.
               </Typography>
             )}
@@ -658,7 +680,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1" color="grey" fontSize={"0.9rem"}>
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"} ml={6}>
                 No contact details available.
               </Typography>
             )}
@@ -707,13 +729,50 @@ const MerchantDetails = ({ merchantDetails, currentUserId }) => {
                 </Grid>
               ))
             ) : (
-              <Typography variant="body1" color="grey" fontSize={"0.9rem"}>
+              <Typography variant="body1" color="grey" fontSize={"0.9rem"} ml={6}>
                 No promotion details available.
               </Typography>
             )}
           </Grid>
         </Paper>
       </Grid>
+
+      <Dialog
+        open={openStatusDialog}
+        onClose={handleStatusClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+            <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
+              <PersonIcon />
+            </Avatar>
+            <Typography variant="h6" fontSize={"1.2rem"} gutterBottom>
+              Change Status
+            </Typography>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ fontSize: "0.85rem" }}>
+            Are you sure you want to change user status to {selectedMerchantStatusName}? This action
+            cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleStatusClose} color="customGreen" sx={{ fontSize: "0.8rem" }}>
+            CANCEL
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleSaveStatus}
+            color="customGreen"
+            sx={{ fontSize: "0.8rem" }}
+          >
+            SAVE
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Grid>
   );
 };

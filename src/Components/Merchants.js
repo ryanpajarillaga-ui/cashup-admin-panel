@@ -113,6 +113,10 @@ const Merchants = () => {
   }, []);
 
   useEffect(() => {
+    fetchMerchants();
+  }, [merchantDetails]);
+
+  useEffect(() => {
     fetchAreas();
   }, [selectedCity]);
 
@@ -1270,7 +1274,11 @@ const Merchants = () => {
             ></DialogTitle>
 
             <DialogContent sx={{ backgroundColor: "#F5F5F5" }}>
-              <MerchantDetails merchantDetails={merchantDetails} currentUserId={currentUserId} />
+              <MerchantDetails
+                merchantDetails={merchantDetails}
+                currentUserId={currentUserId}
+                fetchMerchantDetails={fetchMerchantDetails}
+              />
             </DialogContent>
           </Box>
         </Dialog>
