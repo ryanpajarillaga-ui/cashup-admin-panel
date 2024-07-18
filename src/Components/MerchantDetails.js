@@ -26,16 +26,18 @@ import CampaignIcon from "@mui/icons-material/Campaign";
 import InfoIcon from "@mui/icons-material/Info";
 import PersonIcon from "@mui/icons-material/Person";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
+import TransactionHistory from "./TransactionHistory";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
 const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails }) => {
   const { enqueueSnackbar } = useSnackbar();
   const [merchantStatus, setMerchantStatus] = useState([]);
-  const [selectedMerchantStatus, setselectedMerchantStatus] = useState(2);
-  const [selectedMerchantStatusName, setselectedMerchantStatusName] = useState("Active");
+  const [selectedMerchantStatus, setSelectedMerchantStatus] = useState(null);
+  const [selectedMerchantStatusName, setSelectedMerchantStatusName] = useState("");
   const [remarks, setRemarks] = useState("");
   const [openStatusDialog, setOpenStatusDialog] = useState(false);
+  const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -43,14 +45,30 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
     fetchMerchantStatus();
   }, []);
 
+  useEffect(() => {
+    if (merchantStatus.length > 0) {
+      const selectedStatus = merchantStatus.find(
+        (option) => option.merchant_status === merchantDetails.merchant_status
+      );
+      if (selectedStatus) {
+        setSelectedMerchantStatus(selectedStatus.merchant_status_id);
+        setSelectedMerchantStatusName(merchantDetails.merchant_status);
+      }
+    }
+  }, [merchantStatus, merchantDetails.merchant_status]);
+
   const fetchMerchantStatus = async () => {
-    const res = await axios.get(`${baseURLv1}/adminLookup/getAllMerchantStatus`);
-    setMerchantStatus(res.data.data);
+    try {
+      const res = await axios.get(`${baseURLv1}/adminLookup/getAllMerchantStatus`);
+      setMerchantStatus(res.data.data);
+    } catch (error) {
+      console.error("Error fetching merchant status:", error);
+    }
   };
 
   const handleStatusChange = (e) => {
-    setselectedMerchantStatus(e.target.value);
-    setselectedMerchantStatusName(
+    setSelectedMerchantStatus(e.target.value);
+    setSelectedMerchantStatusName(
       merchantStatus.find((option) => option.merchant_status_id === e.target.value).merchant_status
     );
   };
@@ -72,9 +90,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
         headers,
       });
       enqueueSnackbar(res.data.message, { variant: "success" });
-      setselectedMerchantStatus(2);
       setRemarks("");
-      setselectedMerchantStatusName("Active");
       fetchMerchantDetails();
     } catch (err) {
       const errorMessage = err.response
@@ -108,6 +124,14 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
 
   const handleStatusClose = () => {
     setOpenStatusDialog(false);
+  };
+
+  const handleTransactionDialog = () => {
+    setOpenTransactionDialog(true);
+  };
+
+  const handleTransactionClose = () => {
+    setOpenTransactionDialog(false);
   };
 
   return (
@@ -263,16 +287,17 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
                 {formatDate(merchantDetails.last_transaction_date)}
               </Typography>
               <Link
-                href="/view-all"
                 color="rgba(67,160,71)"
                 variant="body1"
                 fontSize={"0.7rem"}
                 marginLeft={1}
+                onClick={handleTransactionDialog}
                 sx={{
                   textDecoration: "none",
                   display: "flex",
                   alignItems: "flex-start",
                   paddingBottom: "10px",
+                  cursor: "pointer",
                 }}
               >
                 View Transaction History
@@ -307,8 +332,8 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
         </Paper>
 
         <Paper sx={{ marginTop: "20px", padding: "15px", borderRadius: "8px" }}>
-          <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "start" }}>
-            <PersonIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2, mt: 0.5 }} />
+          <Box sx={{ display: "flex", flexDirection: "row", mb: 3, alignItems: "center" }}>
+            <PersonIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
             <Typography variant="h6" fontSize={"1.05rem"}>
               Change Account Status:
             </Typography>
@@ -770,6 +795,22 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
             sx={{ fontSize: "0.8rem" }}
           >
             SAVE
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={openTransactionDialog}
+        onClose={handleTransactionClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="lg"
+        fullWidth
+      >
+        <TransactionHistory />
+        <DialogActions>
+          <Button onClick={handleTransactionClose} color="customGreen" sx={{ fontSize: "0.8rem" }}>
+            CANCEL
           </Button>
         </DialogActions>
       </Dialog>

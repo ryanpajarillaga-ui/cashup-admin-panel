@@ -53,7 +53,7 @@ const Merchants = () => {
   const [merchants, setMerchants] = useState([]);
   const [merchantDetails, setMerchantDetails] = useState({});
 
-  const [selectedMerchant, setSelectedMerchant] = useState(189);
+  const [selectedMerchant, setSelectedMerchant] = useState();
 
   const [searchText, setSearchText] = useState("");
   const [industries, setIndustries] = useState([]);
@@ -104,7 +104,6 @@ const Merchants = () => {
   // var reformatedSignupBonus = 0;
 
   useEffect(() => {
-    fetchMerchants();
     fetchSearchCategory();
     fetchBranchTypes();
     fetchIndustries();
@@ -121,14 +120,18 @@ const Merchants = () => {
   }, [selectedCity]);
 
   useEffect(() => {
+    console.log("fetchMerchantDetails");
     fetchMerchantDetails();
   }, [selectedMerchant]);
 
   const fetchMerchantDetails = async () => {
-    const res = await axios.post(`${baseURLv1}/adminManageMerchant/getFullMerchantProfile`, {
-      in_merchant_id: selectedMerchant,
-    });
-    setMerchantDetails(res.data.data);
+    if (selectedMerchant) {
+      const res = await axios.post(`${baseURLv1}/adminManageMerchant/getFullMerchantProfile`, {
+        in_merchant_id: selectedMerchant.merchant_id,
+      });
+      setMerchantDetails(res.data.data);
+      console.log("merchant", merchantDetails);
+    }
   };
 
   const fetchMerchants = async (searchText = "", selectedCategory = 1, pageNumber = 1) => {
@@ -449,9 +452,9 @@ const Merchants = () => {
     }
   };
 
-  const handleSelectedMerchant = (id) => {
+  const handleSelectedMerchant = (merchant) => {
     setOpenMerchantDetailsDialog(true);
-    setSelectedMerchant(id);
+    setSelectedMerchant(merchant);
   };
 
   return (
@@ -567,6 +570,7 @@ const Merchants = () => {
             </Grid>
           </Grid>
         </Paper>
+
         <Paper elevation={3} sx={{ padding: "20px", maxWidth: "1300px", margin: "auto" }}>
           <TableContainer>
             {merchants.length === 0 ? (
@@ -593,7 +597,7 @@ const Merchants = () => {
                   {merchants.map((merchant) => (
                     <TableRow
                       key={merchant.merchant_id}
-                      onClick={() => handleSelectedMerchant(merchant.merchant_id)}
+                      onClick={() => handleSelectedMerchant(merchant)}
                       sx={{
                         cursor: "pointer",
                         "&:hover": {
@@ -1278,6 +1282,7 @@ const Merchants = () => {
                 merchantDetails={merchantDetails}
                 currentUserId={currentUserId}
                 fetchMerchantDetails={fetchMerchantDetails}
+                selectedMerchant={selectedMerchant}
               />
             </DialogContent>
           </Box>
