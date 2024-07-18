@@ -172,7 +172,7 @@ const MerchantDetails = ({
 
   const handleCashbackFeeChange = (e) => {
     const value = e.target.value;
-    const regex = /^\d*\.?\d*$/;
+    const regex = /^(?!0\d)\d*(\.\d+)?$/;
     if (regex.test(value) && (value === "" || parseFloat(value) <= 25)) {
       setCashbackFee(value);
     }
@@ -311,6 +311,7 @@ const MerchantDetails = ({
                     style={{ cursor: "pointer" }}
                     color={"customGreen"}
                     onClick={handleEditCashbackFee}
+                    fontSize="small"
                   />
                 </Box>
               )}
