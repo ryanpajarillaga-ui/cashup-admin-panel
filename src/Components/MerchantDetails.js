@@ -23,6 +23,7 @@ import React, { useEffect, useState } from "react";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import ArticleIcon from "@mui/icons-material/Article";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 import PersonIcon from "@mui/icons-material/Person";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
@@ -30,14 +31,21 @@ import TransactionHistory from "./TransactionHistory";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
-const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails }) => {
+const MerchantDetails = ({
+  merchantDetails,
+  currentUserId,
+  fetchMerchantDetails,
+  selectedMerchant,
+}) => {
   const { enqueueSnackbar } = useSnackbar();
   const [merchantStatus, setMerchantStatus] = useState([]);
   const [selectedMerchantStatus, setSelectedMerchantStatus] = useState(null);
   const [selectedMerchantStatusName, setSelectedMerchantStatusName] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [cashbackFee, setCashbackFee] = useState();
   const [openStatusDialog, setOpenStatusDialog] = useState(false);
   const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
+  const [isEditable, setIsEditable] = useState(false);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -134,6 +142,34 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
     setOpenTransactionDialog(false);
   };
 
+  const handleEditCashbackFee = () => {
+    setIsEditable(!isEditable);
+  };
+
+  const handleSaveCashback = async () => {
+    const data = {
+      in_merchant_id: selectedMerchant.merchant_id,
+      in_merchant_fee: parseFloat(cashbackFee),
+      in_user_id: currentUserId,
+    };
+    const headers = {
+      in_platform_type_id: 4,
+    };
+    try {
+      const res = await axios.post(`${baseURLv1}/adminManageMerchant/updateCashbackFeeRate`, data, {
+        headers,
+      });
+      enqueueSnackbar(res.data.message, { variant: "success" });
+      handleEditCashbackFee();
+      fetchMerchantDetails();
+    } catch (err) {
+      const errorMessage = err.response
+        ? err.response.data.message || "Error occurred"
+        : "Error occurred";
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    }
+  };
+
   return (
     <Grid container spacing={0} sx={{ marginTop: "15px" }}>
       <Grid xs={8} md={4} paddingX={"50px"}>
@@ -197,15 +233,79 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
               <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
                 Cashback Fee Rate
               </Typography>
-              <Typography
-                variant="body"
-                fontSize={"0.9rem"}
-                // fontWeight={"bold"}
-                marginLeft={1}
-                gutterBottom
-              >
-                {merchantDetails.merchant_fee}%
-              </Typography>
+              {isEditable ? (
+                <>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      marginBottom: "6px",
+                    }}
+                  >
+                    <Grid item xs={4}>
+                      <TextField
+                        autoFocus
+                        name="CashBackFee"
+                        type="text"
+                        color="customGreen"
+                        value={cashbackFee}
+                        size="small"
+                        onChange={(e) => setCashbackFee(e.target.value)}
+                        sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                        InputProps={{ sx: { fontSize: "0.8rem" } }}
+                        inputProps={{ maxLength: 50 }}
+                      />
+                    </Grid>
+                    <Button
+                      onClick={handleEditCashbackFee}
+                      color="customGreen"
+                      size="small"
+                      sx={{
+                        fontSize: "0.75rem",
+                        lineHeight: "1.5rem",
+                      }}
+                    >
+                      CANCEL
+                    </Button>
+                    <Button
+                      onClick={handleSaveCashback}
+                      variant="contained"
+                      color="customGreen"
+                      size="small"
+                      sx={{
+                        fontSize: "0.75rem",
+                        lineHeight: "1.5rem",
+
+                        marginRight: "2rem",
+                      }}
+                    >
+                      SAVE
+                    </Button>
+                  </Box>
+                </>
+              ) : (
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "95%",
+                  }}
+                >
+                  <Typography variant="body1" fontSize="0.9rem" marginLeft={1} gutterBottom>
+                    {merchantDetails.merchant_fee}%
+                  </Typography>
+                  <EditIcon
+                    style={{ cursor: "pointer" }}
+                    color={"customGreen"}
+                    onClick={handleEditCashbackFee}
+                  />
+                </Box>
+              )}
             </Grid>
             <Divider variant="middle" />
             <Grid
@@ -378,6 +478,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
                 InputProps={{
                   sx: { fontSize: "0.8rem" },
                 }}
+                inputProps={{ maxLength: 50 }}
               />
             </Grid>
             <Grid item xs={12} container justifyContent="flex-end">
@@ -807,7 +908,7 @@ const MerchantDetails = ({ merchantDetails, currentUserId, fetchMerchantDetails 
         maxWidth="lg"
         fullWidth
       >
-        <TransactionHistory />
+        <TransactionHistory selectedMerchant={selectedMerchant} formatDate={formatDate} />
         <DialogActions>
           <Button onClick={handleTransactionClose} color="customGreen" sx={{ fontSize: "0.8rem" }}>
             CANCEL
