@@ -83,10 +83,10 @@ const TransactionHistory = ({ selectedMerchant, formatDate }) => {
               src={transactions.logo_path}
             />
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }} ml={1}>
-              <Typography variant="h6" fontSize={"1.2rem"} gutterBottom>
+              <Typography variant="h6" fontSize={"1.2rem"} fontWeight={"bold"} gutterBottom>
                 {transactions.merchant_name}
               </Typography>
-              <Typography variant="body" fontSize={"1rem"} gutterBottom>
+              <Typography variant="body" fontSize={"1rem"} color={"grey"} gutterBottom>
                 {transactions.merchant_code}
               </Typography>
             </Box>

@@ -170,6 +170,14 @@ const MerchantDetails = ({
     }
   };
 
+  const handleCashbackFeeChange = (e) => {
+    const value = e.target.value;
+    const regex = /^\d*\.?\d*$/;
+    if (regex.test(value) && (value === "" || parseFloat(value) <= 25)) {
+      setCashbackFee(value);
+    }
+  };
+
   return (
     <Grid container spacing={0} sx={{ marginTop: "15px" }}>
       <Grid xs={8} md={4} paddingX={"50px"}>
@@ -253,10 +261,10 @@ const MerchantDetails = ({
                         color="customGreen"
                         value={cashbackFee}
                         size="small"
-                        onChange={(e) => setCashbackFee(e.target.value)}
+                        onChange={handleCashbackFeeChange}
                         sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                         InputProps={{ sx: { fontSize: "0.8rem" } }}
-                        inputProps={{ maxLength: 50 }}
+                        inputProps={{ maxLength: 5 }}
                       />
                     </Grid>
                     <Button
@@ -911,7 +919,7 @@ const MerchantDetails = ({
         <TransactionHistory selectedMerchant={selectedMerchant} formatDate={formatDate} />
         <DialogActions>
           <Button onClick={handleTransactionClose} color="customGreen" sx={{ fontSize: "0.8rem" }}>
-            CANCEL
+            CLOSE
           </Button>
         </DialogActions>
       </Dialog>
