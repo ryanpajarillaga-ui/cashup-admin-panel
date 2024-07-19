@@ -27,6 +27,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import InfoIcon from "@mui/icons-material/Info";
 import PersonIcon from "@mui/icons-material/Person";
 import RecentActorsIcon from "@mui/icons-material/RecentActors";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import TransactionHistory from "./TransactionHistory";
 import axios from "axios";
 import { useSnackbar } from "notistack";
@@ -46,6 +47,7 @@ const MerchantDetails = ({
   const [openStatusDialog, setOpenStatusDialog] = useState(false);
   const [openTransactionDialog, setOpenTransactionDialog] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
+  const [error, setError] = useState("");
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -171,10 +173,18 @@ const MerchantDetails = ({
   };
 
   const handleCashbackFeeChange = (e) => {
+    debugger;
     const value = e.target.value;
-    const regex = /^(?!0\d)\d*(\.\d+)?$/;
-    if (regex.test(value) && (value === "" || parseFloat(value) <= 25)) {
+    const regex = /^(?!0\d)\d*(\.\d{0,2})?$/;
+    if (
+      regex.test(value) &&
+      (value === "" || (parseFloat(value) <= 25 && !isNaN(parseFloat(value))))
+    ) {
       setCashbackFee(value);
+      setError("");
+    } else {
+      setCashbackFee("");
+      setError("value should be a number and less than 25");
     }
   };
 
@@ -262,6 +272,8 @@ const MerchantDetails = ({
                         value={cashbackFee}
                         size="small"
                         onChange={handleCashbackFeeChange}
+                        error={Boolean(error)}
+                        helperText={error}
                         sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
                         InputProps={{ sx: { fontSize: "0.8rem" } }}
                         inputProps={{ maxLength: 5 }}
@@ -736,9 +748,23 @@ const MerchantDetails = ({
                   <Typography variant="body" fontSize={"0.65rem"} color="grey" gutterBottom>
                     License Copy
                   </Typography>
-                  <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
-                    {merchantDetails.lic_license_copy}
-                  </Typography>
+
+                  <Box sx={{ display: "flex", flexDirection: "row" }}>
+                    {merchantDetails.lic_file_name ? (
+                      <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                        <a
+                          href={merchantDetails.lic_file_name}
+                          download
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          <SaveAltIcon fontSize="small" sx={{ color: "#2e7d32", mr: 1 }} />
+                        </a>
+                      </Typography>
+                    ) : null}
+                    <Typography variant="body" fontSize={"0.9rem"} gutterBottom>
+                      {merchantDetails.lic_license_copy}
+                    </Typography>
+                  </Box>
                 </Grid>
               </Grid>
               <Divider sx={{ mb: 5 }} />
@@ -890,8 +916,7 @@ const MerchantDetails = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description" sx={{ fontSize: "0.85rem" }}>
-            Are you sure you want to change user status to {selectedMerchantStatusName}? This action
-            cannot be undone.
+            Are you sure you want to change user status to {selectedMerchantStatusName}?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
