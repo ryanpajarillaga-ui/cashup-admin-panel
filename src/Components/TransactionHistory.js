@@ -74,26 +74,6 @@ const TransactionHistory = ({ selectedEntityId, formatDate, entityType }) => {
     setCurrentPageRecords(response.rows_on_this_page);
   };
 
-  // const fetchConsumerTransaction = async (pageNumber = 1) => {
-  //   const data = {
-  //     in_consumer_id: selectedEntityId,
-  //     in_page_number: pageNumber,
-  //   };
-
-  //   const res = await axios.post(
-  //     `${baseURLv1}/adminManageConsumer/getConsumerTransactionHistoryByPage`,
-  //     data
-  //   );
-
-  //   const response = res.data.data;
-  //   setTransactions(response);
-  //   setTotalPages(response.total_number_of_pages);
-  //   setCurrentPage(response.current_page_number);
-  //   setTotalRecords(response.total_rows);
-  //   setPageLimit(response.rows_per_page_limit);
-  //   setCurrentPageRecords(response.rows_on_this_page);
-  // };
-
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
     fetchTransaction(page);
@@ -119,7 +99,7 @@ const TransactionHistory = ({ selectedEntityId, formatDate, entityType }) => {
                 borderRadius: "50%",
               }}
               alt="Descriptive Alt Text"
-              src={transactions.logo_path}
+              src={entityType == "Merchant" ? transactions.logo_path : transactions.photo_path}
             />
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }} ml={1}>
               <Typography variant="h6" fontSize={"1.2rem"} fontWeight={"bold"} gutterBottom>

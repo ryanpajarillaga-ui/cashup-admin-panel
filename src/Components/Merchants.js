@@ -112,7 +112,7 @@ const Merchants = () => {
   }, []);
 
   useEffect(() => {
-    fetchMerchants();
+    fetchMerchants(searchText, selectedCategory, currentPage);
   }, [merchantDetails]);
 
   useEffect(() => {
@@ -130,7 +130,6 @@ const Merchants = () => {
         in_merchant_id: selectedMerchant.merchant_id,
       });
       setMerchantDetails(res.data.data);
-      console.log("merchant", merchantDetails);
     }
   };
 

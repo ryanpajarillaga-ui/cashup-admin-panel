@@ -113,7 +113,7 @@ const Consumers = () => {
   }, []);
 
   useEffect(() => {
-    fetchConsumers();
+    fetchConsumers(searchText, selectedCategory, currentPage);
   }, [consumerDetails]);
 
   useEffect(() => {
