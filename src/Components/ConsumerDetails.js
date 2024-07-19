@@ -587,7 +587,7 @@ const ConsumerDetails = ({
         fullWidth
       >
         <TransactionHistory
-          selectedEntity={selectedConsumer}
+          selectedEntityId={selectedConsumer.consumer_id}
           formatDate={formatDate}
           entityType="Consumer"
         />

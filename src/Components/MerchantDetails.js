@@ -948,7 +948,7 @@ const MerchantDetails = ({
         fullWidth
       >
         <TransactionHistory
-          selectedEntity={selectedMerchant}
+          selectedEntityId={selectedMerchant.merchant_id}
           formatDate={formatDate}
           entityType="Merchant"
         />

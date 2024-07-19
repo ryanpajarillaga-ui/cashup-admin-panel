@@ -26,7 +26,7 @@ import TransferIcon from "../Images/ico_transfer.webp";
 import WithdrawIcon from "../Images/ico_withdraw.webp";
 import axios from "axios";
 
-const TransactionHistory = ({ selectedEntity, formatDate, entityType }) => {
+const TransactionHistory = ({ selectedEntityId, formatDate, entityType }) => {
   const [transactions, setTransactions] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRecords, setCurrentPageRecords] = useState(1);
@@ -37,29 +37,33 @@ const TransactionHistory = ({ selectedEntity, formatDate, entityType }) => {
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
   useEffect(() => {
-    console.log(selectedEntity);
     fetchTransaction();
-  }, [(entityType = "Merchant" ? selectedEntity.merchant_id : selectedEntity.consumer_id)]);
+  }, [selectedEntityId]);
 
   const fetchTransaction = async (pageNumber = 1) => {
-    const merchantData = {
-      in_merchant_id: selectedEntity.merchant_id,
-      in_page_number: pageNumber,
-    };
+    let data = {};
+    let res = null;
+    if (entityType == "Merchant") {
+      data = {
+        in_merchant_id: selectedEntityId,
+        in_page_number: pageNumber,
+      };
 
-    const consumerData = {
-      in_consumer_id: selectedEntity.consumer_id,
-      in_page_number: pageNumber,
-    };
+      res = await axios.post(
+        `${baseURLv1}/adminManageMerchant/getMerchantTransactionHistoryByPage`,
+        data
+      );
+    } else {
+      data = {
+        in_consumer_id: selectedEntityId,
+        in_page_number: pageNumber,
+      };
 
-    const data = entityType == "Merchant" ? merchantData : consumerData;
-
-    const url =
-      entityType == "Merchant"
-        ? "adminManageMerchant/getMerchantTransactionHistoryByPage"
-        : "adminManageConsumer/getConsumerTransactionHistoryByPage";
-
-    const res = await axios.post(`${baseURLv1}/${url}`, data);
+      res = await axios.post(
+        `${baseURLv1}/adminManageConsumer/getConsumerTransactionHistoryByPage`,
+        data
+      );
+    }
 
     const response = res.data.data;
     setTransactions(response);
@@ -69,6 +73,26 @@ const TransactionHistory = ({ selectedEntity, formatDate, entityType }) => {
     setPageLimit(response.rows_per_page_limit);
     setCurrentPageRecords(response.rows_on_this_page);
   };
+
+  // const fetchConsumerTransaction = async (pageNumber = 1) => {
+  //   const data = {
+  //     in_consumer_id: selectedEntityId,
+  //     in_page_number: pageNumber,
+  //   };
+
+  //   const res = await axios.post(
+  //     `${baseURLv1}/adminManageConsumer/getConsumerTransactionHistoryByPage`,
+  //     data
+  //   );
+
+  //   const response = res.data.data;
+  //   setTransactions(response);
+  //   setTotalPages(response.total_number_of_pages);
+  //   setCurrentPage(response.current_page_number);
+  //   setTotalRecords(response.total_rows);
+  //   setPageLimit(response.rows_per_page_limit);
+  //   setCurrentPageRecords(response.rows_on_this_page);
+  // };
 
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
