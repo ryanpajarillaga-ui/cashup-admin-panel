@@ -55,9 +55,9 @@ const VerticalNav = () => {
           permission: "menu_accounts_merchant",
         },
         {
-          text: "Consumer",
+          text: "Consumers",
           icon: <Face6OutlinedIcon />,
-          path: "/consumer",
+          path: "/consumers",
           permission: "menu_accounts_consumer",
         },
         {
@@ -168,13 +168,16 @@ const VerticalNav = () => {
                 <>
                   <ListItem button onClick={handleSubmenuClick}>
                     <ListItemIcon>
-                      <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : null }}>
+                      <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : "#91d9a4" }}>
                         {item.icon}
                       </Avatar>
                     </ListItemIcon>
                     <ListItemText
                       primary={item.text}
-                      primaryTypographyProps={{ fontSize: "0.8rem" }}
+                      primaryTypographyProps={{
+                        fontSize: "0.8rem",
+                        fontWeight: isActive(item.path) ? "bold" : null,
+                      }}
                     />
                     {submenuOpen ? <ExpandLess /> : <ExpandMore />}
                   </ListItem>
@@ -191,13 +194,18 @@ const VerticalNav = () => {
                           onClick={() => navigate(subItem.path)}
                         >
                           <ListItemIcon>
-                            <Avatar sx={{ bgcolor: isActive(subItem.path) ? "#2e7d32" : null }}>
+                            <Avatar
+                              sx={{ bgcolor: isActive(subItem.path) ? "#2e7d32" : "#91d9a4" }}
+                            >
                               {subItem.icon}
                             </Avatar>
                           </ListItemIcon>
                           <ListItemText
                             primary={subItem.text}
-                            primaryTypographyProps={{ fontSize: "0.8rem" }}
+                            primaryTypographyProps={{
+                              fontSize: "0.8rem",
+                              fontWeight: isActive(subItem.path) ? "bold" : null,
+                            }}
                           />
                         </ListItem>
                       ))}
@@ -211,13 +219,16 @@ const VerticalNav = () => {
                   onClick={() => navigate(item.path)}
                 >
                   <ListItemIcon>
-                    <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : null }}>
+                    <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : "#91d9a4" }}>
                       {item.icon}
                     </Avatar>
                   </ListItemIcon>
                   <ListItemText
                     primary={item.text}
-                    primaryTypographyProps={{ fontSize: "0.8rem" }}
+                    primaryTypographyProps={{
+                      fontSize: "0.8rem",
+                      fontWeight: isActive(item.path) ? "bold" : null,
+                    }}
                   />
                 </ListItem>
               )}
@@ -232,13 +243,16 @@ const VerticalNav = () => {
                 <>
                   <ListItem button onClick={handleSubmenuClick}>
                     <ListItemIcon>
-                      <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : null }}>
+                      <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : "#91d9a4" }}>
                         {item.icon}
                       </Avatar>
                     </ListItemIcon>
                     <ListItemText
                       primary={item.text}
-                      primaryTypographyProps={{ fontSize: "0.8rem" }}
+                      primaryTypographyProps={{
+                        fontSize: "0.8rem",
+                        fontWeight: isActive(item.path) ? "bold" : null,
+                      }}
                     />
                     {submenuOpen ? <ExpandLess /> : <ExpandMore />}
                   </ListItem>
@@ -255,13 +269,16 @@ const VerticalNav = () => {
                           onClick={() => navigate(subItem.path)}
                         >
                           <ListItemIcon>
-                            <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : null }}>
+                            <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : "#91d9a4" }}>
                               {item.icon}
                             </Avatar>
                           </ListItemIcon>
                           <ListItemText
                             primary={subItem.text}
-                            primaryTypographyProps={{ fontSize: "0.8rem" }}
+                            primaryTypographyProps={{
+                              fontSize: "0.8rem",
+                              fontWeight: isActive(item.path) ? "bold" : null,
+                            }}
                           />
                         </ListItem>
                       ))}
@@ -275,13 +292,16 @@ const VerticalNav = () => {
                   onClick={() => navigate(item.path)}
                 >
                   <ListItemIcon>
-                    <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : null }}>
+                    <Avatar sx={{ bgcolor: isActive(item.path) ? "#2e7d32" : "#91d9a4" }}>
                       {item.icon}
                     </Avatar>
                   </ListItemIcon>
                   <ListItemText
                     primary={item.text}
-                    primaryTypographyProps={{ fontSize: "0.8rem" }}
+                    primaryTypographyProps={{
+                      fontSize: "0.8rem",
+                      fontWeight: isActive(item.path) ? "bold" : null,
+                    }}
                   />
                 </ListItem>
               )}

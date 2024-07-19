@@ -755,9 +755,14 @@ const MerchantDetails = ({
                         <a
                           href={merchantDetails.lic_file_name}
                           download
+                          target="_blank"
                           style={{ textDecoration: "none", color: "inherit" }}
                         >
-                          <SaveAltIcon fontSize="small" sx={{ color: "#2e7d32", mr: 1 }} />
+                          <SaveAltIcon
+                            fontSize="small"
+                            color={"customGreen"}
+                            sx={{ mr: 1, cursor: "pointer" }}
+                          />
                         </a>
                       </Typography>
                     ) : null}
@@ -942,7 +947,11 @@ const MerchantDetails = ({
         maxWidth="lg"
         fullWidth
       >
-        <TransactionHistory selectedMerchant={selectedMerchant} formatDate={formatDate} />
+        <TransactionHistory
+          selectedEntity={selectedMerchant}
+          formatDate={formatDate}
+          entityType="Merchant"
+        />
         <DialogActions>
           <Button onClick={handleTransactionClose} color="customGreen" sx={{ fontSize: "0.8rem" }}>
             CLOSE
