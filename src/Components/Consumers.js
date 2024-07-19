@@ -27,6 +27,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AdminLogo from "../Images/no_logo.png";
 import ClearIcon from "@mui/icons-material/Clear";
 import ConsumerDetails from "./ConsumerDetails";
@@ -471,7 +472,7 @@ const Consumers = () => {
           }}
         >
           <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
-            <StoreOutlinedIcon />
+            <AccountCircleIcon />
           </Avatar>
           <Typography variant="h6" gutterBottom fontSize={"1.2rem"}>
             Consumers

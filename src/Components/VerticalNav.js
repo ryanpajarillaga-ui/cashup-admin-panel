@@ -11,6 +11,7 @@ import {
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import { Avatar } from "@mui/material";
@@ -56,7 +57,7 @@ const VerticalNav = () => {
         },
         {
           text: "Consumers",
-          icon: <Face6OutlinedIcon />,
+          icon: <AccountCircleIcon />,
           path: "/consumers",
           permission: "menu_accounts_consumer",
         },
