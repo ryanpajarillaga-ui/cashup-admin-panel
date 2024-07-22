@@ -1,17 +1,32 @@
 import * as Yup from "yup";
 
-import { Box, Button, Divider, Menu, MenuItem, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Menu,
+  MenuItem,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { Field, Form, Formik } from "formik";
+import React, { useState } from "react";
 
 import { Avatar } from "@mui/material";
 import BuildIcon from "@mui/icons-material/Build";
 import Cookies from "js-cookie";
 import PersonIcon from "@mui/icons-material/Person";
-import React from "react";
+import SystemSettings from "./SystemSettings";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
 const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) => {
+  const [openSystemSettingsDialog, setOpenSystemSettingsDialog] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const validationSchema = Yup.object({
     fullname: Yup.string().required("Full Name is required"),
@@ -77,174 +92,202 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
     window.location.href = "/";
   };
 
+  const handleSystemSttings = () => {
+    setOpenSystemSettingsDialog(!openSystemSettingsDialog);
+  };
+
+  const handleSystemSettingsClose = () => {
+    setOpenSystemSettingsDialog(!openSystemSettingsDialog);
+  };
+
   return (
-    <Menu
-      anchorEl={anchorEl}
-      open={submenuOpen}
-      onClose={handleClose}
-      PaperProps={{
-        style: {
-          width: "300px",
-          padding: "16px",
-        },
-      }}
-    >
-      <MenuItem
-        sx={{
-          pointerEvents: "none",
-          cursor: "default",
+    <>
+      <Menu
+        anchorEl={anchorEl}
+        open={submenuOpen}
+        onClose={handleClose}
+        PaperProps={{
+          style: {
+            width: "300px",
+            padding: "16px",
+          },
         }}
       >
-        <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
-          <PersonIcon />
-        </Avatar>
-        <Typography variant="h6" fontSize={"1.2rem"}>
-          User Profile
-        </Typography>
-      </MenuItem>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ errors, touched }) => (
-          <Form>
-            <Box mb={2} mt={2}>
-              <Field
-                as={TextField}
-                name="fullname"
-                label="Full Name"
-                color="success"
-                fullWidth
-                required
-                error={touched.fullname && Boolean(errors.fullname)}
-                helperText={touched.fullname && errors.fullname}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: "0.8rem" } }}
-                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-              />
-            </Box>
-            <Box mb={2}>
-              <Field
-                as={TextField}
-                name="designation"
-                label="Designation"
-                color="success"
-                fullWidth
-                required
-                error={touched.designation && Boolean(errors.designation)}
-                helperText={touched.designation && errors.designation}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: "0.8rem" } }}
-                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-              />
-            </Box>
-            <Divider />
-            <Box mb={2} mt={2}>
-              <Field
-                as={TextField}
-                name="username"
-                label="User Name"
-                color="success"
-                fullWidth
-                required
-                inputProps={{ maxLength: 20 }}
-                error={touched.username && Boolean(errors.username)}
-                helperText={touched.username && errors.username}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: "0.8rem" } }}
-                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-              />
-            </Box>
-            <Box mb={2}>
-              <Field
-                as={TextField}
-                name="password"
-                type="password"
-                label="Password"
-                color="success"
-                fullWidth
-                required
-                inputProps={{ maxLength: 15 }}
-                error={touched.password && Boolean(errors.password)}
-                helperText={touched.password && errors.password}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: "0.8rem" } }}
-                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-              />
-            </Box>
-            <Box mb={2}>
-              <Field
-                as={TextField}
-                name="retypePassword"
-                type="password"
-                label="Retype Password"
-                color="success"
-                fullWidth
-                required
-                inputProps={{ maxLength: 15 }}
-                error={touched.retypePassword && Boolean(errors.retypePassword)}
-                helperText={touched.retypePassword && errors.retypePassword}
-                sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
-                InputProps={{ sx: { fontSize: "0.8rem" } }}
-                InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
-              />
-            </Box>
-            {userData.system_settings ? (
-              <>
-                <Divider sx={{ my: 2 }} />
-                <Box
-                  mt={2}
-                  mb={1.5}
-                  sx={{ display: "flex", alignItems: "center", gap: 1, justifyContent: "center" }}
-                >
-                  <BuildIcon color="customGreen" />
-                  <Typography variant="body2" sx={{ color: "#4caf50" }}>
-                    Manage System Settings
-                  </Typography>
-                </Box>
-              </>
-            ) : null}
+        <MenuItem
+          sx={{
+            pointerEvents: "none",
+            cursor: "default",
+          }}
+        >
+          <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
+            <PersonIcon />
+          </Avatar>
+          <Typography variant="h6" fontSize={"1.2rem"}>
+            User Profile
+          </Typography>
+        </MenuItem>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ errors, touched }) => (
+            <Form>
+              <Box mb={2} mt={2}>
+                <Field
+                  as={TextField}
+                  name="fullname"
+                  label="Full Name"
+                  color="success"
+                  fullWidth
+                  required
+                  error={touched.fullname && Boolean(errors.fullname)}
+                  helperText={touched.fullname && errors.fullname}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                />
+              </Box>
+              <Box mb={2}>
+                <Field
+                  as={TextField}
+                  name="designation"
+                  label="Designation"
+                  color="success"
+                  fullWidth
+                  required
+                  error={touched.designation && Boolean(errors.designation)}
+                  helperText={touched.designation && errors.designation}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                />
+              </Box>
+              <Divider />
+              <Box mb={2} mt={2}>
+                <Field
+                  as={TextField}
+                  name="username"
+                  label="User Name"
+                  color="success"
+                  fullWidth
+                  required
+                  inputProps={{ maxLength: 20 }}
+                  error={touched.username && Boolean(errors.username)}
+                  helperText={touched.username && errors.username}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                />
+              </Box>
+              <Box mb={2}>
+                <Field
+                  as={TextField}
+                  name="password"
+                  type="password"
+                  label="Password"
+                  color="success"
+                  fullWidth
+                  required
+                  inputProps={{ maxLength: 15 }}
+                  error={touched.password && Boolean(errors.password)}
+                  helperText={touched.password && errors.password}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                />
+              </Box>
+              <Box mb={2}>
+                <Field
+                  as={TextField}
+                  name="retypePassword"
+                  type="password"
+                  label="Retype Password"
+                  color="success"
+                  fullWidth
+                  required
+                  inputProps={{ maxLength: 15 }}
+                  error={touched.retypePassword && Boolean(errors.retypePassword)}
+                  helperText={touched.retypePassword && errors.retypePassword}
+                  sx={{ "& .MuiOutlinedInput-root": { borderRadius: 2 } }}
+                  InputProps={{ sx: { fontSize: "0.8rem" } }}
+                  InputLabelProps={{ sx: { fontSize: "0.8rem" } }}
+                />
+              </Box>
+              {userData.system_settings ? (
+                <>
+                  <Divider sx={{ my: 2 }} />
+                  <Box
+                    mt={2}
+                    mb={1.5}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    }}
+                    onClick={handleSystemSttings}
+                  >
+                    <BuildIcon color="customGreen" />
+                    <Typography variant="body2" sx={{ color: "#4caf50" }}>
+                      Manage System Settings
+                    </Typography>
+                  </Box>
+                </>
+              ) : null}
 
-            <Divider />
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-              <Button
-                type="button"
-                variant="contained"
-                width="80%"
-                style={{
-                  marginTop: "1.5rem",
-                  fontSize: "0.75rem",
-                  backgroundColor: "rgba(67,160,71)",
-                  color: "white",
-                  "&:hover": { backgroundColor: "rgba(46, 112, 49)" },
-                  borderRadius: 2,
-                }}
-                onClick={handleLogout}
-              >
-                Log Out
-              </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                width="80%"
-                size="20px"
-                style={{
-                  marginTop: "1.5rem",
-                  fontSize: "0.75rem",
-                  backgroundColor: "rgba(67,160,71)",
-                  color: "white",
-                  "&:hover": { backgroundColor: "rgba(46, 112, 49)" },
-                  borderRadius: 2,
-                }}
-              >
-                Save
-              </Button>
-            </Box>
-          </Form>
-        )}
-      </Formik>
-    </Menu>
+              <Divider />
+              <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+                <Button
+                  type="button"
+                  variant="contained"
+                  width="80%"
+                  style={{
+                    marginTop: "1.5rem",
+                    fontSize: "0.75rem",
+                    backgroundColor: "rgba(67,160,71)",
+                    color: "white",
+                    "&:hover": { backgroundColor: "rgba(46, 112, 49)" },
+                    borderRadius: 2,
+                  }}
+                  onClick={handleLogout}
+                >
+                  Log Out
+                </Button>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  width="80%"
+                  size="20px"
+                  style={{
+                    marginTop: "1.5rem",
+                    fontSize: "0.75rem",
+                    backgroundColor: "rgba(67,160,71)",
+                    color: "white",
+                    "&:hover": { backgroundColor: "rgba(46, 112, 49)" },
+                    borderRadius: 2,
+                  }}
+                >
+                  Save
+                </Button>
+              </Box>
+            </Form>
+          )}
+        </Formik>
+      </Menu>
+
+      <Dialog
+        open={openSystemSettingsDialog}
+        onClose={handleSystemSettingsClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        maxWidth="lg"
+        fullWidth
+      >
+        <SystemSettings handleSystemSettingsClose={handleSystemSettingsClose} />
+      </Dialog>
+    </>
   );
 };
 

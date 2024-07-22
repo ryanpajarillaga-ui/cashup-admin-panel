@@ -113,6 +113,9 @@ const MerchantDetails = ({
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return null;
+    }
     const options = {
       year: "numeric",
       month: "2-digit",
@@ -173,7 +176,6 @@ const MerchantDetails = ({
   };
 
   const handleCashbackFeeChange = (e) => {
-    debugger;
     const value = e.target.value;
     const regex = /^(?!0\d)\d*(\.\d{0,2})?$/;
     if (

@@ -53,6 +53,7 @@ const ConsumerDetails = ({
 
   useEffect(() => {
     fetchConsumerStatus();
+    console.log("date:", formatDate(consumerDetails.last_transaction_date));
   }, []);
 
   useEffect(() => {
@@ -115,6 +116,9 @@ const ConsumerDetails = ({
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
+    if (isNaN(date.getTime())) {
+      return null;
+    }
     const options = {
       year: "numeric",
       month: "2-digit",
