@@ -114,11 +114,13 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
-    if (numberFields.includes(name) && isNaN(value)) {
-      setFormValues((prevValues) => ({
-        ...prevValues,
-        [name]: "",
-      }));
+    const isValidNumber = (value) => /^[+\d]*$/.test(value.replace(/\s+/g, ""));
+
+    if (numberFields.includes(name) && !isValidNumber(value)) {
+      // setFormValues((prevValues) => ({
+      //   ...prevValues,
+      //   [name]: "",
+      // }));
       return;
     }
     setFormValues((prevValues) => ({
