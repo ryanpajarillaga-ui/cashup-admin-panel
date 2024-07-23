@@ -6,13 +6,6 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
   Typography,
 } from "@mui/material";
@@ -20,22 +13,11 @@ import React, { useEffect, useState } from "react";
 
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Cookies from "js-cookie";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
-import GetAppIcon from "@mui/icons-material/GetApp";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import OutboxIcon from "@mui/icons-material/Outbox";
-import Pagination from "@mui/material/Pagination";
 import PersonIcon from "@mui/icons-material/Person";
-import ReceiveIcon from "../Images/ico_receive.webp";
-import SendIcon from "../Images/ico_send.webp";
 import SettingsIcon from "@mui/icons-material/Settings";
-import Stack from "@mui/material/Stack";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
-import TopupIcon from "../Images/ico_topup.webp";
-import TransferIcon from "../Images/ico_transfer.webp";
-import WithdrawIcon from "../Images/ico_withdraw.webp";
 import axios from "axios";
 import { useSnackbar } from "notistack";
 
@@ -95,6 +77,40 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
     "Telephone_Number",
     "Mobile_Number",
   ];
+
+  useEffect(() => {
+    fetchSystemSettings();
+  }, []);
+
+  const fetchSystemSettings = async () => {
+    const res = await axios.get(`${baseURLv1}/adminSettings/getSystemSettings`);
+
+    const SystemSettingsObject = {
+      Receiver: res.data.data.cashback_perc_receiver,
+      Upline1: res.data.data.cashback_perc_upline1,
+      GN_Primary: res.data.data.cashback_perc_gn,
+      Upline2: res.data.data.cashback_perc_upline2,
+      Bank_Accounts: res.data.data.bank_limit_count,
+      Trade_Licenses: res.data.data.license_limit_count,
+      Contact_Persons: res.data.data.contact_limit_count,
+      Promotions: res.data.data.promo_limit_count,
+      Active_Promotions: res.data.data.promo_limit_count_active,
+      Merchant_Min_Balance: res.data.data.balance_min_notify_merchant,
+      Consumer_Min_Balance: res.data.data.balance_min_notify_consumer,
+      License_Expiry_Days: res.data.data.license_expiry_days_notify,
+      Home_Promotions: res.data.data.cons_app_dash_limit_promo,
+      Home_Featured_Merchants: res.data.data.cons_app_dash_limit_featured,
+      Payment_Gateway: res.data.data.default_payment_gateway_id,
+      Minimum_Amount: res.data.data.withdraw_min_amount,
+      Service_Charge: res.data.data.withdraw_service_charge,
+      Telephone_Number: res.data.data.contact_telephone,
+      Mobile_Number: res.data.data.contact_mobile,
+      Email_Address: res.data.data.contact_email,
+      Website: res.data.data.contact_website,
+    };
+
+    setFormValues(SystemSettingsObject);
+  };
 
   const handleFieldChange = (e) => {
     const { name, value } = e.target;
@@ -156,33 +172,36 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
 
   const validateForm = () => {
     const newError = {};
-
-    if (formValues.Receiver.trim() == "") newError.Receiver = "Receiver is required";
-    if (formValues.Upline1.trim() == "") newError.Upline1 = "Upline1 is required";
-    if (formValues.GN_Primary.trim() == "") newError.GN_Primary = "Receiver is required";
-    if (formValues.Upline2.trim() == "") newError.Upline2 = "Upline2 is required";
-    if (formValues.Bank_Accounts.trim() == "") newError.Bank_Accounts = "Bank Accounts is required";
-    if (formValues.Trade_Licenses.trim() == "")
+    console.log(formValues.Receiver);
+    if (formValues.Receiver.toString().trim() == "") newError.Receiver = "Receiver is required";
+    if (formValues.Upline1.toString().trim() == "") newError.Upline1 = "Upline1 is required";
+    if (formValues.GN_Primary.toString().trim() == "") newError.GN_Primary = "Receiver is required";
+    if (formValues.Upline2.toString().trim() == "") newError.Upline2 = "Upline2 is required";
+    if (formValues.Bank_Accounts.toString().trim() == "")
+      newError.Bank_Accounts = "Bank Accounts is required";
+    if (formValues.Trade_Licenses.toString().trim() == "")
       newError.Trade_Licenses = "Trade Licenses is required";
-    if (formValues.Contact_Persons.trim() == "")
+    if (formValues.Contact_Persons.toString().trim() == "")
       newError.Contact_Persons = "Contact Persons is required";
-    if (formValues.Promotions.trim() == "") newError.Promotions = "Promotions is required";
-    if (formValues.Active_Promotions.trim() == "")
+    if (formValues.Promotions.toString().trim() == "")
+      newError.Promotions = "Promotions is required";
+    if (formValues.Active_Promotions.toString().trim() == "")
       newError.Active_Promotions = "Active Promotions is required";
-    if (formValues.Merchant_Min_Balance.trim() == "")
+    if (formValues.Merchant_Min_Balance.toString().trim() == "")
       newError.Merchant_Min_Balance = "Merchant Min Balance is required";
-    if (formValues.Consumer_Min_Balance.trim() == "")
+    if (formValues.Consumer_Min_Balance.toString().trim() == "")
       newError.Consumer_Min_Balance = "Consumer Min Balance is required";
-    if (formValues.License_Expiry_Days.trim() == "")
+    if (formValues.License_Expiry_Days.toString().trim() == "")
       newError.License_Expiry_Days = "License_Expiry_Days is required";
-    if (formValues.Home_Promotions.trim() == "") newError.Home_Promotions = "Receiver is required";
-    if (formValues.Home_Featured_Merchants.trim() == "")
+    if (formValues.Home_Promotions.toString().trim() == "")
+      newError.Home_Promotions = "Receiver is required";
+    if (formValues.Home_Featured_Merchants.toString().trim() == "")
       newError.Home_Featured_Merchants = "Home Featured Merchants is required";
-    if (formValues.Payment_Gateway.trim() == "")
+    if (formValues.Payment_Gateway.toString().trim() == "")
       newError.Payment_Gateway = "Payment Gateway is required";
-    if (formValues.Minimum_Amount.trim() == "")
+    if (formValues.Minimum_Amount.toString().trim() == "")
       newError.Minimum_Amount = "Minimum Amount is required";
-    if (formValues.Service_Charge.trim() == "")
+    if (formValues.Service_Charge.toString().trim() == "")
       newError.Service_Charge = "Service Charge is required";
     if (formValues.Telephone_Number.trim() == "")
       newError.Telephone_Number = "Telephone Number is required";
@@ -647,7 +666,8 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
               sx={{
                 display: "flex",
                 flexDirection: "row",
-                mt: 7,
+                mt: 9,
+                paddingTop: "0px",
               }}
             >
               <MonetizationOnIcon fontSize="medium" sx={{ color: "#2e7d32", mr: 2 }} />
