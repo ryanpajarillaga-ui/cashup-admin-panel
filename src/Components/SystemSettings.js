@@ -113,14 +113,10 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
   };
 
   const handleFieldChange = (e) => {
-    const { name, value } = e.target;
-    const isValidNumber = (value) => /^[+\d]*$/.test(value.replace(/\s+/g, ""));
+    const { name, value, label } = e.target;
+    const isValidNumber = (value) => /^[+\d]*\.?\d*$/.test(value.replace(/\s+/g, ""));
 
     if (numberFields.includes(name) && !isValidNumber(value)) {
-      // setFormValues((prevValues) => ({
-      //   ...prevValues,
-      //   [name]: "",
-      // }));
       return;
     }
     setFormValues((prevValues) => ({
@@ -131,10 +127,27 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
     const regex = /^(?!0\d)\d*(\.\d{0,2})?$/;
 
     if (value.trim() === "") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: `${name.replace("_", " ").replace("_", " ")} is required`,
-      }));
+      if (name == "Receiver" || name == "GN_Primary" || name == "Service_Charge") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: `${name.replace("_", " ")} % is required`,
+        }));
+      } else if (name == "Upline1") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: `${name.replace("1", " ")} # 1 % is required`,
+        }));
+      } else if (name == "Upline2") {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: `${name.replace("2", " ")} # 2 % is required`,
+        }));
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          [name]: `${name.replace("_", " ").replace("_", " ")} is required`,
+        }));
+      }
     } else if (
       decimalFields.includes(name) &&
       regex.test(value) &&
@@ -175,10 +188,11 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
   const validateForm = () => {
     const newError = {};
     console.log(formValues.Receiver);
-    if (formValues.Receiver.toString().trim() == "") newError.Receiver = "Receiver is required";
-    if (formValues.Upline1.toString().trim() == "") newError.Upline1 = "Upline1 is required";
-    if (formValues.GN_Primary.toString().trim() == "") newError.GN_Primary = "Receiver is required";
-    if (formValues.Upline2.toString().trim() == "") newError.Upline2 = "Upline2 is required";
+    if (formValues.Receiver.toString().trim() == "") newError.Receiver = "Receiver % is required";
+    if (formValues.Upline1.toString().trim() == "") newError.Upline1 = "Upline # 1 % is required";
+    if (formValues.GN_Primary.toString().trim() == "")
+      newError.GN_Primary = "GN Primary %  is required";
+    if (formValues.Upline2.toString().trim() == "") newError.Upline2 = "Upline # 2 % is required";
     if (formValues.Bank_Accounts.toString().trim() == "")
       newError.Bank_Accounts = "Bank Accounts is required";
     if (formValues.Trade_Licenses.toString().trim() == "")
@@ -204,7 +218,7 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
     if (formValues.Minimum_Amount.toString().trim() == "")
       newError.Minimum_Amount = "Minimum Amount is required";
     if (formValues.Service_Charge.toString().trim() == "")
-      newError.Service_Charge = "Service Charge is required";
+      newError.Service_Charge = "Service Charge % is required";
     if (formValues.Telephone_Number.trim() == "")
       newError.Telephone_Number = "Telephone Number is required";
     if (formValues.Mobile_Number.trim() == "") newError.Mobile_Number = "Mobile Number is required";
