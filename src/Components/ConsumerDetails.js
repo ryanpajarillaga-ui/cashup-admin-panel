@@ -53,7 +53,6 @@ const ConsumerDetails = ({
 
   useEffect(() => {
     fetchConsumerStatus();
-    console.log("date:", formatDate(consumerDetails.last_transaction_date));
   }, []);
 
   useEffect(() => {
@@ -85,14 +84,12 @@ const ConsumerDetails = ({
   };
 
   const handleSaveStatus = async () => {
-    console.log();
     const data = {
       in_consumer_id: selectedConsumer.consumer_id,
       in_consumer_status_id: selectedConsumerStatus,
       in_user_id: currentUserId,
       in_remarks: remarks,
     };
-    console.log("consumer id: ", data.in_consumer_id);
 
     const headers = {
       in_platform_type_id: 4,

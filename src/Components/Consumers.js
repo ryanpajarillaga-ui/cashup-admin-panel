@@ -121,7 +121,6 @@ const Consumers = () => {
   }, [selectedCity]);
 
   useEffect(() => {
-    console.log("fetchConsumerDetails");
     fetchConsumerDetails();
   }, [selectedConsumer]);
 
@@ -132,7 +131,6 @@ const Consumers = () => {
         // in_consumer_id: selectedConsumer.consumer_id,
       });
       setConsumerDetails(res.data.data);
-      console.log("merchant", consumerDetails);
     }
   };
 

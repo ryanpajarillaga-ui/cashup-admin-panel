@@ -120,7 +120,6 @@ const Merchants = () => {
   }, [selectedCity]);
 
   useEffect(() => {
-    console.log("fetchMerchantDetails");
     fetchMerchantDetails();
   }, [selectedMerchant]);
 

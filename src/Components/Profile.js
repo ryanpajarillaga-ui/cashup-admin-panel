@@ -65,7 +65,6 @@ const Profile = ({ anchorEl, submenuOpen, handleClose, userData, updateState }) 
 
   const handleSubmit = async (values) => {
     try {
-      console.log(values);
       const headers = { in_platform_type_id: "4" };
       const data = {
         in_user_id: userData.user_id,

@@ -2,7 +2,6 @@ import {
   Avatar,
   Box,
   Button,
-  Chip,
   Dialog,
   DialogActions,
   DialogContent,
@@ -10,9 +9,8 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  IconButton,
   InputAdornment,
-  InputLabel,
+  Link,
   MenuItem,
   Paper,
   Select,
@@ -28,22 +26,20 @@ import {
 import React, { useEffect, useState } from "react";
 
 import AdminLogo from "../Images/no_logo.png";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import CancelIcon from "@mui/icons-material/Cancel";
 import ClearIcon from "@mui/icons-material/Clear";
+import ContactsupportDetails from "./ContactSupportDetails";
+import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import Cookies from "js-cookie";
-import DubaiFlag from "../Images/dubai_flag.jpg";
-import EditIcon from "@mui/icons-material/Edit";
 import Header from "./Header";
-import InfoIcon from "@mui/icons-material/Info";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import MerchantDetails from "./MerchantDetails";
 import Pagination from "@mui/material/Pagination";
-import PersonIcon from "@mui/icons-material/Person";
-import PhoneIcon from "@mui/icons-material/Phone";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
+import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import Stack from "@mui/material/Stack";
-import StoreOutlinedIcon from "@mui/icons-material/StoreOutlined";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import VerifiedIcon from "@mui/icons-material/Verified";
 import VerticalNav from "./VerticalNav";
 import axios from "axios";
 import { useSnackbar } from "notistack";
@@ -52,62 +48,42 @@ const ContactSupport = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [contactSupports, setContactSupports] = useState([]);
-  const [merchantDetails, setMerchantDetails] = useState({});
-
-  const [selectedMerchant, setSelectedMerchant] = useState();
+  const [newContactSupports, setNewContactSupports] = useState([]);
+  const [reviewContactSupports, setReviewContactSupports] = useState([]);
+  const [contactSupportDetails, setContactSupportDetails] = useState([]);
 
   const [searchText, setSearchText] = useState("");
-  const [industries, setIndustries] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [areas, setAreas] = useState([]);
-  const [paymentModes, setPaymentModes] = useState([]);
-  const [branchTypes, setBranchTypes] = useState([]);
+
   const [searchCategory, setSearchCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRecords, setCurrentPageRecords] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const [pageLimit, setPageLimit] = useState();
-  const [openRegisterDialog, setOpenRegisterDialog] = useState(false);
-  const [error, setError] = useState("");
-  const [logoFile, setLogoFile] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(1);
-  const [newMerchant, setNewMerchant] = useState({
-    Merchant_Id: null,
-    Merchant_Name: "",
-    Fee_Rate: "",
-    Industry: null,
-    Branch_Type: null,
-    Address: "",
-    PO_Box: "",
-    City: null,
-    Area: null,
-    Email_Address: "",
-    Mobile_Number: "",
-    Telephone_Number: "",
-    Deposit_Amount: "",
-    Signup_Bonus: "",
-    Payment_Mode: null,
-    Payment_Details: "",
-  });
+  const [reviewRemarks, setReviewRemarks] = useState("");
+  const [closeRemarks, setCloseRemarks] = useState("");
+
   const [totalRecords, setTotalRecords] = useState();
-  const [errors, setErrors] = useState({});
-  const [logo, setLogo] = useState(AdminLogo);
-  const [openMerchantDetailsDialog, setOpenMerchantDetailsDialog] = useState(false);
+  const [selectedContactSupport, setSelectedContactSupport] = useState();
+
+  const [opencontactSupportDetails, setOpencontactSupportDetails] = useState(false);
+  const [opencontactSupportReview, setOpencontactSupportReview] = useState(false);
+  const [opencontactSupportClose, setOpencontactSupportClose] = useState(false);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
   const userDataObject = JSON.parse(Cookies.get("userData") || "{}");
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
-  var file = null;
-  // var reformatedDepositAmount = 0;
-  // var reformatedSignupBonus = 0;
 
   useEffect(() => {
     fetchSearchCategory();
     fetchContactSupports(searchText, selectedCategory, currentPage);
   }, []);
+
+  useEffect(() => {
+    fetchContactSupportDetails();
+  }, [selectedContactSupport]);
 
   const fetchContactSupports = async (searchText = "", selectedCategory = 1, pageNumber = 1) => {
     try {
@@ -123,6 +99,14 @@ const ContactSupport = () => {
       );
       response = response.data.data;
       const result = response.results_list || [];
+      const newContactSupportsArray = result.filter(
+        (contactSupport) => contactSupport.status == "New"
+      );
+      const reviewContactSupportsArray = result.filter(
+        (contactSupport) => contactSupport.status == "Reviewing"
+      );
+      setNewContactSupports(newContactSupportsArray);
+      setReviewContactSupports(reviewContactSupportsArray);
       setContactSupports(result);
       setTotalPages(response.total_number_of_pages);
       setCurrentPage(response.current_page_number);
@@ -131,6 +115,15 @@ const ContactSupport = () => {
       setCurrentPageRecords(response.rows_on_this_page);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
+    }
+  };
+
+  const fetchContactSupportDetails = async () => {
+    if (selectedContactSupport) {
+      const res = await axios.post(`${baseURLv1}/adminContactSupport/getContactRequestDetails`, {
+        in_contact_support_id: selectedContactSupport.contact_support_id,
+      });
+      setContactSupportDetails(res.data.data);
     }
   };
 
@@ -152,6 +145,14 @@ const ContactSupport = () => {
 
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
+  };
+
+  const handleReviewRemarksChange = (e) => {
+    setReviewRemarks(e.target.value);
+  };
+
+  const handlecloseRemarksChange = (e) => {
+    setCloseRemarks(e.target.value);
   };
 
   const handleCategoryChange = (e) => {
@@ -184,97 +185,6 @@ const ContactSupport = () => {
     return amount.toLocaleString("en-US", { style: "currency", currency: "USD" }).replace("$", "");
   }
 
-  const handleFieldChange = (e) => {
-    let { name, value } = e.target;
-    const numericFields = [
-      "Mobile_Number",
-      "Telephone_Number",
-      "Fee_Rate",
-      "Deposit_Amount",
-      "Signup_Bonus",
-    ];
-
-    if (numericFields.includes(name) && !/^\d*\.?\d*$/.test(value)) {
-      return;
-    }
-
-    setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: value }));
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: String(value).trim() === "" ? `${name.replace("_", " ")} is required` : "",
-    }));
-    if (name == "Email_Address" && String(value).trim() === "") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: "Valid email address is required",
-      }));
-    }
-    if (name === "Email_Address") {
-      const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (!emailPattern.test(value)) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "Valid email address is required",
-        }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "",
-        }));
-      }
-    }
-    if (name == "City") {
-      setSelectedCity(value);
-    }
-  };
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-
-    if (name === "Deposit_Amount" || name === "Signup_Bonus") {
-      const numberValue = parseFloat(value.replace(/,/g, ""));
-      if (!isNaN(numberValue)) {
-        const formattedValue = formatCurrency(numberValue);
-        setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: formattedValue }));
-        // name === "Deposit_Amount"
-        //   ? (reformatedDepositAmount = numberValue)
-        //   : (reformatedSignupBonus = numberValue);
-      }
-    }
-
-    if (name === "Fee_Rate") {
-      const numberValue = parseFloat(value);
-      if (!isNaN(numberValue) && numberValue <= 100) {
-        const formattedValue = formatCurrency(numberValue);
-        setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: formattedValue }));
-      } else {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          [name]: "Fee Rate should be less than or equal to 100",
-        }));
-      }
-    }
-  };
-
-  const handleLogoChange = (event) => {
-    file = event.target.files[0];
-    setLogoFile(file);
-
-    if (file) {
-      if (file.size > 500 * 1024) {
-        // 500KB size limit
-        setError("File size should be less than 500KB");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogo(reader.result);
-        setError("");
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) {
@@ -291,81 +201,87 @@ const ContactSupport = () => {
     return date.toLocaleString("en-US", options).replace(",", "").replace(/\//g, "-");
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (newMerchant.Merchant_Name.trim() === "")
-      newErrors.Merchant_Name = "Merchant Name is required";
-    if (newMerchant.Fee_Rate < 1) newErrors.Fee_Rate = "Fee Rate is required";
-    if (newMerchant.Industry < 1) newErrors.Industry = "Industry is required";
-    if (newMerchant.Branch_Type < 1) newErrors.Branch_Type = "Branch Type is required";
-    if (newMerchant.Address.trim() === "") newErrors.Address = "Address is required";
-    if (newMerchant.City < 1) newErrors.City = "City is required";
-    if (newMerchant.Area < 1) newErrors.Area = "Area is required";
-    if (newMerchant.Email_Address.trim() === "")
-      newErrors.Email_Address = "Valid email address is required";
-    if (newMerchant.Mobile_Number < 1) newErrors.Mobile_Number = "Mobile Number is required";
-    if (newMerchant.Telephone_Number < 1)
-      newErrors.Telephone_Number = "Telephone Number is required";
-    if (newMerchant.Deposit_Amount < 1) newErrors.Deposit_Amount = "Deposit Amount is required";
-    if (newMerchant.Signup_Bonus < 1) newErrors.Signup_Bonus = "Signup Bonus is required";
-    if (newMerchant.Payment_Mode < 1) newErrors.Payment_Mode = "Payment_Mode is required";
-    if (!newMerchant.Mobile_Number.startsWith("5"))
-      newErrors.Mobile_Number = "Valid mobile number is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const handleFileClick = (pdfUrl) => {
+    window.open(pdfUrl, "_blank");
   };
 
-  const handleSubmit = async (event) => {
-    if (!validateForm()) return;
-    event.preventDefault();
-    const data = new FormData();
-    data.append("in_merchant_name", newMerchant.Merchant_Name);
-    data.append("in_industry_id", newMerchant.Industry);
-    data.append("in_address", newMerchant.Address);
-    data.append("in_country_id", 1);
-    data.append("in_city_id", newMerchant.City);
-    data.append("in_area_id", newMerchant.Area);
-    data.append("in_pobox", newMerchant.PO_Box);
-    data.append("in_coordinate", "");
-    data.append("in_branch_type_id", newMerchant.Branch_Type);
+  const handlePreviewClick = (contactSupport) => {
+    setOpencontactSupportDetails(true);
+    setSelectedContactSupport(contactSupport);
+  };
 
-    data.append("in_tel_country_code_id", 1);
-    data.append("in_tel_no", newMerchant.Telephone_Number);
-    data.append("in_mobile_country_code_id", 1);
-    data.append("in_mobile_no", newMerchant.Mobile_Number);
-    data.append("in_email_address", newMerchant.Email_Address);
+  const handleContactSupportDetailsClose = () => {
+    setOpencontactSupportDetails(false);
+  };
 
-    data.append("in_merchant_fee", newMerchant.Fee_Rate);
-    data.append("in_user_id", currentUserId);
-    data.append("in_logo_path", logoFile);
-    data.append("in_deposit_amount", newMerchant.Deposit_Amount.replace(/,/g, ""));
-    data.append("in_signup_bonus", newMerchant.Signup_Bonus.replace(/,/g, ""));
-    data.append("in_payment_mode_id", newMerchant.Payment_Mode);
-    data.append("in_payment_details", newMerchant.Payment_Details);
+  const handleReviewClick = (contactSupport) => {
+    setOpencontactSupportReview(true);
+    setSelectedContactSupport(contactSupport);
+  };
 
+  const handleCloseClick = (contactSupport) => {
+    setOpencontactSupportClose(true);
+    setSelectedContactSupport(contactSupport);
+  };
+
+  const handleContactSupportReviewClose = () => {
+    setReviewRemarks("");
+    setOpencontactSupportReview(false);
+  };
+
+  const handleContactSupportCloseClose = () => {
+    setCloseRemarks("");
+    setOpencontactSupportClose(false);
+  };
+
+  const handleContactSupportReview = async () => {
+    const data = {
+      in_contact_support_id: selectedContactSupport.contact_support_id,
+      in_logged_user_id: currentUserId,
+      in_read_remarks: reviewRemarks,
+    };
+    const headers = {
+      in_platform_type_id: 4,
+    };
     try {
-      const response = await axios.post(
-        `${baseURLv1}/adminManageMerchant/registerNewMerchant`,
-        data,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            in_platform_type_id: 4,
-          },
-        }
-      );
-      setNewMerchant({});
-      setLogo(AdminLogo);
-      enqueueSnackbar(response.data.message, { variant: "success" });
+      const res = await axios.post(`${baseURLv1}/adminContactSupport/receiveContactRequest`, data, {
+        headers,
+      });
+      enqueueSnackbar(res.data.message, { variant: "success" });
+      handleContactSupportReviewClose();
+      fetchContactSupports(searchText, selectedCategory, currentPage);
+      setReviewRemarks("");
     } catch (err) {
-      const errorMessage = err.response ? err.response.data : "Error occurred";
-      enqueueSnackbar(errorMessage.message || errorMessage, { variant: "error" });
+      const errorMessage = err.response
+        ? err.response.data.message || "Error occurred"
+        : "Error occurred";
+      enqueueSnackbar(errorMessage, { variant: "error" });
     }
   };
 
-  const handleSelectedMerchant = (merchant) => {
-    setOpenMerchantDetailsDialog(true);
-    setSelectedMerchant(merchant);
+  const handleContactSupportClose = async () => {
+    const data = {
+      in_contact_support_id: selectedContactSupport.contact_support_id,
+      in_logged_user_id: currentUserId,
+      in_closed_remarks: closeRemarks,
+    };
+    const headers = {
+      in_platform_type_id: 4,
+    };
+    try {
+      const res = await axios.post(`${baseURLv1}/adminContactSupport/closeContactRequest`, data, {
+        headers,
+      });
+      enqueueSnackbar(res.data.message, { variant: "success" });
+      handleContactSupportCloseClose();
+      fetchContactSupports(searchText, selectedCategory, currentPage);
+      setCloseRemarks("");
+    } catch (err) {
+      const errorMessage = err.response
+        ? err.response.data.message || "Error occurred"
+        : "Error occurred";
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    }
   };
 
   return (
@@ -374,15 +290,86 @@ const ContactSupport = () => {
       <Box component="main" marginTop="4%" sx={{ flexGrow: 1, p: 3 }}>
         <Header />
 
-        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
-          <Avatar sx={{ bgcolor: "#2e7d32", mr: 2, mb: 1 }}>
-            <SupportAgentIcon />
-          </Avatar>
-          <Typography variant="h6" gutterBottom fontSize={"1.2rem"}>
-            Contact Support Requests
-          </Typography>
-        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            mb: 2,
+          }}
+        >
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
+              <SupportAgentIcon />
+            </Avatar>
+            <Typography variant="h6" gutterBottom fontSize={"1.2rem"}>
+              Contact Support Requests
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+            {reviewContactSupports.length > 0 ? (
+              <Paper
+                elevation={3}
+                sx={{
+                  padding: "5px",
+                  maxWidth: "300px",
+                  marginRight: 3,
 
+                  backgroundColor: "lightyellow",
+                }}
+              >
+                <Typography sx={{ fontSize: "0.8rem" }}>
+                  There are{" "}
+                  <Box component="span" sx={{ color: "orange" }}>
+                    {reviewContactSupports.length}
+                  </Box>{" "}
+                  support requests on progress.
+                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    size="small"
+                    color="customGreen"
+                    variant="text"
+                    onClick={() => setContactSupports(reviewContactSupports)}
+                    sx={{ fontSize: "0.8rem", textTransform: "none" }}
+                  >
+                    View All
+                  </Button>
+                </Box>
+              </Paper>
+            ) : null}
+
+            {newContactSupports.length > 0 ? (
+              <Paper
+                elevation={3}
+                sx={{
+                  padding: "5px",
+                  maxWidth: "300px",
+                  backgroundColor: "lightyellow",
+                }}
+              >
+                <Typography sx={{ fontSize: "0.8rem" }}>
+                  There are{" "}
+                  <Box component="span" sx={{ color: "red" }}>
+                    {newContactSupports.length}
+                  </Box>{" "}
+                  new support requests.
+                </Typography>
+                <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button
+                    size="small"
+                    color="customGreen"
+                    variant="text"
+                    onClick={() => setContactSupports(newContactSupports)}
+                    sx={{ fontSize: "0.8rem", textTransform: "none" }}
+                  >
+                    View All
+                  </Button>
+                </Box>
+              </Paper>
+            ) : null}
+          </Box>
+        </Box>
         <Paper elevation={3} sx={{ padding: "20px", maxWidth: "1300px", marginBottom: "2rem" }}>
           <Grid container spacing={2} style={{ paddingTop: 0 }}>
             <Grid item xs={7}>
@@ -480,15 +467,14 @@ const ContactSupport = () => {
                     <TableCell sx={{ padding: "4px" }}>Status</TableCell>
                     <TableCell sx={{ padding: "4px" }}></TableCell>
                     <TableCell sx={{ padding: "4px" }}></TableCell>
+                    <TableCell sx={{ padding: "4px" }}></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {contactSupports.map((contactSupport) => (
                     <TableRow
                       key={contactSupport.contact_support_id}
-                      onClick={() => handleSelectedMerchant(contactSupport)}
                       sx={{
-                        cursor: "pointer",
                         "&:hover": {
                           backgroundColor: "rgba(0, 0, 0, 0.02)",
                         },
@@ -540,14 +526,60 @@ const ContactSupport = () => {
                         </Typography>
                       </TableCell>
 
-                      <TableCell sx={{ padding: "4px" }} align="right">
-                        <Typography
-                          fontSize="0.8rem"
-                          color={contactSupport.points_balance < 100 ? "red" : "black"}
-                        >
-                          {contactSupport.status}
-                        </Typography>
+                      <TableCell sx={{ padding: "4px" }}>
+                        <Box sx={{ display: "flex", flexDirection: "row" }}>
+                          {contactSupport.status == "Closed" ? (
+                            <VerifiedIcon color="primary" />
+                          ) : null}
+                          <Typography
+                            fontSize="0.8rem"
+                            color={
+                              contactSupport.status == "New"
+                                ? "red"
+                                : contactSupport.status == "Reviewing"
+                                ? "orange"
+                                : "black"
+                            }
+                            fontWeight={"bold"}
+                          >
+                            {contactSupport.status.toUpperCase()}
+                          </Typography>
+                        </Box>
                       </TableCell>
+                      {contactSupport.status == "New" || contactSupport.status == "Closed" ? (
+                        <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
+                          <AssignmentIcon
+                            color={"customGreen"}
+                            onClick={() => handleFileClick(contactSupport.file_attachement)}
+                          />
+                        </TableCell>
+                      ) : (
+                        <TableCell sx={{ padding: "4px" }}></TableCell>
+                      )}
+
+                      <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
+                        <ContentPasteIcon
+                          color={"customGreen"}
+                          onClick={() => handlePreviewClick(contactSupport)}
+                        />
+                      </TableCell>
+                      {contactSupport.status == "New" ? (
+                        <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
+                          <SettingsSuggestIcon
+                            color={"customGreen"}
+                            onClick={() => handleReviewClick(contactSupport)}
+                          />
+                        </TableCell>
+                      ) : null}
+
+                      {contactSupport.status == "Reviewing" ? (
+                        <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
+                          <CancelIcon
+                            color={"customGreen"}
+                            onClick={() => handleCloseClick(contactSupport)}
+                          />
+                        </TableCell>
+                      ) : null}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -576,6 +608,155 @@ const ContactSupport = () => {
             </Grid>
           </TableContainer>
         </Paper>
+
+        <Dialog
+          open={opencontactSupportReview}
+          onClose={handleContactSupportReviewClose}
+          aria-labelledby="form-dialog-title"
+          maxWidth="xs"
+          fullWidth
+        >
+          <Box>
+            <DialogTitle id="form-dialog-title">
+              <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
+                  <SettingsSuggestIcon />
+                </Avatar>
+                <Typography variant="h6">Receive & Review Request</Typography>
+              </Box>
+            </DialogTitle>
+
+            <DialogContent>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                value={reviewRemarks}
+                onChange={handleReviewRemarksChange}
+                placeholder="Please provide your remarks for this request."
+                color="customGreen"
+                InputProps={{
+                  sx: { fontSize: "0.8rem", marginTop: "2rem", marginBottom: "1rem" },
+                }}
+                inputProps={{ maxLength: 50 }}
+              />
+              <Typography sx={{ fontSize: "0.9rem" }}>
+                Are you sure you want to receive and review this support request?
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleContactSupportReviewClose}
+                color="customGreen"
+                sx={{ fontSize: "0.8rem" }}
+              >
+                CANCEL
+              </Button>
+              <Button
+                onClick={handleContactSupportReview}
+                color="customGreen"
+                sx={{ fontSize: "0.8rem" }}
+              >
+                REVIEW
+              </Button>
+            </DialogActions>
+          </Box>
+        </Dialog>
+
+        <Dialog
+          open={opencontactSupportClose}
+          onClose={handleContactSupportCloseClose}
+          aria-labelledby="form-dialog-title"
+          maxWidth="xs"
+          fullWidth
+        >
+          <Box>
+            <DialogTitle id="form-dialog-title">
+              <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
+                  <CancelIcon />
+                </Avatar>
+                <Typography variant="h6">Close Support Request</Typography>
+              </Box>
+            </DialogTitle>
+
+            <DialogContent>
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                value={closeRemarks}
+                onChange={handlecloseRemarksChange}
+                placeholder="Please provide your remarks for this request."
+                color="customGreen"
+                InputProps={{
+                  sx: { fontSize: "0.8rem", marginTop: "2rem", marginBottom: "1rem" },
+                }}
+                inputProps={{ maxLength: 50 }}
+              />
+              <Typography sx={{ fontSize: "0.9rem", marginBottom: "6px" }}>
+                Please make sure the request has been reviewed and already resolved before closing.
+              </Typography>
+              <Typography sx={{ fontSize: "0.9rem" }}>
+                Are you sure you want to close this support request?
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={handleContactSupportCloseClose}
+                color="customGreen"
+                sx={{ fontSize: "0.8rem" }}
+              >
+                CANCEL
+              </Button>
+              <Button
+                onClick={handleContactSupportClose}
+                color="customGreen"
+                sx={{ fontSize: "0.8rem" }}
+              >
+                CLOSE
+              </Button>
+            </DialogActions>
+          </Box>
+        </Dialog>
+
+        <Dialog
+          open={opencontactSupportDetails}
+          onClose={handleContactSupportDetailsClose}
+          aria-labelledby="form-dialog-title"
+          maxWidth="md"
+          fullWidth
+        >
+          <Box>
+            <DialogTitle id="form-dialog-title">
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                  <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
+                    <ContentPasteIcon />
+                  </Avatar>
+                  <Typography variant="h6">Contact Support Details</Typography>
+                </Box>
+                <Button onClick={handleContactSupportDetailsClose} color={"customGreen"}>
+                  X
+                </Button>
+              </Box>
+            </DialogTitle>
+
+            <DialogContent>
+              <ContactsupportDetails
+                selectedContactSupport={selectedContactSupport}
+                contactSupportDetails={contactSupportDetails}
+              />
+            </DialogContent>
+          </Box>
+        </Dialog>
       </Box>
     </Box>
   );

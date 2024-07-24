@@ -11,7 +11,6 @@ const HomePage = () => {
   const [fullname, setFullname] = useState("");
   const userDataObject = JSON.parse(Cookies.get("userData") || "{}");
   const userData = userDataObject?.data?.[0];
-  console.log(userData);
 
   const updateState = (fullName) => setFullname(fullName);
 

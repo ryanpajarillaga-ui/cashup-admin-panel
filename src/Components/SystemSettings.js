@@ -187,7 +187,6 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
 
   const validateForm = () => {
     const newError = {};
-    console.log(formValues.Receiver);
     if (formValues.Receiver.toString().trim() == "") newError.Receiver = "Receiver % is required";
     if (formValues.Upline1.toString().trim() == "") newError.Upline1 = "Upline # 1 % is required";
     if (formValues.GN_Primary.toString().trim() == "")
@@ -231,7 +230,6 @@ const SystemSettings = ({ handleSystemSettingsClose }) => {
   };
 
   const handleSaveSettings = async () => {
-    console.log("errors list :", errors);
     if (!validateForm()) {
       return;
     }
