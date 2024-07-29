@@ -117,79 +117,85 @@ const ContactsupportDetails = ({ selectedContactSupport, contactSupportDetails }
           </Box>
         </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column", mb: 3 }}>
-          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
-            <DownloadIcon sx={{ mr: 2, color: "#2e7d32" }} />
-            <Typography variant="h6" fontSize="1.05rem">
-              Received By:
-            </Typography>
-          </Box>
-
-          <Box ml={5}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box>
-                <Typography variant="body2" fontSize="0.9rem" gutterBottom>
-                  {contactSupportDetails.received_by_name}
-                </Typography>
-                <Typography variant="body2" fontSize="0.7rem" gutterBottom>
-                  {contactSupportDetails.received_by_designation}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography variant="body2" fontSize="0.9rem" gutterBottom>
-                  {formatDate(contactSupportDetails.received_timestamp)}
-                </Typography>
-              </Box>
+        {contactSupportDetails.received_by_name == null &&
+        contactSupportDetails.received_by_designation == null ? null : (
+          <Box sx={{ display: "flex", flexDirection: "column", mb: 3 }}>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+              <DownloadIcon sx={{ mr: 2, color: "#2e7d32" }} />
+              <Typography variant="h6" fontSize="1.05rem">
+                Received By:
+              </Typography>
             </Box>
-            <Typography variant="body2" fontSize="0.9rem" mt={2} gutterBottom>
-              {contactSupportDetails.received_remarks}
-            </Typography>
-          </Box>
-        </Box>
 
-        <Box sx={{ display: "flex", flexDirection: "column" }}>
-          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
-            <CancelIcon sx={{ mr: 2, color: "#2e7d32" }} />
-            <Typography variant="h6" fontSize="1.05rem">
-              Closed By:
-            </Typography>
-          </Box>
-
-          <Box ml={5}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Box>
-                <Typography variant="body2" fontSize="0.8rem" gutterBottom>
-                  {contactSupportDetails.closed_by_name}
-                </Typography>
-                <Typography variant="body2" fontSize="0.8rem" gutterBottom>
-                  {contactSupportDetails.closed_by_designation}
-                </Typography>
+            <Box ml={5}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box>
+                  <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+                    {contactSupportDetails.received_by_name}
+                  </Typography>
+                  <Typography variant="body2" fontSize="0.7rem" gutterBottom>
+                    {contactSupportDetails.received_by_designation}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+                    {formatDate(contactSupportDetails.received_timestamp)}
+                  </Typography>
+                </Box>
               </Box>
-              <Box>
-                <Typography variant="body2" fontSize="0.9rem" gutterBottom>
-                  {formatDate(contactSupportDetails.closed_timestamp)}
-                </Typography>
-              </Box>
+              <Typography variant="body2" fontSize="0.9rem" mt={2} gutterBottom>
+                {contactSupportDetails.received_remarks}
+              </Typography>
             </Box>
-            <Typography variant="body2" fontSize="0.8rem" mt={2} gutterBottom>
-              {contactSupportDetails.closed_remarks}
-            </Typography>
           </Box>
-        </Box>
+        )}
+
+        {contactSupportDetails.closed_by_name == null &&
+        contactSupportDetails.closed_by_designation == null ? null : (
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", mb: 1 }}>
+              <CancelIcon sx={{ mr: 2, color: "#2e7d32" }} />
+              <Typography variant="h6" fontSize="1.05rem">
+                Closed By:
+              </Typography>
+            </Box>
+
+            <Box ml={5}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Box>
+                  <Typography variant="body2" fontSize="0.8rem" gutterBottom>
+                    {contactSupportDetails.closed_by_name}
+                  </Typography>
+                  <Typography variant="body2" fontSize="0.8rem" gutterBottom>
+                    {contactSupportDetails.closed_by_designation}
+                  </Typography>
+                </Box>
+                <Box>
+                  <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+                    {formatDate(contactSupportDetails.closed_timestamp)}
+                  </Typography>
+                </Box>
+              </Box>
+              <Typography variant="body2" fontSize="0.8rem" mt={2} gutterBottom>
+                {contactSupportDetails.closed_remarks}
+              </Typography>
+            </Box>
+          </Box>
+        )}
       </Grid>
     </Grid>
   );

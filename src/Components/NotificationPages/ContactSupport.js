@@ -1,8 +1,9 @@
-import { Badge, Box, Divider, Link, Tooltip, Typography } from "@mui/material";
+import { Badge, Box, Divider, Tooltip, Typography } from "@mui/material";
 import React, { Fragment, useState } from "react";
 
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
+import { Link } from "react-router-dom";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { format } from "date-fns";
 
@@ -46,13 +47,11 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
               </Typography>
             </Box>
             <Link
-              href="/view-all"
-              color="rgba(67,160,71)"
-              variant="body1"
-              fontSize={"0.8rem"}
-              sx={{ textDecoration: "none" }}
+              to="/contactsupport"
+              state={{ message: "View All Clicked" }}
+              style={{ color: "rgba(67,160,71)", fontSize: "0.8rem", textDecoration: "none" }}
             >
-              View All >
+              View All &gt;
             </Link>
           </Box>
           <Divider />
@@ -75,27 +74,40 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
                     border: 2, // Sets the border width
                     marginBottom: "1rem",
                     color: "rgba(196, 196, 196)",
+                    "&:hover": {
+                      backgroundColor: "rgba(0, 0, 0, 0.02)",
+                    },
+                    cursor: "pointer",
                   }}
                 >
-                  <Box
-                    px={2}
-                    py={1}
-                    sx={{
-                      marginBottom: "2px",
-                      width: "100%",
+                  <Link
+                    to="/contactsupport"
+                    state={{
+                      message: "Notification Clicked",
+                      notification: notification,
                     }}
+                    style={{ color: "rgba(67,160,71)", fontSize: "0.8rem", textDecoration: "none" }}
                   >
-                    <Typography color={"#2b2827"} fontSize={".8rem"} fontWeight={"200"}>
-                      {notification.message_sender}
-                    </Typography>
-                    <Typography color={"#2b2827"} fontSize={".8rem"}>
-                      Date Sent:{" "}
-                      {format(new Date(notification.message_timestamp), "dd/MM/yyyy hh:mm a")}
-                    </Typography>
-                    <Typography color={"#2b2827"} fontSize={".75rem"}>
-                      Message: {notification.message_preview}
-                    </Typography>
-                  </Box>
+                    <Box
+                      px={2}
+                      py={1}
+                      sx={{
+                        marginBottom: "2px",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography color={"#2b2827"} fontSize={".8rem"} fontWeight={"200"}>
+                        {notification.message_sender}
+                      </Typography>
+                      <Typography color={"#2b2827"} fontSize={".8rem"}>
+                        Date Sent:{" "}
+                        {format(new Date(notification.message_timestamp), "dd/MM/yyyy hh:mm a")}
+                      </Typography>
+                      <Typography color={"#2b2827"} fontSize={".75rem"}>
+                        Message: {notification.message_preview}
+                      </Typography>
+                    </Box>
+                  </Link>
                 </Box>
               </li>
             ))}

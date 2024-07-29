@@ -9,6 +9,7 @@ import {
   FormControl,
   FormHelperText,
   Grid,
+  IconButton,
   InputAdornment,
   Link,
   MenuItem,
@@ -21,12 +22,14 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import AdminLogo from "../Images/no_logo.png";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import AttachmentIcon from "@mui/icons-material/Attachment";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ClearIcon from "@mui/icons-material/Clear";
 import ContactsupportDetails from "./ContactSupportDetails";
@@ -41,7 +44,9 @@ import Stack from "@mui/material/Stack";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import VerticalNav from "./VerticalNav";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 import { useSnackbar } from "notistack";
 
 const ContactSupport = () => {
@@ -50,6 +55,8 @@ const ContactSupport = () => {
   const [contactSupports, setContactSupports] = useState([]);
   const [newContactSupports, setNewContactSupports] = useState([]);
   const [reviewContactSupports, setReviewContactSupports] = useState([]);
+  const [newContactSupportsCount, setNewContactSupportsCount] = useState();
+  const [reviewContactSupportsCount, setReviewContactSupportsCount] = useState();
   const [contactSupportDetails, setContactSupportDetails] = useState([]);
 
   const [searchText, setSearchText] = useState("");
@@ -75,10 +82,27 @@ const ContactSupport = () => {
   const userDataObject = JSON.parse(Cookies.get("userData") || "{}");
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
+  const location = useLocation();
+  const { message } = location.state || {};
+  const { notification } = location.state || {};
+  const [notificationMessage, setNotificationMessage] = useState(message);
 
   useEffect(() => {
     fetchSearchCategory();
-    fetchContactSupports(searchText, selectedCategory, currentPage);
+
+    if (notificationMessage == "View All Clicked") {
+      handleNewContactSupport();
+    }
+    // else if (notificationMessage == "Notification Clicked") {
+    //   console.log(notification);
+    //   setOpencontactSupportDetails(true);
+    //   setSelectedContactSupport(notification);
+    // }
+    else {
+      fetchContactSupports(searchText, selectedCategory, currentPage);
+    }
+
+    setNotificationMessage(null);
   }, []);
 
   useEffect(() => {
@@ -99,15 +123,11 @@ const ContactSupport = () => {
       );
       response = response.data.data;
       const result = response.results_list || [];
-      const newContactSupportsArray = result.filter(
-        (contactSupport) => contactSupport.status == "New"
-      );
-      const reviewContactSupportsArray = result.filter(
-        (contactSupport) => contactSupport.status == "Reviewing"
-      );
-      setNewContactSupports(newContactSupportsArray);
-      setReviewContactSupports(reviewContactSupportsArray);
+
       setContactSupports(result);
+
+      setNewContactSupportsCount(response.new_request_count);
+      setReviewContactSupportsCount(response.review_request_count);
       setTotalPages(response.total_number_of_pages);
       setCurrentPage(response.current_page_number);
       setTotalRecords(response.total_row_count);
@@ -177,7 +197,6 @@ const ContactSupport = () => {
   };
 
   const handlePageChange = (event, page) => {
-    setCurrentPage(page);
     fetchContactSupports(searchText, selectedCategory, page);
   };
 
@@ -284,6 +303,18 @@ const ContactSupport = () => {
     }
   };
 
+  const handleNewContactSupport = () => {
+    setSelectedCategory(3);
+    setSearchText("New");
+    fetchContactSupports("New", 3);
+  };
+
+  const handleReviewContactSupport = () => {
+    setSelectedCategory(3);
+    setSearchText("Reviewing");
+    fetchContactSupports("Reviewing", 3);
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <VerticalNav />
@@ -307,7 +338,7 @@ const ContactSupport = () => {
             </Typography>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-            {reviewContactSupports.length > 0 ? (
+            {reviewContactSupportsCount > 0 ? (
               <Paper
                 elevation={3}
                 sx={{
@@ -321,7 +352,7 @@ const ContactSupport = () => {
                 <Typography sx={{ fontSize: "0.8rem" }}>
                   There are{" "}
                   <Box component="span" sx={{ color: "orange" }}>
-                    {reviewContactSupports.length}
+                    {reviewContactSupportsCount}
                   </Box>{" "}
                   support requests on progress.
                 </Typography>
@@ -330,7 +361,7 @@ const ContactSupport = () => {
                     size="small"
                     color="customGreen"
                     variant="text"
-                    onClick={() => setContactSupports(reviewContactSupports)}
+                    onClick={handleReviewContactSupport}
                     sx={{ fontSize: "0.8rem", textTransform: "none" }}
                   >
                     View All
@@ -339,7 +370,7 @@ const ContactSupport = () => {
               </Paper>
             ) : null}
 
-            {newContactSupports.length > 0 ? (
+            {newContactSupportsCount > 0 ? (
               <Paper
                 elevation={3}
                 sx={{
@@ -351,7 +382,7 @@ const ContactSupport = () => {
                 <Typography sx={{ fontSize: "0.8rem" }}>
                   There are{" "}
                   <Box component="span" sx={{ color: "red" }}>
-                    {newContactSupports.length}
+                    {newContactSupportsCount}
                   </Box>{" "}
                   new support requests.
                 </Typography>
@@ -360,7 +391,7 @@ const ContactSupport = () => {
                     size="small"
                     color="customGreen"
                     variant="text"
-                    onClick={() => setContactSupports(newContactSupports)}
+                    onClick={handleNewContactSupport}
                     sx={{ fontSize: "0.8rem", textTransform: "none" }}
                   >
                     View All
@@ -546,38 +577,47 @@ const ContactSupport = () => {
                           </Typography>
                         </Box>
                       </TableCell>
-                      {contactSupport.status == "New" || contactSupport.status == "Closed" ? (
+                      {(contactSupport.status == "New" || contactSupport.status == "Closed") &&
+                      contactSupport.file_attachement ? (
                         <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                          <AssignmentIcon
-                            color={"customGreen"}
-                            onClick={() => handleFileClick(contactSupport.file_attachement)}
-                          />
+                          <Tooltip title={"File Attachment"}>
+                            <AttachmentIcon
+                              color={"customGreen"}
+                              onClick={() => handleFileClick(contactSupport.file_attachement)}
+                            />
+                          </Tooltip>
                         </TableCell>
                       ) : (
                         <TableCell sx={{ padding: "4px" }}></TableCell>
                       )}
 
                       <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                        <ContentPasteIcon
-                          color={"customGreen"}
-                          onClick={() => handlePreviewClick(contactSupport)}
-                        />
+                        <Tooltip title={"Preview Contact Support"}>
+                          <VisibilityIcon
+                            color={"customGreen"}
+                            onClick={() => handlePreviewClick(contactSupport)}
+                          />
+                        </Tooltip>
                       </TableCell>
                       {contactSupport.status == "New" ? (
                         <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                          <SettingsSuggestIcon
-                            color={"customGreen"}
-                            onClick={() => handleReviewClick(contactSupport)}
-                          />
+                          <Tooltip title={"Review"}>
+                            <SettingsSuggestIcon
+                              color={"customGreen"}
+                              onClick={() => handleReviewClick(contactSupport)}
+                            />
+                          </Tooltip>
                         </TableCell>
                       ) : null}
 
                       {contactSupport.status == "Reviewing" ? (
                         <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                          <CancelIcon
-                            color={"customGreen"}
-                            onClick={() => handleCloseClick(contactSupport)}
-                          />
+                          <Tooltip title={"Close Support Request"}>
+                            <CancelIcon
+                              color={"customGreen"}
+                              onClick={() => handleCloseClick(contactSupport)}
+                            />
+                          </Tooltip>
                         </TableCell>
                       ) : null}
                     </TableRow>
@@ -638,7 +678,7 @@ const ContactSupport = () => {
                 InputProps={{
                   sx: { fontSize: "0.8rem", marginTop: "2rem", marginBottom: "1rem" },
                 }}
-                inputProps={{ maxLength: 50 }}
+                inputProps={{ maxLength: 100 }}
               />
               <Typography sx={{ fontSize: "0.9rem" }}>
                 Are you sure you want to receive and review this support request?
@@ -692,7 +732,7 @@ const ContactSupport = () => {
                 InputProps={{
                   sx: { fontSize: "0.8rem", marginTop: "2rem", marginBottom: "1rem" },
                 }}
-                inputProps={{ maxLength: 50 }}
+                inputProps={{ maxLength: 100 }}
               />
               <Typography sx={{ fontSize: "0.9rem", marginBottom: "6px" }}>
                 Please make sure the request has been reviewed and already resolved before closing.
@@ -739,7 +779,7 @@ const ContactSupport = () => {
               >
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                   <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
-                    <ContentPasteIcon />
+                    <SupportAgentIcon />
                   </Avatar>
                   <Typography variant="h6">Contact Support Details</Typography>
                 </Box>
