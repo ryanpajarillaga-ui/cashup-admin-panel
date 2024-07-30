@@ -6,12 +6,18 @@ import IconButton from "@mui/material/IconButton";
 import { Link } from "react-router-dom";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
+  const navigate = useNavigate();
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const toggleNotificationsDrawer = () => {
     setIsNotificationDrawerOpen((open) => !open);
     fetchNotifications("adminHome/getNotificationContactSupport");
+  };
+
+  const handleNotificationClick = (notificationId) => {
+    navigate("/contactsupport", { state: { contact_support_id: notificationId } });
   };
 
   return (
@@ -68,7 +74,7 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
                   mx={2}
                   sx={{
                     display: "flex",
-                    justifyContent: "center", // Aligns the content to the left
+                    justifyContent: "flex-start", // Aligns the content to the left
                     borderRadius: 2, // Custom border radius
                     bgcolor: "rgb(232, 245, 233)", // Custom background color
                     border: 2, // Sets the border width
@@ -79,6 +85,7 @@ const ContactSupport = ({ fetchNotifications, notifications, userData }) => {
                     },
                     cursor: "pointer",
                   }}
+                  onClick={() => handleNotificationClick(notification.contact_support_id)}
                 >
                   <Link
                     to="/contactsupport"

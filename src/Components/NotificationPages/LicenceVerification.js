@@ -78,7 +78,7 @@ const LicenceVerification = ({ fetchNotifications, notifications, userData }) =>
                   mx={2}
                   sx={{
                     display: "flex",
-                    justifyContent: "center", // Aligns the content to the left
+                    justifyContent: "flex-start", // Aligns the content to the left
                     borderRadius: 2, // Custom border radius
                     bgcolor: "rgb(227, 242, 244)", // Custom background color
                     border: 2, // Sets the border width

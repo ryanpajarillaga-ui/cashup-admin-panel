@@ -9,9 +9,7 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  IconButton,
   InputAdornment,
-  Link,
   MenuItem,
   Paper,
   Select,
@@ -27,13 +25,10 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-import AdminLogo from "../Images/no_logo.png";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import CancelIcon from "@mui/icons-material/Cancel";
 import ClearIcon from "@mui/icons-material/Clear";
 import ContactsupportDetails from "./ContactSupportDetails";
-import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import Cookies from "js-cookie";
 import Header from "./Header";
 import Pagination from "@mui/material/Pagination";
@@ -53,8 +48,6 @@ const ContactSupport = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [contactSupports, setContactSupports] = useState([]);
-  const [newContactSupports, setNewContactSupports] = useState([]);
-  const [reviewContactSupports, setReviewContactSupports] = useState([]);
   const [newContactSupportsCount, setNewContactSupportsCount] = useState();
   const [reviewContactSupportsCount, setReviewContactSupportsCount] = useState();
   const [contactSupportDetails, setContactSupportDetails] = useState([]);
@@ -84,7 +77,7 @@ const ContactSupport = () => {
   const currentUserId = userData.user_id;
   const location = useLocation();
   const { message } = location.state || {};
-  const { notification } = location.state || {};
+  const { contact_support_id } = location.state || {};
   const [notificationMessage, setNotificationMessage] = useState(message);
 
   useEffect(() => {
@@ -92,13 +85,9 @@ const ContactSupport = () => {
 
     if (notificationMessage == "View All Clicked") {
       handleNewContactSupport();
-    }
-    // else if (notificationMessage == "Notification Clicked") {
-    //   console.log(notification);
-    //   setOpencontactSupportDetails(true);
-    //   setSelectedContactSupport(notification);
-    // }
-    else {
+    } else if (contact_support_id) {
+      fetchContactSupportById();
+    } else {
       fetchContactSupports(searchText, selectedCategory, currentPage);
     }
 
@@ -128,6 +117,24 @@ const ContactSupport = () => {
 
       setNewContactSupportsCount(response.new_request_count);
       setReviewContactSupportsCount(response.review_request_count);
+      setTotalPages(response.total_number_of_pages);
+      setCurrentPage(response.current_page_number);
+      setTotalRecords(response.total_row_count);
+      setPageLimit(response.rows_per_page_limit);
+      setCurrentPageRecords(response.rows_on_this_page);
+    } catch (error) {
+      console.error("Error fetching Merchants:", error);
+    }
+  };
+
+  const fetchContactSupportById = async () => {
+    try {
+      let response = await axios.post(`${baseURLv1}/adminContactSupport/searchContactRequestByID`, {
+        in_contact_support_id: contact_support_id,
+      });
+      response = response.data.data;
+      const result = response.results_list || [];
+      setContactSupports(result);
       setTotalPages(response.total_number_of_pages);
       setCurrentPage(response.current_page_number);
       setTotalRecords(response.total_row_count);
@@ -199,10 +206,6 @@ const ContactSupport = () => {
   const handlePageChange = (event, page) => {
     fetchContactSupports(searchText, selectedCategory, page);
   };
-
-  function formatCurrency(amount) {
-    return amount.toLocaleString("en-US", { style: "currency", currency: "USD" }).replace("$", "");
-  }
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -354,7 +357,7 @@ const ContactSupport = () => {
                   <Box component="span" sx={{ color: "orange" }}>
                     {reviewContactSupportsCount}
                   </Box>{" "}
-                  support requests on progress.
+                  support requests on review.
                 </Typography>
                 <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                   <Button
@@ -588,11 +591,11 @@ const ContactSupport = () => {
                           </Tooltip>
                         </TableCell>
                       ) : (
-                        <TableCell sx={{ padding: "4px" }}></TableCell>
+                        <TableCell></TableCell>
                       )}
 
                       <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                        <Tooltip title={"Preview Contact Support"}>
+                        <Tooltip title={"View Details"}>
                           <VisibilityIcon
                             color={"customGreen"}
                             onClick={() => handlePreviewClick(contactSupport)}

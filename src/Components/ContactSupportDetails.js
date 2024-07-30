@@ -1,30 +1,6 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormHelperText,
-  Grid,
-  InputAdornment,
-  Link,
-  MenuItem,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 
 import CancelIcon from "@mui/icons-material/Cancel";
-import ContentPasteIcon from "@mui/icons-material/ContentPaste";
 import DownloadIcon from "@mui/icons-material/Download";
 import EmailIcon from "@mui/icons-material/Email";
 import React from "react";
@@ -105,15 +81,17 @@ const ContactsupportDetails = ({ selectedContactSupport, contactSupportDetails }
             <Typography variant="body2" fontSize="0.9rem" gutterBottom>
               {contactSupportDetails.message}
             </Typography>
-            <Button
-              size="small"
-              color="customGreen"
-              variant="text"
-              onClick={() => handleFileClick(selectedContactSupport.file_attachement)}
-              sx={{ fontSize: "0.8rem", textTransform: "none" }}
-            >
-              View Attachment
-            </Button>
+            {selectedContactSupport.file_attachement ? (
+              <Button
+                size="small"
+                color="customGreen"
+                variant="text"
+                onClick={() => handleFileClick(selectedContactSupport.file_attachement)}
+                sx={{ fontSize: "0.8rem", textTransform: "none" }}
+              >
+                View Attachment
+              </Button>
+            ) : null}
           </Box>
         </Box>
 

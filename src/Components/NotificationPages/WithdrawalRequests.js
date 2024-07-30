@@ -78,7 +78,7 @@ const WithdrawalRequests = ({ fetchNotifications, notifications, userData }) => 
                   mx={2}
                   sx={{
                     display: "flex",
-                    justifyContent: "center", // Aligns the content to the left
+                    justifyContent: "flex-start", // Aligns the content to the left
                     borderColor: "rgb(199, 225, 188)", // Custom border color
                     borderRadius: 2, // Custom border radius
                     bgcolor: "rgb(252, 252, 242)", // Custom background color
