@@ -54,13 +54,13 @@ const ContactsupportDetails = ({ selectedContactSupport, contactSupportDetails }
               </Typography>
             </Box>
             <Box ml={5}>
-              <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+              <Typography variant="body2" fontSize="0.9rem">
                 {contactSupportDetails.sender_name}
               </Typography>
-              <Typography variant="body2" fontSize="0.75rem" gutterBottom>
+              <Typography variant="body2" fontSize="0.75rem">
                 {contactSupportDetails.sender_account_name}
               </Typography>
-              <Typography variant="body2" fontSize="0.75rem" gutterBottom>
+              <Typography variant="body2" fontSize="0.75rem">
                 {contactSupportDetails.sender_email} | {contactSupportDetails.sender_mobile_no}
               </Typography>
             </Box>
@@ -78,7 +78,7 @@ const ContactsupportDetails = ({ selectedContactSupport, contactSupportDetails }
             </Typography>
           </Box>
           <Box ml={5}>
-            <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+            <Typography variant="body2" fontSize="0.9rem">
               {contactSupportDetails.message}
             </Typography>
             {selectedContactSupport.file_attachement ? (
@@ -115,20 +115,20 @@ const ContactsupportDetails = ({ selectedContactSupport, contactSupportDetails }
                 }}
               >
                 <Box>
-                  <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+                  <Typography variant="body2" fontSize="0.9rem">
                     {contactSupportDetails.received_by_name}
                   </Typography>
-                  <Typography variant="body2" fontSize="0.7rem" gutterBottom>
+                  <Typography variant="body2" fontSize="0.7rem">
                     {contactSupportDetails.received_by_designation}
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+                  <Typography variant="body2" fontSize="0.9rem">
                     {formatDate(contactSupportDetails.received_timestamp)}
                   </Typography>
                 </Box>
               </Box>
-              <Typography variant="body2" fontSize="0.9rem" mt={2} gutterBottom>
+              <Typography variant="body2" fontSize="0.9rem" mt={2}>
                 {contactSupportDetails.received_remarks}
               </Typography>
             </Box>
@@ -155,20 +155,20 @@ const ContactsupportDetails = ({ selectedContactSupport, contactSupportDetails }
                 }}
               >
                 <Box>
-                  <Typography variant="body2" fontSize="0.8rem" gutterBottom>
+                  <Typography variant="body2" fontSize="0.8rem">
                     {contactSupportDetails.closed_by_name}
                   </Typography>
-                  <Typography variant="body2" fontSize="0.8rem" gutterBottom>
+                  <Typography variant="body2" fontSize="0.8rem">
                     {contactSupportDetails.closed_by_designation}
                   </Typography>
                 </Box>
                 <Box>
-                  <Typography variant="body2" fontSize="0.9rem" gutterBottom>
+                  <Typography variant="body2" fontSize="0.9rem">
                     {formatDate(contactSupportDetails.closed_timestamp)}
                   </Typography>
                 </Box>
               </Box>
-              <Typography variant="body2" fontSize="0.8rem" mt={2} gutterBottom>
+              <Typography variant="body2" fontSize="0.8rem" mt={2}>
                 {contactSupportDetails.closed_remarks}
               </Typography>
             </Box>

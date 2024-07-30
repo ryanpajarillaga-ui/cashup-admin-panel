@@ -623,6 +623,10 @@ const ContactSupport = () => {
                           </Tooltip>
                         </TableCell>
                       ) : null}
+
+                      {contactSupport.status == "Closed" ? (
+                        <TableCell sx={{ padding: "4px", cursor: "pointer" }}></TableCell>
+                      ) : null}
                     </TableRow>
                   ))}
                 </TableBody>
