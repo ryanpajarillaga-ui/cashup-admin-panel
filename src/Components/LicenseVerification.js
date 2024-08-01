@@ -27,48 +27,37 @@ import React, { useEffect, useState } from "react";
 
 import AttachmentIcon from "@mui/icons-material/Attachment";
 import CancelIcon from "@mui/icons-material/Cancel";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ClearIcon from "@mui/icons-material/Clear";
 import Cookies from "js-cookie";
 import Header from "./Header";
 import Pagination from "@mui/material/Pagination";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import SearchIcon from "@mui/icons-material/Search";
-import SettingsSuggestIcon from "@mui/icons-material/SettingsSuggest";
 import Stack from "@mui/material/Stack";
-import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import TaskIcon from "@mui/icons-material/Task";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import VerticalNav from "./VerticalNav";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 import { useSnackbar } from "notistack";
-
-//import LicenseVerificationDetails from "./LicenseVerificationDetails";
 
 const LicenseVerification = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const [licenseVerifications, setLicenseVerifications] = useState([]);
-  const [newLicenseVerificationsCount, setNewLicenseVerificationsCount] = useState();
-  const [licenseVerificationDetails, setLicenseVerificationDetails] = useState([]);
-
+  const [licenseForVerificationsCount, setLicenseForVerificationsCount] = useState();
   const [searchText, setSearchText] = useState("");
-
   const [searchCategory, setSearchCategory] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [currentPageRecords, setCurrentPageRecords] = useState(1);
   const [totalPages, setTotalPages] = useState();
   const [pageLimit, setPageLimit] = useState();
-  const [reviewRemarks, setReviewRemarks] = useState("");
-  const [closeRemarks, setCloseRemarks] = useState("");
-
   const [totalRecords, setTotalRecords] = useState();
-  const [selectedContactSupport, setSelectedContactSupport] = useState();
-
-  const [openLicenseVerificationDetails, setOpenLicenseVerificationDetails] = useState(false);
-  const [opencontactSupportReview, setOpencontactSupportReview] = useState(false);
-  const [opencontactSupportClose, setOpencontactSupportClose] = useState(false);
+  const [selectedLicenseVerify, setSelectedLicenseVerify] = useState();
+  const [openLicenseVerify, setOpenLicenseVerify] = useState(false);
+  const [openlicenseVerifyClose, setOpenlicenseVerifyClose] = useState(false);
 
   const baseURLv1 = "https://cheerful-arachnid-sought.ngrok-free.app/v1";
 
@@ -94,10 +83,6 @@ const LicenseVerification = () => {
     setNotificationMessage(null);
   }, []);
 
-  useEffect(() => {
-    fetchLicenseVerificationDetails();
-  }, [selectedContactSupport]);
-
   const fetchLicenseVerifications = async (
     searchText = "",
     selectedCategory = 1,
@@ -111,7 +96,7 @@ const LicenseVerification = () => {
       };
 
       let response = await axios.post(
-        `${baseURLv1}/adminContactSupport/searchContactRequestListByPage`,
+        `${baseURLv1}/adminLicenseVerification/searchLicenseListByPage`,
         data
       );
       response = response.data.data;
@@ -119,7 +104,7 @@ const LicenseVerification = () => {
 
       setLicenseVerifications(result);
 
-      setNewLicenseVerificationsCount(response.new_request_count);
+      setLicenseForVerificationsCount(response.for_verification_count);
       setTotalPages(response.total_number_of_pages);
       setCurrentPage(response.current_page_number);
       setTotalRecords(response.total_row_count);
@@ -148,18 +133,9 @@ const LicenseVerification = () => {
     }
   };
 
-  const fetchLicenseVerificationDetails = async () => {
-    if (selectedContactSupport) {
-      const res = await axios.post(`${baseURLv1}/adminContactSupport/getContactRequestDetails`, {
-        in_contact_support_id: selectedContactSupport.contact_support_id,
-      });
-      setLicenseVerificationDetails(res.data.data);
-    }
-  };
-
   const fetchSearchCategory = async () => {
     try {
-      const response = await axios.get(`${baseURLv1}/adminLookup/getAllContactSearchCategory`);
+      const response = await axios.get(`${baseURLv1}/adminLookup/getAllLicenseSearchCategory`);
       setSearchCategory(response.data.data);
     } catch (error) {
       console.error("Error fetching Merchants:", error);
@@ -175,14 +151,6 @@ const LicenseVerification = () => {
 
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
-  };
-
-  const handleReviewRemarksChange = (e) => {
-    setReviewRemarks(e.target.value);
-  };
-
-  const handlecloseRemarksChange = (e) => {
-    setCloseRemarks(e.target.value);
   };
 
   const handleCategoryChange = (e) => {
@@ -210,7 +178,7 @@ const LicenseVerification = () => {
     fetchLicenseVerifications(searchText, selectedCategory, page);
   };
 
-  const formatDate = (dateStr) => {
+  const formatDateWithoutTime = (dateStr) => {
     const date = new Date(dateStr);
     if (isNaN(date.getTime())) {
       return null;
@@ -219,63 +187,47 @@ const LicenseVerification = () => {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
     };
-    return date.toLocaleString("en-US", options).replace(",", "").replace(/\//g, "-");
+    return date.toLocaleDateString("en-US", options).replace(/\//g, "-");
   };
 
   const handleFileClick = (pdfUrl) => {
     window.open(pdfUrl, "_blank");
   };
 
-  const handlePreviewClick = (contactSupport) => {
-    setOpenLicenseVerificationDetails(true);
-    setSelectedContactSupport(contactSupport);
-  };
-
-  const handleLicenseVerificationDetailsClose = () => {
-    setOpenLicenseVerificationDetails(false);
-  };
-
-  const handleReviewClick = (contactSupport) => {
-    setOpencontactSupportReview(true);
-    setSelectedContactSupport(contactSupport);
+  const handleVerifyClick = (contactSupport) => {
+    setOpenLicenseVerify(true);
+    setSelectedLicenseVerify(contactSupport);
   };
 
   const handleCloseClick = (contactSupport) => {
-    setOpencontactSupportClose(true);
-    setSelectedContactSupport(contactSupport);
+    setOpenlicenseVerifyClose(true);
+    setSelectedLicenseVerify(contactSupport);
   };
 
-  const handleContactSupportReviewClose = () => {
-    setReviewRemarks("");
-    setOpencontactSupportReview(false);
+  const handleLicenseVerifyClose = () => {
+    setOpenLicenseVerify(false);
   };
 
-  const handleContactSupportCloseClose = () => {
-    setCloseRemarks("");
-    setOpencontactSupportClose(false);
+  const handleLicenseVerifyRejectClose = () => {
+    setOpenlicenseVerifyClose(false);
   };
 
-  const handleContactSupportReview = async () => {
+  const handleLicenseVerify = async () => {
     const data = {
-      in_contact_support_id: selectedContactSupport.contact_support_id,
+      in_merchant_license_id: selectedLicenseVerify.merchant_license_id,
       in_logged_user_id: currentUserId,
-      in_read_remarks: reviewRemarks,
     };
     const headers = {
       in_platform_type_id: 4,
     };
     try {
-      const res = await axios.post(`${baseURLv1}/adminContactSupport/receiveContactRequest`, data, {
+      const res = await axios.post(`${baseURLv1}/adminLicenseVerification/verifyLicense`, data, {
         headers,
       });
       enqueueSnackbar(res.data.message, { variant: "success" });
-      handleContactSupportReviewClose();
+      handleLicenseVerifyClose();
       fetchLicenseVerifications(searchText, selectedCategory, currentPage);
-      setReviewRemarks("");
     } catch (err) {
       const errorMessage = err.response
         ? err.response.data.message || "Error occurred"
@@ -284,23 +236,21 @@ const LicenseVerification = () => {
     }
   };
 
-  const handleContactSupportClose = async () => {
+  const handleLicenseVerifyReject = async () => {
     const data = {
-      in_contact_support_id: selectedContactSupport.contact_support_id,
+      in_merchant_license_id: selectedLicenseVerify.merchant_license_id,
       in_logged_user_id: currentUserId,
-      in_closed_remarks: closeRemarks,
     };
     const headers = {
       in_platform_type_id: 4,
     };
     try {
-      const res = await axios.post(`${baseURLv1}/adminContactSupport/closeContactRequest`, data, {
+      const res = await axios.post(`${baseURLv1}/adminLicenseVerification/rejectLicense`, data, {
         headers,
       });
       enqueueSnackbar(res.data.message, { variant: "success" });
-      handleContactSupportCloseClose();
+      handleLicenseVerifyRejectClose();
       fetchLicenseVerifications(searchText, selectedCategory, currentPage);
-      setCloseRemarks("");
     } catch (err) {
       const errorMessage = err.response
         ? err.response.data.message || "Error occurred"
@@ -310,9 +260,9 @@ const LicenseVerification = () => {
   };
 
   const handleNewContactSupport = () => {
-    setSelectedCategory(3);
-    setSearchText("New");
-    fetchLicenseVerifications("New", 3);
+    setSelectedCategory(7);
+    setSearchText("For Verification");
+    fetchLicenseVerifications("For Verification", 7);
   };
 
   return (
@@ -331,14 +281,14 @@ const LicenseVerification = () => {
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
-              <SupportAgentIcon />
+              <TaskIcon />
             </Avatar>
             <Typography variant="h6" gutterBottom fontSize={"1.2rem"}>
-              Contact Support Requests
+              License Verification
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-            {newLicenseVerificationsCount > 0 ? (
+          <Box>
+            {licenseForVerificationsCount > 0 ? (
               <Paper
                 elevation={3}
                 sx={{
@@ -350,7 +300,7 @@ const LicenseVerification = () => {
                 <Typography sx={{ fontSize: "0.8rem" }}>
                   There are{" "}
                   <Box component="span" sx={{ color: "red" }}>
-                    {newLicenseVerificationsCount}
+                    {licenseForVerificationsCount}
                   </Box>{" "}
                   new support requests.
                 </Typography>
@@ -369,6 +319,7 @@ const LicenseVerification = () => {
             ) : null}
           </Box>
         </Box>
+
         <Paper elevation={3} sx={{ padding: "20px", maxWidth: "1300px", marginBottom: "2rem" }}>
           <Grid container spacing={2} style={{ paddingTop: 0 }}>
             <Grid item xs={7}>
@@ -464,9 +415,11 @@ const LicenseVerification = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell sx={{ padding: "4px" }}>Requested By</TableCell>
-                    <TableCell sx={{ padding: "4px" }}>Message</TableCell>
-                    <TableCell sx={{ padding: "4px" }}>Date Requested</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>Merchant Name</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>License Trade Name</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>Issued In</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>Issue Date</TableCell>
+                    <TableCell sx={{ padding: "4px" }}>Expiry Date</TableCell>
                     <TableCell sx={{ padding: "4px" }}>Status</TableCell>
                     <TableCell sx={{ padding: "4px" }}></TableCell>
                     <TableCell sx={{ padding: "4px" }}></TableCell>
@@ -476,7 +429,7 @@ const LicenseVerification = () => {
                 <TableBody>
                   {licenseVerifications.map((licenseVerification) => (
                     <TableRow
-                      key={licenseVerification.contact_support_id}
+                      key={licenseVerification.merchant_license_id}
                       sx={{
                         "&:hover": {
                           backgroundColor: "rgba(0, 0, 0, 0.02)",
@@ -489,7 +442,7 @@ const LicenseVerification = () => {
                         >
                           {
                             <img
-                              src={licenseVerification.sender_photo}
+                              src={licenseVerification.logo_path}
                               alt="Logo"
                               style={{ width: "35px", marginRight: ".5rem", borderRadius: "50%" }}
                             />
@@ -503,60 +456,73 @@ const LicenseVerification = () => {
                             }}
                           >
                             <Typography variant="body" fontSize="0.8rem">
-                              {licenseVerification.sender_name}
+                              {licenseVerification.merchant_name}
                             </Typography>
                             <Typography variant="body" color="textSecondary" fontSize="0.7rem">
-                              {licenseVerification.account_name}
-                            </Typography>
-                            <Typography variant="body" color="textSecondary" fontSize="0.7rem">
-                              {licenseVerification.sender_email}
-                            </Typography>
-                            <Typography variant="body" color="textSecondary" fontSize="0.7rem">
-                              {licenseVerification.sender_mobile_no}
+                              {licenseVerification.merchant_code}
                             </Typography>
                           </Box>
                         </Box>
                       </TableCell>
 
                       <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "flex-start",
+                          }}
+                        >
+                          <Typography variant="body" fontSize="0.8rem">
+                            {licenseVerification.trade_name}
+                          </Typography>
+                          <Typography variant="body" color="textSecondary" fontSize="0.7rem">
+                            {licenseVerification.license_no}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
                         <Typography variant="body" fontSize="0.8rem">
-                          {licenseVerification.message}
+                          {licenseVerification.city_name}
                         </Typography>
                       </TableCell>
                       <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
                         <Typography variant="body" fontSize="0.8rem">
-                          {formatDate(licenseVerification.message_timestamp)}
+                          {formatDateWithoutTime(licenseVerification.issue_date)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ padding: "4px", fontSize: "0.8rem" }}>
+                        <Typography variant="body" fontSize="0.8rem">
+                          {formatDateWithoutTime(licenseVerification.expiry_date)}
                         </Typography>
                       </TableCell>
 
                       <TableCell sx={{ padding: "4px" }}>
-                        <Box sx={{ display: "flex", flexDirection: "row" }}>
-                          {licenseVerification.status == "Closed" ? (
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
+                          {licenseVerification.license_status == "Verified" ? (
                             <VerifiedIcon color="primary" />
+                          ) : licenseVerification.license_status == "Rejected" ? (
+                            <CancelIcon color="error" />
                           ) : null}
                           <Typography
                             fontSize="0.8rem"
                             color={
-                              licenseVerification.status == "New"
+                              licenseVerification.license_status == "For Verification"
                                 ? "red"
-                                : licenseVerification.status == "Reviewing"
-                                ? "orange"
                                 : "black"
                             }
                             fontWeight={"bold"}
                           >
-                            {licenseVerification.status.toUpperCase()}
+                            {licenseVerification.license_status.toUpperCase()}
                           </Typography>
                         </Box>
                       </TableCell>
-                      {(licenseVerification.status == "New" ||
-                        licenseVerification.status == "Closed") &&
-                      licenseVerification.file_attachement ? (
+                      {licenseVerification.file_name ? (
                         <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
                           <Tooltip title={"File Attachment"}>
                             <AttachmentIcon
                               color={"customGreen"}
-                              onClick={() => handleFileClick(licenseVerification.file_attachement)}
+                              onClick={() => handleFileClick(licenseVerification.file_name)}
                             />
                           </Tooltip>
                         </TableCell>
@@ -564,39 +530,31 @@ const LicenseVerification = () => {
                         <TableCell></TableCell>
                       )}
 
-                      <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                        <Tooltip title={"View Details"}>
-                          <VisibilityIcon
-                            color={"customGreen"}
-                            onClick={() => handlePreviewClick(licenseVerification)}
-                          />
-                        </Tooltip>
-                      </TableCell>
-                      {licenseVerification.status == "New" ? (
-                        <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                          <Tooltip title={"Review"}>
-                            <SettingsSuggestIcon
-                              color={"customGreen"}
-                              onClick={() => handleReviewClick(licenseVerification)}
-                            />
-                          </Tooltip>
-                        </TableCell>
-                      ) : null}
-
-                      {licenseVerification.status == "Reviewing" ? (
-                        <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
-                          <Tooltip title={"Close Support Request"}>
-                            <CancelIcon
-                              color={"customGreen"}
-                              onClick={() => handleCloseClick(licenseVerification)}
-                            />
-                          </Tooltip>
-                        </TableCell>
-                      ) : null}
-
-                      {licenseVerification.status == "Closed" ? (
-                        <TableCell sx={{ padding: "4px", cursor: "pointer" }}></TableCell>
-                      ) : null}
+                      {licenseVerification.license_status == "For Verification" ? (
+                        <>
+                          <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
+                            <Tooltip title={"Reject"}>
+                              <CancelIcon
+                                color={"customGreen"}
+                                onClick={() => handleCloseClick(licenseVerification)}
+                              />
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell sx={{ padding: "4px", cursor: "pointer" }}>
+                            <Tooltip title={"Verify"}>
+                              <CheckCircleIcon
+                                color={"customGreen"}
+                                onClick={() => handleVerifyClick(licenseVerification)}
+                              />
+                            </Tooltip>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          <TableCell></TableCell>
+                          <TableCell></TableCell>
+                        </>
+                      )}
                     </TableRow>
                   ))}
                 </TableBody>
@@ -627,8 +585,8 @@ const LicenseVerification = () => {
         </Paper>
 
         <Dialog
-          open={opencontactSupportReview}
-          onClose={handleContactSupportReviewClose}
+          open={openLicenseVerify}
+          onClose={handleLicenseVerifyClose}
           aria-labelledby="form-dialog-title"
           maxWidth="xs"
           fullWidth
@@ -637,52 +595,47 @@ const LicenseVerification = () => {
             <DialogTitle id="form-dialog-title">
               <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
                 <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
-                  <SettingsSuggestIcon />
+                  <CheckCircleIcon />
                 </Avatar>
-                <Typography variant="h6">Receive & Review Request</Typography>
+                <Typography variant="h6">License Verification</Typography>
               </Box>
             </DialogTitle>
 
             <DialogContent>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                value={reviewRemarks}
-                onChange={handleReviewRemarksChange}
-                placeholder="Please provide your remarks for this request."
-                color="customGreen"
-                InputProps={{
-                  sx: { fontSize: "0.8rem", marginTop: "2rem", marginBottom: "1rem" },
+              <Paper
+                sx={{
+                  padding: "15px",
+                  backgroundColor: "lightyellow",
+                  mb: "1rem",
                 }}
-                inputProps={{ maxLength: 100 }}
-              />
+              >
+                <Typography sx={{ fontSize: "0.9rem" }}>
+                  You should proceed with the verification after you have confirmed the correctness
+                  & authenticity of the uploaded license copy.
+                </Typography>
+              </Paper>
               <Typography sx={{ fontSize: "0.9rem" }}>
-                Are you sure you want to receive and review this support request?
+                Are you sure you want to verify this trade license?
               </Typography>
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={handleContactSupportReviewClose}
+                onClick={handleLicenseVerifyClose}
                 color="customGreen"
                 sx={{ fontSize: "0.8rem" }}
               >
                 CANCEL
               </Button>
-              <Button
-                onClick={handleContactSupportReview}
-                color="customGreen"
-                sx={{ fontSize: "0.8rem" }}
-              >
-                REVIEW
+              <Button onClick={handleLicenseVerify} color="customGreen" sx={{ fontSize: "0.8rem" }}>
+                VERIFY
               </Button>
             </DialogActions>
           </Box>
         </Dialog>
 
         <Dialog
-          open={opencontactSupportClose}
-          onClose={handleContactSupportCloseClose}
+          open={openlicenseVerifyClose}
+          onClose={handleLicenseVerifyRejectClose}
           aria-labelledby="form-dialog-title"
           maxWidth="xs"
           fullWidth
@@ -693,85 +646,27 @@ const LicenseVerification = () => {
                 <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
                   <CancelIcon />
                 </Avatar>
-                <Typography variant="h6">Close Support Request</Typography>
+                <Typography variant="h6">License Verification</Typography>
               </Box>
             </DialogTitle>
 
             <DialogContent>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                value={closeRemarks}
-                onChange={handlecloseRemarksChange}
-                placeholder="Please provide your remarks for this request."
-                color="customGreen"
-                InputProps={{
-                  sx: { fontSize: "0.8rem", marginTop: "2rem", marginBottom: "1rem" },
-                }}
-                inputProps={{ maxLength: 100 }}
-              />
-              <Typography sx={{ fontSize: "0.9rem", marginBottom: "6px" }}>
-                Please make sure the request has been reviewed and already resolved before closing.
-              </Typography>
               <Typography sx={{ fontSize: "0.9rem" }}>
-                Are you sure you want to close this support request?
+                Are you sure you want to reject this trade license?
               </Typography>
             </DialogContent>
             <DialogActions>
               <Button
-                onClick={handleContactSupportCloseClose}
+                onClick={handleLicenseVerifyRejectClose}
                 color="customGreen"
                 sx={{ fontSize: "0.8rem" }}
               >
                 CANCEL
               </Button>
-              <Button
-                onClick={handleContactSupportClose}
-                color="customGreen"
-                sx={{ fontSize: "0.8rem" }}
-              >
-                CLOSE
+              <Button onClick={handleLicenseVerifyReject} color="error" sx={{ fontSize: "0.8rem" }}>
+                REJECT
               </Button>
             </DialogActions>
-          </Box>
-        </Dialog>
-
-        <Dialog
-          open={openLicenseVerificationDetails}
-          onClose={handleLicenseVerificationDetailsClose}
-          aria-labelledby="form-dialog-title"
-          maxWidth="md"
-          fullWidth
-        >
-          <Box>
-            <DialogTitle id="form-dialog-title">
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                  <Avatar sx={{ bgcolor: "#2e7d32", mr: 2 }}>
-                    <SupportAgentIcon />
-                  </Avatar>
-                  <Typography variant="h6">Contact Support Details</Typography>
-                </Box>
-                <Button onClick={handleLicenseVerificationDetailsClose} color={"customGreen"}>
-                  X
-                </Button>
-              </Box>
-            </DialogTitle>
-
-            <DialogContent>
-              {/* <LicenseVerificationDetails
-                selectedContactSupport={selectedContactSupport}
-                licenseVerificationDetails={licenseVerificationDetails}
-              /> */}
-            </DialogContent>
           </Box>
         </Dialog>
       </Box>

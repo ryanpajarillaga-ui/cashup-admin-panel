@@ -23,6 +23,7 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -100,8 +101,6 @@ const Merchants = () => {
   const userData = userDataObject.data[0];
   const currentUserId = userData.user_id;
   var file = null;
-  // var reformatedDepositAmount = 0;
-  // var reformatedSignupBonus = 0;
 
   useEffect(() => {
     fetchSearchCategory();
@@ -248,7 +247,6 @@ const Merchants = () => {
   const handlePageChange = (event, page) => {
     setCurrentPage(page);
     fetchMerchants(searchText, selectedCategory, page);
-    //fetchMerchants("", 1, page);
   };
 
   const handleRegisterClick = () => {
@@ -338,9 +336,6 @@ const Merchants = () => {
       if (!isNaN(numberValue)) {
         const formattedValue = formatCurrency(numberValue);
         setNewMerchant((prevNewUser) => ({ ...prevNewUser, [name]: formattedValue }));
-        // name === "Deposit_Amount"
-        //   ? (reformatedDepositAmount = numberValue)
-        //   : (reformatedSignupBonus = numberValue);
       }
     }
 
@@ -364,7 +359,6 @@ const Merchants = () => {
 
     if (file) {
       if (file.size > 500 * 1024) {
-        // 500KB size limit
         setError("File size should be less than 500KB");
         return;
       }
@@ -555,16 +549,20 @@ const Merchants = () => {
               sx={{ display: "flex", alignItems: "center" }}
               justifyContent={"space-between"}
             >
-              <SearchIcon
-                style={{ cursor: "pointer", fontSize: 36 }}
-                onClick={handleSearch}
-                color={"customGreen"}
-              />
-              <RestartAltIcon
-                style={{ cursor: "pointer", fontSize: 36 }}
-                onClick={handleReset}
-                color={"customGreen"}
-              />
+              <Tooltip title="Search">
+                <SearchIcon
+                  style={{ cursor: "pointer", fontSize: 36 }}
+                  onClick={handleSearch}
+                  color={"customGreen"}
+                />
+              </Tooltip>
+              <Tooltip title="Reset">
+                <RestartAltIcon
+                  style={{ cursor: "pointer", fontSize: 36 }}
+                  onClick={handleReset}
+                  color={"customGreen"}
+                />
+              </Tooltip>
             </Grid>
           </Grid>
         </Paper>

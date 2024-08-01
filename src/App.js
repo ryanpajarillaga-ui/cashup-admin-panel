@@ -4,6 +4,7 @@ import AdminUsers from "./Components/AdminUsers";
 import Consumers from "./Components/Consumers";
 import ContactSupport from "./Components/ContactSupport";
 import HomePage from "./Components/HomePage";
+import LicenseVerification from "./Components/LicenseVerification";
 import LoginPage from "./Components/Login/LoginPage";
 import Merchants from "./Components/Merchants";
 import React from "react";
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/merchants" element={<Merchants />} />
         <Route path="/consumers" element={<Consumers />} />
         <Route path="/contactsupport" element={<ContactSupport />} />
+        <Route path="/licenseverification" element={<LicenseVerification />} />
         <Route path="/test" element={<Test />} />
       </Routes>
     </Router>

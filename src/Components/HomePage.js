@@ -1,5 +1,3 @@
-// src/components/HomePage.js
-
 import { Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 

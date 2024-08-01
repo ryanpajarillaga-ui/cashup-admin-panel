@@ -471,16 +471,20 @@ const ContactSupport = () => {
               sx={{ display: "flex", alignItems: "center" }}
               justifyContent={"space-between"}
             >
-              <SearchIcon
-                style={{ cursor: "pointer", fontSize: 36 }}
-                onClick={handleSearch}
-                color={"customGreen"}
-              />
-              <RestartAltIcon
-                style={{ cursor: "pointer", fontSize: 36 }}
-                onClick={handleReset}
-                color={"customGreen"}
-              />
+              <Tooltip title="Search">
+                <SearchIcon
+                  style={{ cursor: "pointer", fontSize: 36 }}
+                  onClick={handleSearch}
+                  color={"customGreen"}
+                />
+              </Tooltip>
+              <Tooltip title="Reset">
+                <RestartAltIcon
+                  style={{ cursor: "pointer", fontSize: 36 }}
+                  onClick={handleReset}
+                  color={"customGreen"}
+                />
+              </Tooltip>
             </Grid>
           </Grid>
         </Paper>
